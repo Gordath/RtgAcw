@@ -9,6 +9,8 @@ private:
 	Glacier::D3D11Window *win2;
 
 public:
+	~RtgApplication();
+
 	bool initialize(int *argc, char *argv[]) override;
 
 	void update() override;
