@@ -1,10 +1,11 @@
-#include "../include/win32window.h"
+#include "win32window.h"
 #include <sstream>
+#include <iostream>
+
 
 namespace Glacier
 {
 	const std::string Win32Window::WindowClass::_win_class_name{"GlacierWindowClass"};
-	std::map<HWND, Window*> Win32Window::_window_by_handle;
 
 	// Private Class implementation ----------------------------------------------------------------
 	Win32Window::WindowClass::WindowClass()
@@ -13,12 +14,12 @@ namespace Glacier
 		wc.cbSize = sizeof(WNDCLASSEX);
 		wc.cbClsExtra = 0;
 		wc.cbWndExtra = 0;
-		wc.hInstance = ::GetModuleHandle(nullptr);
+		wc.hInstance = GetModuleHandle(nullptr);
 		wc.style = (CS_HREDRAW | CS_VREDRAW);
-		wc.lpfnWndProc = _winProc;
-		wc.hIcon = ::LoadIcon(nullptr, IDI_APPLICATION);
-		wc.hIconSm = ::LoadIcon(nullptr, IDI_APPLICATION);
-		wc.hCursor = ::LoadCursor(nullptr, IDC_ARROW);
+		wc.lpfnWndProc = _win_proc_def;
+		wc.hIcon = LoadIcon(nullptr, IDI_APPLICATION);
+		wc.hIconSm = LoadIcon(nullptr, IDI_APPLICATION);
+		wc.hCursor = LoadCursor(nullptr, IDC_ARROW);
 		wc.hbrBackground = static_cast<HBRUSH>(GetStockObject(WHITE_BRUSH));
 		wc.lpszMenuName = nullptr;
 		wc.lpszClassName = _win_class_name.c_str();
@@ -39,7 +40,7 @@ namespace Glacier
 		--_count;
 
 		if (_count >= 0) {
-			::UnregisterClass(_win_class_name.c_str(), ::GetModuleHandle(nullptr));
+			UnregisterClass(_win_class_name.c_str(), ::GetModuleHandle(nullptr));
 		}
 	}
 
@@ -68,7 +69,7 @@ namespace Glacier
 		unsigned const window_flags_ex_enable(WS_EX_CLIENTEDGE);
 		unsigned const window_flags_ex_disable(0);
 
-		_flags = (window_flags_enable    & ~window_flags_disable);
+		_flags = (window_flags_enable & ~window_flags_disable);
 		_flags_ex = (window_flags_ex_enable & ~window_flags_ex_disable);
 
 		_handle = ::CreateWindowEx(_flags_ex,
@@ -82,7 +83,7 @@ namespace Glacier
 		                           _parent,
 		                           _menu,
 		                           ::GetModuleHandle(nullptr),
-		                           nullptr);
+		                           this);
 
 		if (!_handle) {
 			char buff[256];
@@ -91,80 +92,63 @@ namespace Glacier
 			throw std::runtime_error(buff);
 		}
 
-		_window_by_handle[_handle] = this;
-
 		ShowWindow(_handle, SW_SHOWDEFAULT);
 		UpdateWindow(_handle);
 		ShowCursor(_show_cursor);
 	}
-	
-	LRESULT CALLBACK Win32Window::_winProc(HWND handle, UINT msg, WPARAM wparam, LPARAM lparam)
+
+	LRESULT CALLBACK Win32Window::win_proc(HWND handle, UINT msg, WPARAM wparam, LPARAM lparam)
 	{
-		Window* win{_window_by_handle[handle]};
-
-		if(!win) {
-			return DefWindowProc(handle, msg, wparam, lparam);
-		}
-
-		const WindowFunctionCallbacks& callbacks{win->get_callbacks()};
-
-		Vec2i mouse_pos{win->get_mouse_position()};
-
 		switch (msg) {
 		case WM_PAINT:
-			win->set_redisplay(true);
+			set_redisplay(true);
 			ValidateRect(handle, nullptr);
 			break;
-
 		case WM_CLOSE:
-
 			break;
 		case WM_SIZE:
-			win->set_size(Vec2i{LOWORD(lparam), HIWORD(lparam)});
-			win->set_changed_size(true);
+			set_size(Vec2i{LOWORD(lparam), HIWORD(lparam)});
+			set_changed_size(true);
 			break;
-
 		case WM_KEYDOWN:
+			std::cout << "WindowID: " << _win_id << " Keydown!!" << std::endl;
 			if (wparam < 256) {
-				if (callbacks._keyboard_func) {
-					callbacks._keyboard_func(wparam, mouse_pos.x, mouse_pos.y);
+				if (_callbacks._keyboard_func) {
+					_callbacks._keyboard_func(wparam, _mouse_pos.x, _mouse_pos.y);
 				}
 			}
 			else {
-				if (callbacks._special_func) {
-					callbacks._special_func(wparam, mouse_pos.x, mouse_pos.y);
+				if (_callbacks._special_func) {
+					_callbacks._special_func(wparam, _mouse_pos.x, _mouse_pos.y);
 				}
 			}
 			break;
-
 		case WM_KEYUP:
 			if (wparam < 256) {
-				if (callbacks._keyboard_up_func) {
-					callbacks._keyboard_up_func(wparam, mouse_pos.x, mouse_pos.y);
+				if (_callbacks._keyboard_up_func) {
+					_callbacks._keyboard_up_func(wparam, _mouse_pos.x, _mouse_pos.y);
 				}
 			}
 			else {
-				if (callbacks._special_up_func) {
-					callbacks._special_up_func(wparam, mouse_pos.x, mouse_pos.y);
+				if (_callbacks._special_up_func) {
+					_callbacks._special_up_func(wparam, _mouse_pos.x, _mouse_pos.y);
 				}
 			}
 			break;
-
 		case WM_MOUSEMOVE:
-			win->set_mouse_position(Vec2i{LOWORD(lparam), HIWORD(lparam)});
+			set_mouse_position(Vec2i{LOWORD(lparam), HIWORD(lparam)});
 
 			if (wparam & (MK_LBUTTON | MK_MBUTTON | MK_RBUTTON)) {
-				if (callbacks._motion_func) {
-					callbacks._motion_func(mouse_pos.x, mouse_pos.y);
+				if (_callbacks._motion_func) {
+					_callbacks._motion_func(_mouse_pos.x, _mouse_pos.y);
 				}
 			}
 			else {
-				if (callbacks._passive_motion_func) {
-					callbacks._passive_motion_func(mouse_pos.x, mouse_pos.y);
+				if (_callbacks._passive_motion_func) {
+					_callbacks._passive_motion_func(_mouse_pos.x, _mouse_pos.y);
 				}
 			}
 			break;
-
 		case WM_LBUTTONDOWN:
 			break;
 		case WM_RBUTTONDOWN:
@@ -181,11 +165,40 @@ namespace Glacier
 			//int delta = GET_WHEEL_DELTA_WPARAM(wparam);
 			break;
 		case WM_DESTROY:
+			PostQuitMessage(WM_QUIT);
 			break;
 		default:
-			return DefWindowProc(handle, msg, wparam, lparam);
+			break;
 		}
 
-		return 0;
+		return DefWindowProc(handle, msg, wparam, lparam);
+	}
+
+
+	LRESULT CALLBACK Win32Window::_win_proc_def(HWND handle, UINT msg, WPARAM wparam, LPARAM lparam)
+	{
+		switch (msg) {
+		case WM_NCCREATE:
+		case WM_NCDESTROY: {
+			Win32Window* win{ nullptr };
+			if (msg == WM_NCCREATE) {
+				win = static_cast<Win32Window*>(reinterpret_cast<CREATESTRUCT*>(lparam)->lpCreateParams);
+			}
+
+			set_window_long_ptr(handle, GWL_USERDATA, win);
+
+			return DefWindowProc(handle, msg, wparam, lparam);
+		}
+		default:
+			break;
+		}
+
+		Win32Window* win{nullptr};
+		win = get_window_long_ptr<Win32Window>(handle, GWL_USERDATA);
+		if (win) {
+			return win->win_proc(handle, msg, wparam, lparam);
+		}
+
+		return DefWindowProc(handle, msg, wparam, lparam);
 	}
 }

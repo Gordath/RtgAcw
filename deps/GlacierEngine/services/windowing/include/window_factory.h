@@ -10,6 +10,7 @@ namespace Glacier
 	public:
 		static T *create_instance()
 		{
+			static_assert(sizeof(T) == sizeof(Window), "Type is not a window.");
 			return new T;
 		}
 	};

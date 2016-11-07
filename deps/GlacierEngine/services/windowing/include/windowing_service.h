@@ -5,7 +5,6 @@
 #include "window.h"
 #include "service.h"
 #include <vector>
-#include <map>
 
 namespace Glacier
 {
@@ -21,16 +20,16 @@ namespace Glacier
 
 		WindowingService &operator=(const WindowingService &service) = delete;
 
-		void GLACIERENGINE_API add(Window *window);
+		void add(Window *window);
 
 		//TODO: figure out a nice data structure for traversing and removing windows.
-		void GLACIERENGINE_API remove();
+		void remove();
 
-		Window GLACIERENGINE_API *get_window(unsigned int win_id) const;
+		Window *get_window(unsigned int win_id) const;
 
-		Window GLACIERENGINE_API *get_window(const std::string &title) const;
+		Window *get_window(const std::string &title) const;
 
-		size_t GLACIERENGINE_API get_window_count() const;
+		size_t get_window_count() const;
 	};
 }
 

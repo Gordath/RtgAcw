@@ -1,15 +1,11 @@
 #ifndef GLACIER_ENGINE_APPLICATION_H_
 #define GLACIER_ENGINE_APPLICATION_H_
-#include "dll_export.h"
-#include "types.h"
-#include <string>
-#include "windowing_service.h"
 
 namespace Glacier
 {
 	class Application {
 	protected:
-		bool _terminate;
+		bool _terminate = false;
 
 	public:
 		Application() = default;
@@ -23,6 +19,17 @@ namespace Glacier
 		virtual void draw() = 0;
 		virtual int run() = 0;
 	};
+
+#if defined(_MSC_VER)
+#  pragma comment(linker, "/ENTRY:mainCRTStartup")
+#  if defined(_DEBUG)
+#    pragma comment(linker, "/SUBSYSTEM:console ")
+#    pragma message(__FILE__ ": /SUBSYSTEM:console /ENTRY:mainCRTStartup")
+#  else
+#    pragma comment(linker, "/SUBSYSTEM:windows")
+#    pragma message(__FILE__ ": /SUBSYSTEM:windows /ENTRY:mainCRTStartup")
+#  endif
+#endif
 }
 
 #endif //GLACIER_ENGINE_APPLICATION_H_

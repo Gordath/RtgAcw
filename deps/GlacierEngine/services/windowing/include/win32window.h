@@ -1,7 +1,8 @@
 #ifndef GLACIER_WIN32_WINDOW_H_
 #define GLACIER_WIN32_WINDOW_H_
 
-#include <windows.h>
+#include "win32utils.h"
+//#include <Windows.h>
 #include "window.h"
 #include <map>
 
@@ -18,14 +19,14 @@ namespace Glacier
 			int _count = 0;
 
 		public:
-			GLACIERENGINE_API WindowClass();
-			GLACIERENGINE_API ~WindowClass();
+			WindowClass();
+			~WindowClass();
 		};
 
 		const WindowClass _window_class;
 
-		static std::map<HWND, Window*> _window_by_handle;
-		static LRESULT CALLBACK _winProc(HWND handle, UINT msg, WPARAM wparam, LPARAM lparam);
+
+		static LRESULT CALLBACK _win_proc_def(HWND handle, UINT msg, WPARAM wparam, LPARAM lparam);
 
 	protected:
 		HWND  _handle = nullptr;
@@ -38,7 +39,7 @@ namespace Glacier
 		unsigned int _flags_ex = 0;
 
 	public:
-		GLACIERENGINE_API Win32Window(const std::string& title,
+		Win32Window(const std::string& title,
 		            const Vec2i& size,
 		            const Vec2i& position,
 					const unsigned int window_id,
@@ -46,6 +47,8 @@ namespace Glacier
 		            const bool minimized,
 		            const bool resizeable,
 		            const bool show_cursor);
+
+		virtual LRESULT CALLBACK win_proc(HWND handle, UINT msg, WPARAM wparam, LPARAM lparam);
 	};
 }
 #endif //GLACIER_WIN32_WINDOW_H_

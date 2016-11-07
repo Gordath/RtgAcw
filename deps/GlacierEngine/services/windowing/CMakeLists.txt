@@ -11,7 +11,8 @@ set(SOURCE_FILES
 	  include/win32window.h
 	  include/d3d11window.h
 	  include/windowing_service.h
-	  include/window_factory.h)
+	  include/window_factory.h
+	  include/win32utils.h)
 
 add_library(windowing ${SOURCE_FILES})
 

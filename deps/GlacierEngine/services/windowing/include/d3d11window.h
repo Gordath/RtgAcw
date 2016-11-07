@@ -1,19 +1,23 @@
 #ifndef GLACIER_ENGINE_D3D11WINDOW_H_
 #define GLACIER_ENGINE_D3D11WINDOW_H_
 #include "win32window.h"
-#include <d3d11.h>
+#include <D3D/d3d11.h>
 #include <D3D/d3dx11.h>
 #include <D3D/d3dx10.h>
+#include <wrl.h>
 
 namespace Glacier
 {
+	template<typename T>
+	using ComPtr = Microsoft::WRL::ComPtr<T>;
+
 	class D3D11Window : public Win32Window
 	{
 	private:
-		static ID3D11Device* _device;
-		static ID3D11DeviceContext* _context;
+		static ComPtr<ID3D11Device> _device;
+		static ComPtr<ID3D11DeviceContext> _context;
 
-		IDXGISwapChain* _swap_chain;
+		ComPtr<IDXGISwapChain> _swap_chain;
 
 		bool _enable_MSAA = false;
 		int _sample_count = 4;

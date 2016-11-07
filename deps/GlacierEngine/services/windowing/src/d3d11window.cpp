@@ -1,14 +1,12 @@
 #include "d3d11window.h"
 #include <array>
 #include <assert.h>
-#include "dxgi.h"
 
-#define ReleaseCOM(x) { if(x) x->Release(); }
 
 namespace Glacier
 {
-	ID3D11Device* D3D11Window::_device;
-	ID3D11DeviceContext* D3D11Window::_context;
+	ComPtr<ID3D11Device> D3D11Window::_device;
+	ComPtr<ID3D11DeviceContext> D3D11Window::_context;
 
 	bool D3D11Window::create_D3D11_device(D3D11Window* window)
 	{
@@ -24,29 +22,32 @@ namespace Glacier
 
 		D3D_FEATURE_LEVEL feature_level;
 
-		HRESULT h_result{0};
-		h_result = D3D11CreateDevice(nullptr,
-		                             D3D_DRIVER_TYPE_HARDWARE,
-		                             nullptr,
-		                             device_flags,
-		                             &feature_levels[0],
-		                             feature_levels.size(),
-		                             D3D11_SDK_VERSION,
-		                             &_device,
-		                             &feature_level,
-		                             &_context);
+		if (!_device) {
+			HRESULT h_result{ 0 };
+			h_result = D3D11CreateDevice(nullptr,
+			                             D3D_DRIVER_TYPE_HARDWARE,
+			                             nullptr,
+			                             device_flags,
+			                             &feature_levels[0],
+			                             feature_levels.size(),
+			                             D3D11_SDK_VERSION,
+			                             _device.GetAddressOf(),
+			                             &feature_level,
+			                             _context.GetAddressOf());
 
-		LPCSTR err_msg;
-		if (FAILED(h_result)) {
-			err_msg = "D3D11CreateDevice Failed.";
-			MessageBox(window->_handle, err_msg, nullptr, 0);
-			return false;
+			LPCSTR err_msg;
+			if (FAILED(h_result)) {
+				err_msg = "D3D11CreateDevice Failed.";
+				MessageBox(window->_handle, err_msg, nullptr, 0);
+				return false;
+			}
+
+			if (feature_level != D3D_FEATURE_LEVEL_11_0) {
+				err_msg = "Direct3D Feature Level 11 unsupported.";
+				MessageBox(window->_handle, err_msg, nullptr, 0);
+			}
 		}
 
-		if (feature_level != D3D_FEATURE_LEVEL_11_0) {
-			err_msg = "Direct3D Feature Level 11 unsupported.";
-			MessageBox(window->_handle, err_msg, nullptr, 0);
-		}
 
 		return true;
 	}
@@ -55,7 +56,7 @@ namespace Glacier
 	{
 		//Describe the swapchain
 		DXGI_SWAP_CHAIN_DESC swap_chain_desc;
-		Vec2i win_size{ window->get_size() };
+		Vec2i win_size{window->get_size()};
 		swap_chain_desc.BufferDesc.Width = win_size.x;
 		swap_chain_desc.BufferDesc.Height = win_size.y;
 		swap_chain_desc.BufferDesc.RefreshRate.Numerator = 60;
@@ -77,32 +78,29 @@ namespace Glacier
 		swap_chain_desc.BufferCount = 1; //1 back buffer = Double buffering
 		swap_chain_desc.OutputWindow = window->_handle;
 		swap_chain_desc.Windowed = true; //TODO: Ckeck if this is the fullscreen switch.
+		swap_chain_desc.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
 		swap_chain_desc.Flags = 0;
 
-		HRESULT h_result{ 0 };
+		HRESULT h_result{0};
 
-		IDXGIDevice* dxgi_device{ nullptr };
-		_device->QueryInterface(__uuidof(IDXGIDevice), (void**)&dxgi_device);
+		ComPtr<IDXGIDevice> dxgi_device{nullptr};
+		h_result = _device.As(&dxgi_device);
 
-		IDXGIAdapter* dxgi_adapter{ nullptr };
-		dxgi_device->GetParent(__uuidof(IDXGIAdapter), (void**)&dxgi_adapter);
+		ComPtr<IDXGIAdapter> dxgi_adapter{nullptr};
+		h_result = dxgi_device->GetAdapter(dxgi_adapter.GetAddressOf());
 
 		//Now get the factory interface that was used to create the _device.
-		IDXGIFactory* dxgi_factory{ nullptr };
-		dxgi_adapter->GetParent(__uuidof(IDXGIFactory), (void**)&dxgi_factory);
+		ComPtr<IDXGIFactory> dxgi_factory{nullptr};
+		h_result = dxgi_adapter->GetParent(__uuidof(IDXGIFactory), (void**)dxgi_factory.GetAddressOf());
 
 		//At last create the swap chain.
-		h_result = dxgi_factory->CreateSwapChain(_device, &swap_chain_desc, &window->_swap_chain);
+		h_result = dxgi_factory->CreateSwapChain(_device.Get(), &swap_chain_desc, window->_swap_chain.GetAddressOf());
 
 		if (FAILED(h_result)) {
-			LPCSTR err_msg{ "DXGISwapChain creation failed." };
+			LPCSTR err_msg{"DXGISwapChain creation failed."};
 			MessageBox(window->_handle, err_msg, nullptr, 0);
 			return false;
 		}
-
-		ReleaseCOM(dxgi_device);
-		ReleaseCOM(dxgi_adapter);
-		ReleaseCOM(dxgi_factory);
 
 		return true;
 	}
@@ -153,5 +151,4 @@ namespace Glacier
 	{
 		return _MSAA_quality;
 	}
-
 }

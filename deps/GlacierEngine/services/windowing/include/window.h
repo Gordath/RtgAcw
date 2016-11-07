@@ -2,7 +2,6 @@
 #define GLACIER_WINDOW_H_
 
 #include <string>
-#include "dll_export.h"
 #include "types.h"
 #include "windowing_types.h"
 
@@ -28,7 +27,7 @@ namespace Glacier
 		WindowFunctionCallbacks _callbacks;
 	
 	public:
-		GLACIERENGINE_API Window(const std::string &title,
+		Window(const std::string &title,
 			   const Vec2i &size, 
 			   const Vec2i &position,
 			   const unsigned int window_id,
@@ -45,49 +44,49 @@ namespace Glacier
 										_show_cursor(show_cursor)				
 		{ }
 
-		GLACIERENGINE_API Window(const Window &win) = delete;
+		Window(const Window &win) = delete;
 
-		GLACIERENGINE_API Window &operator=(const Window &win) = delete;
+		Window &operator=(const Window &win) = delete;
 
-		virtual GLACIERENGINE_API ~Window() = default;
+		virtual ~Window() = default;
 
-		const std::string GLACIERENGINE_API &get_title() const;
+		const std::string &get_title() const;
 
-		void GLACIERENGINE_API set_size(const Vec2i &size);
+		void set_size(const Vec2i &size);
 
-		const Vec2i GLACIERENGINE_API &get_size() const;
+		const Vec2i &get_size() const;
 
-		unsigned int GLACIERENGINE_API get_id() const;
+		unsigned int get_id() const;
 
-		const Vec2i GLACIERENGINE_API &get_mouse_position() const;
+		const Vec2i &get_mouse_position() const;
 
-		void GLACIERENGINE_API set_mouse_position(const Vec2i &mouse_pos);
+		void set_mouse_position(const Vec2i &mouse_pos);
 
-		void GLACIERENGINE_API set_focus(const bool focus);
+		void set_focus(const bool focus);
 
-		bool GLACIERENGINE_API is_focused() const;
+		bool is_focused() const;
 
-		void GLACIERENGINE_API set_minimized(const bool minimized);
+		void set_minimized(const bool minimized);
 
-		bool GLACIERENGINE_API is_minimized() const;
+		bool is_minimized() const;
 
-		void GLACIERENGINE_API set_resizable(const bool resizeable);
+		void set_resizable(const bool resizeable);
 
-		bool GLACIERENGINE_API is_resizeable() const;
+		bool is_resizeable() const;
 
-		void GLACIERENGINE_API set_changed_size(const bool state);
+		void set_changed_size(const bool state);
 
-		bool GLACIERENGINE_API changed_size() const;
+		bool changed_size() const;
 
-		void GLACIERENGINE_API set_redisplay(const bool redisplay);
+		void set_redisplay(const bool redisplay);
 
-		void GLACIERENGINE_API show_cursor(bool show);
+		void show_cursor(bool show);
 
-		bool GLACIERENGINE_API must_redisplay() const;
+		bool must_redisplay() const;
 
-		void GLACIERENGINE_API set_window_callbacks(const WindowFunctionCallbacks &cbs);
+		void set_window_callbacks(const WindowFunctionCallbacks &cbs);
 
-		const WindowFunctionCallbacks GLACIERENGINE_API &get_callbacks() const;
+		const WindowFunctionCallbacks &get_callbacks() const;
 	};
 }
 
