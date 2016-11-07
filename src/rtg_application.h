@@ -5,12 +5,10 @@
 
 class RtgApplication : public Glacier::Application {
 private:
-	Glacier::WindowingService *_windowing_service;
 	Glacier::D3D11Window *win;
+	Glacier::D3D11Window *win2;
 
 public:
-	//RtgApplication() = default;
-
 	bool initialize(int *argc, char *argv[]) override;
 
 	void update() override;

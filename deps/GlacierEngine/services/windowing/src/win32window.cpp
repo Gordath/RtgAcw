@@ -6,30 +6,33 @@
 namespace Glacier
 {
 	const std::string Win32Window::WindowClass::_win_class_name{"GlacierWindowClass"};
+	int Win32Window::WindowClass::_count{ 0 };
 
 	// Private Class implementation ----------------------------------------------------------------
 	Win32Window::WindowClass::WindowClass()
 	{
-		WNDCLASSEX wc = {0};
-		wc.cbSize = sizeof(WNDCLASSEX);
-		wc.cbClsExtra = 0;
-		wc.cbWndExtra = 0;
-		wc.hInstance = GetModuleHandle(nullptr);
-		wc.style = (CS_HREDRAW | CS_VREDRAW);
-		wc.lpfnWndProc = _win_proc_def;
-		wc.hIcon = LoadIcon(nullptr, IDI_APPLICATION);
-		wc.hIconSm = LoadIcon(nullptr, IDI_APPLICATION);
-		wc.hCursor = LoadCursor(nullptr, IDC_ARROW);
-		wc.hbrBackground = static_cast<HBRUSH>(GetStockObject(WHITE_BRUSH));
-		wc.lpszMenuName = nullptr;
-		wc.lpszClassName = _win_class_name.c_str();
+		if (_count <= 0) {
+			WNDCLASSEX wc = { 0 };
+			wc.cbSize = sizeof(WNDCLASSEX);
+			wc.cbClsExtra = 0;
+			wc.cbWndExtra = 0;
+			wc.hInstance = GetModuleHandle(nullptr);
+			wc.style = (CS_HREDRAW | CS_VREDRAW);
+			wc.lpfnWndProc = _win_proc_def;
+			wc.hIcon = LoadIcon(nullptr, IDI_APPLICATION);
+			wc.hIconSm = LoadIcon(nullptr, IDI_APPLICATION);
+			wc.hCursor = LoadCursor(nullptr, IDC_ARROW);
+			wc.hbrBackground = static_cast<HBRUSH>(GetStockObject(WHITE_BRUSH));
+			wc.lpszMenuName = nullptr;
+			wc.lpszClassName = _win_class_name.c_str();
 
-		if (!::RegisterClassEx(&wc)) {
-			std::ostringstream ostr;
+			if (!::RegisterClassEx(&wc)) {
+				std::ostringstream ostr;
 
-			ostr << "Unable to register window class '" << _win_class_name.c_str() << "'";
+				ostr << "Unable to register window class '" << _win_class_name.c_str() << "'";
 
-			throw std::runtime_error(ostr.str().c_str());
+				throw std::runtime_error(ostr.str().c_str());
+			}
 		}
 
 		++_count;

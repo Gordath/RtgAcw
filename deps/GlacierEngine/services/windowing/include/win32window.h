@@ -16,7 +16,7 @@ namespace Glacier
 			friend class Win32Window;
 
 			static const std::string _win_class_name;
-			int _count = 0;
+			static int _count;
 
 		public:
 			WindowClass();
