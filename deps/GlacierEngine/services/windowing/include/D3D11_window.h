@@ -1,32 +1,28 @@
 #ifndef GLACIER_ENGINE_D3D11WINDOW_H_
 #define GLACIER_ENGINE_D3D11WINDOW_H_
-#include "win32window.h"
+#include "win32_window.h"
 #include <D3D/d3d11.h>
-#include <D3D/d3dx11.h>
-#include <D3D/d3dx10.h>
-#include <wrl.h>
+#include "GAPI_context_locator.h"
+#include "D3D11_render_target.h"
+#include <memory>
 
 namespace Glacier
 {
-	template<typename T>
-	using ComPtr = Microsoft::WRL::ComPtr<T>;
+	class D3D11Context;
 
-	class D3D11Window : public Win32Window
+	class D3D11Window : public Win32Window, protected GAPIContextLocator
 	{
 	private:
-		static ComPtr<ID3D11Device> _device;
-		static ComPtr<ID3D11DeviceContext> _context;
+		std::unique_ptr<D3D11RenderTarget>		_render_target;
+		ComPtr<IDXGISwapChain>					_swap_chain;
 
-		ComPtr<IDXGISwapChain> _swap_chain;
+		bool									_enable_MSAA = false;
+		int										_sample_count = 4;
+		unsigned int							_MSAA_quality;
 
-		bool _enable_MSAA = false;
-		int _sample_count = 4;
-		unsigned int _MSAA_quality;
+		bool									create_D3D11_swap_chain(const D3D11Context* ctx);
 
-		static bool create_D3D11_device(D3D11Window* window);
-		static bool create_D3D11_swap_chain(D3D11Window* window);
-		static unsigned int check_MSAA_quality(D3D11Window* window);
-		static bool init_D3D(D3D11Window* window);
+		bool									initialize();
 
 	public:
 		D3D11Window(const std::string& title,
@@ -49,7 +45,7 @@ namespace Glacier
 		                                           _enable_MSAA(enable_MSAA),
 		                                           _sample_count(MSAA_sample_count)
 		{
-			init_D3D(this);
+			initialize();
 		}
 
 		void enable_MSAA(bool state);

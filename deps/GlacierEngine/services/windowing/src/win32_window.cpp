@@ -1,4 +1,4 @@
-#include "win32window.h"
+#include "win32_window.h"
 #include <sstream>
 #include <iostream>
 
@@ -86,7 +86,7 @@ namespace Glacier
 		                           _parent,
 		                           _menu,
 		                           ::GetModuleHandle(nullptr),
-		                           this);
+		                           this); //Carry the window class pointer.
 
 		if (!_handle) {
 			char buff[256];
@@ -185,9 +185,11 @@ namespace Glacier
 		case WM_NCDESTROY: {
 			Win32Window* win{ nullptr };
 			if (msg == WM_NCCREATE) {
+				//extract the Win32Window we stored in the window creation from the lparam.
 				win = static_cast<Win32Window*>(reinterpret_cast<CREATESTRUCT*>(lparam)->lpCreateParams);
 			}
 
+			//map the window with it's handle.
 			set_window_long_ptr(handle, GWL_USERDATA, win);
 
 			return DefWindowProc(handle, msg, wparam, lparam);
@@ -197,8 +199,10 @@ namespace Glacier
 		}
 
 		Win32Window* win{nullptr};
+		//get the window by it's handle
 		win = get_window_long_ptr<Win32Window>(handle, GWL_USERDATA);
 		if (win) {
+			//execute the window specific win_proc.
 			return win->win_proc(handle, msg, wparam, lparam);
 		}
 

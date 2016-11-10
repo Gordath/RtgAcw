@@ -1,8 +1,7 @@
 #ifndef GLACIER_WIN32_WINDOW_H_
 #define GLACIER_WIN32_WINDOW_H_
 
-#include "win32utils.h"
-//#include <Windows.h>
+#include "win32_utils.h"
 #include "window.h"
 #include <map>
 

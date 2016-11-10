@@ -9,20 +9,20 @@ namespace Glacier
 {
 	class Window {
 	protected:
-		std::string			_title;
-		Vec2i				_size;
-		Vec2i				_position;
-		unsigned int		_win_id = 0;
+		std::string				_title;
+		Vec2i					_size;
+		Vec2i					_position;
+		unsigned int			_win_id = 0;
 
-		Vec2i				_mouse_pos;
+		Vec2i					_mouse_pos;
 
-		bool				_focused;
-		bool				_minimized;
-		bool				_resizeable;
-		bool				_show_cursor;
+		bool					_focused;
+		bool					_minimized;
+		bool					_resizeable;
+		bool					_show_cursor;
 
-		bool				_changed_size;
-		bool				_redisplay;
+		bool					_changed_size;
+		bool					_redisplay;
 
 		WindowFunctionCallbacks _callbacks;
 	

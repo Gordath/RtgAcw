@@ -8,6 +8,7 @@ add_subdirectory(deps)
 include_directories(deps/GlacierEngine/include)
 include_directories(deps/GlacierEngine/include/internal)
 include_directories(deps/GlacierEngine/services/windowing/include)
+include_directories(deps/GlacierEngine/services/rendering/include)
 include_directories(C:/usr/include)
 link_directories(C:/usr/lib)
 

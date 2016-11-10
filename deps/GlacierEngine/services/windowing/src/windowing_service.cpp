@@ -1,4 +1,4 @@
-#include "../include/windowing_service.h"
+#include "windowing_service.h"
 
 namespace Glacier
 {

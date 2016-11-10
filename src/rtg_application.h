@@ -1,7 +1,7 @@
 #ifndef RTGAPPLICATION_H_
 #define RTGAPPLICATION_H_
 #include "application.h"
-#include "d3d11window.h"
+#include "D3D11_window.h"
 
 class RtgApplication : public Glacier::Application {
 private:
