@@ -3,30 +3,61 @@ add_definitions("-DGLM_PRECISION_HIGHP_FLOAT")
 add_definitions("-DGLM_PRECISION_HIGHP_INT")
 add_definitions("-DGLM_FORCE_SWIZZLE")
 
-add_definitions(-DGLACIERENGINE_STATIC)
 add_definitions(-DGLACIERENGINE_EXPORTS)
 add_definitions(-DGLACIERENGINE_BUILD_D3D)
 
 include_directories(include/internal)
 include_directories(include)
-include_directories(services/windowing/include)
-include_directories(services/rendering/include)
+include_directories(windowing/include)
+include_directories(windowing/include/d3d)
+include_directories(windowing/include/win32)
+include_directories(rendering/include)
+include_directories(rendering/include/d3d)
 include_directories(C:/usr/include)
 
-add_subdirectory(services)
-
 set(SOURCE_FILES
-           src/service_provider.cpp
 		include/glacier_engine.h
-		include/internal/dll_export.h
-		include/internal/application.h
-		include/internal/service.h
-		include/internal/service_provider.h
-		include/internal/types.h)
+		include/component.h
+		include/application.h
+		include/internal/dll_export.h						include/internal/service.h
+		include/internal/types.h
+		rendering/include/GAPI_context.h
+		rendering/include/GAPI_context_locator.h
+		rendering/include/IBO.h
+		rendering/include/mesh.h
+		rendering/include/render_target.h
+		rendering/include/renderer.h
+		rendering/include/shader.h
+		rendering/include/VBO.h
+		rendering/include/vertex.h
+		rendering/include/d3d/D3D11_context.h
+		rendering/include/d3d/D3D11_IBO.h
+		rendering/include/d3d/D3D11_render_target.h
+		rendering/include/d3d/D3D11_renderer.h
+		rendering/include/d3d/D3D11_shader.h
+		rendering/include/d3d/D3D11_VBO.h
+		windowing/include/window.h
+		windowing/include/window_factory.h
+		windowing/include/windowing_service.h
+		windowing/include/windowing_types.h
+		windowing/include/d3d/D3D11_window.h
+		windowing/include/win32/win32_window.h
+		windowing/include/win32/win32_utils.h
+		rendering/src/GAPI_context_locator.cpp
+		rendering/src/mesh.cpp
+		rendering/src/d3d/D3D11_context.cpp
+		rendering/src/d3d/D3D11_IBO.cpp
+		rendering/src/d3d/D3D11_render_target.cpp
+		rendering/src/d3d/D3D11_renderer.cpp
+		rendering/src/d3d/D3D11_VBO.cpp
+		windowing/src/window.cpp
+		windowing/src/window_factory.cpp
+		windowing/src/windowing_service.cpp
+		windowing/src/d3d/D3D11_window.cpp
+		windowing/src/win32/win32_window.cpp)
 
 add_library(GlacierEngine ${SOURCE_FILES})
-
-target_link_libraries(GlacierEngine  
-			rendering
-			windowing)
-
+target_link_libraries(GlacierEngine 
+		d3d11.lib
+		d3dx11.lib
+		d3dx10.lib)
