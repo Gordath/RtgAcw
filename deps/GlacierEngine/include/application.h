@@ -1,27 +1,31 @@
 #ifndef GLACIER_ENGINE_APPLICATION_H_
 #define GLACIER_ENGINE_APPLICATION_H_
-#include "../rendering/include/GAPI_context.h"
+#include "GAPI_context.h"
+#include "windowing_service_locator.h"
+#include "engine_context.h"
 
 namespace Glacier
 {
-	class Application {
+	class Application : protected WindowingServiceLocator {
 	protected:
 		bool _terminate{ false };
-		GAPIContext* _gapi_context;
+
+		static EngineContext _engine_context;
 
 	public:
 		Application() = default;
-		Application(const Application &application) = delete;
-		Application &operator=(const Application &application) = delete;
+		Application(const Application& application) = delete;
+		Application& operator=(const Application& application) = delete;
 
-		virtual ~Application() { delete _gapi_context; }
+		virtual ~Application() = default;
 
-		GAPIContext* get_context() const { return _gapi_context; }
+		virtual bool initialize(int* argc, char* argv[]) = 0;
 
-		virtual bool initialize(int *argc, char *argv[]) = 0;
 		virtual void update() = 0;
+
 		virtual void draw() = 0;
-		virtual int run() = 0;
+
+		virtual int  run() = 0;
 	};
 
 #if defined(_MSC_VER)

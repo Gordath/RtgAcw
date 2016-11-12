@@ -19,8 +19,12 @@ set(SOURCE_FILES
 		include/glacier_engine.h
 		include/component.h
 		include/application.h
-		include/internal/dll_export.h						include/internal/service.h
+		include/internal/dll_export.h
+		include/internal/service.h
 		include/internal/types.h
+		include/internal/engine_context.h
+		src/application.cpp
+		src/engine_context.cpp
 		rendering/include/GAPI_context.h
 		rendering/include/GAPI_context_locator.h
 		rendering/include/IBO.h
@@ -39,6 +43,7 @@ set(SOURCE_FILES
 		windowing/include/window.h
 		windowing/include/window_factory.h
 		windowing/include/windowing_service.h
+		windowing/include/windowing_service_locator.h
 		windowing/include/windowing_types.h
 		windowing/include/d3d/D3D11_window.h
 		windowing/include/win32/win32_window.h
@@ -54,7 +59,8 @@ set(SOURCE_FILES
 		windowing/src/window_factory.cpp
 		windowing/src/windowing_service.cpp
 		windowing/src/d3d/D3D11_window.cpp
-		windowing/src/win32/win32_window.cpp)
+		windowing/src/win32/win32_window.cpp
+		windowing/src/windowing_service_locator.cpp)
 
 add_library(GlacierEngine ${SOURCE_FILES})
 target_link_libraries(GlacierEngine 

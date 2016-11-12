@@ -3,23 +3,11 @@
 
 namespace Glacier
 {
-	enum class ServiceType {
-		SRV_INPUT,
-		SRV_PARTICLE,
-		SRV_AUDIO,
-		SRV_LOGGER,
-		SRV_WINDOWING,
-		SRV_NULL
-	};
-
 	class Service {
 	protected:
-		ServiceType _type;
-
-		Service(ServiceType type) : _type(type) {};
-
+		Service() = default;
 	public:
-		ServiceType get_type() const { return _type; }
+		virtual ~Service() = default;
 	};
 }
 

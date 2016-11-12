@@ -13,7 +13,7 @@ namespace Glacier
 			return false;
 		}
 
-		auto device{ ctx->get_device() };
+		ComPtr<ID3D11Device> device{ ctx->get_device() };
 
 		HRESULT res{ 0 };
 		if (!_color_attachment) {

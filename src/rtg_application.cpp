@@ -6,17 +6,18 @@ using namespace Glacier;
 
 RtgApplication::~RtgApplication()
 {
-	delete win;
-//	delete win2;
+
 }
 
 bool RtgApplication::initialize(int* argc, char* argv[])
 {
-	_gapi_context = new D3D11Context;
-	_gapi_context->create();
-	GAPIContextLocator::provide(_gapi_context);
-	win = new D3D11Window("D3D test", Vec2i{ 256, 256 }, Vec2i{ 250, 250 }, 0, true, false, true, true, true, 4);
-	//win2 = new Glacier::D3D11Window("D3D Test 2", Vec2i{ 500, 500 }, Vec2i{ 300, 300 }, 1, false, false, true, true, true, 4);
+	if(!_engine_context.initialize()) {
+		std::cerr << "RtgApplication initialization failed!" << std::endl;
+		return false;
+	}
+
+	WindowingService* windowing_service{ get_windowing_service() };
+	windowing_service->create("D3D test", Vec2i{ 256, 256 }, Vec2i{ 250, 250 }, true, false, true, true, true, 4);
 
 	return true;
 }

@@ -6,7 +6,7 @@
 
 namespace Glacier
 {
-	class IBO : public GAPIContextLocator {
+	class IBO : protected GAPIContextLocator {
 	protected:
 		unsigned int _index_count = 0;
 
