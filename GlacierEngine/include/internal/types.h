@@ -1,7 +1,7 @@
 #ifndef GLACIER_TYPES_H_
 #define GLACIER_TYPES_H_
 
-#include "GL/GLM/glm.hpp"
+#include "GLM/glm.hpp"
 #include "wrl.h"
 
 namespace Glacier
