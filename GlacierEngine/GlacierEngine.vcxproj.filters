@@ -1,0 +1,179 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Header Files\Internal">
+      <UniqueIdentifier>{69b03125-04fa-44e1-9dcc-28b4734e1e29}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Windowing">
+      <UniqueIdentifier>{5e997b83-a8ac-4360-adca-1c63cfcabbd0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Windowing\Source Files">
+      <UniqueIdentifier>{f15c3ce4-6fe2-42d2-8daa-3d64e98338cf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Windowing\Source Files\d3d">
+      <UniqueIdentifier>{766ba6df-9278-4804-8c8f-884f2c133ec9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Windowing\Source Files\win32">
+      <UniqueIdentifier>{c2b539d3-dbf0-4f35-b89c-6db729d4550d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Windowing\Header Files">
+      <UniqueIdentifier>{26a6f4d2-b681-4c16-a778-f1082416f467}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Windowing\Header Files\win32">
+      <UniqueIdentifier>{571aec2f-74f8-4f94-b722-9345e0640e3d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Windowing\Header Files\d3d">
+      <UniqueIdentifier>{f6a3b090-520c-4906-97fc-aef6ba5e2e6e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering">
+      <UniqueIdentifier>{25501eec-5402-4710-af25-48155d69a1e9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Source Files">
+      <UniqueIdentifier>{64a286ad-f8f8-4500-baa2-7df38807180e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Header Files">
+      <UniqueIdentifier>{4e17e2a4-0538-4941-86e3-ba51074f7e77}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Source Files\d3d">
+      <UniqueIdentifier>{c2cfcf2a-65ae-4cb8-b4a7-1a4715d4f190}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Header Files\d3d">
+      <UniqueIdentifier>{f75a2076-bb5b-42bc-8e36-07b5077c7d75}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\application.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\engine_context.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="windowing\src\win32\win32_window.cpp">
+      <Filter>Windowing\Source Files\win32</Filter>
+    </ClCompile>
+    <ClCompile Include="windowing\src\d3d\D3D11_window.cpp">
+      <Filter>Windowing\Source Files\d3d</Filter>
+    </ClCompile>
+    <ClCompile Include="windowing\src\windowing_service.cpp">
+      <Filter>Windowing\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="windowing\src\windowing_service_locator.cpp">
+      <Filter>Windowing\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="rendering\src\GAPI_context_locator.cpp">
+      <Filter>Rendering\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="rendering\src\mesh.cpp">
+      <Filter>Rendering\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="rendering\src\d3d\D3D11_context.cpp">
+      <Filter>Rendering\Source Files\d3d</Filter>
+    </ClCompile>
+    <ClCompile Include="rendering\src\d3d\D3D11_IBO.cpp">
+      <Filter>Rendering\Source Files\d3d</Filter>
+    </ClCompile>
+    <ClCompile Include="rendering\src\d3d\D3D11_render_target.cpp">
+      <Filter>Rendering\Source Files\d3d</Filter>
+    </ClCompile>
+    <ClCompile Include="rendering\src\d3d\D3D11_renderer.cpp">
+      <Filter>Rendering\Source Files\d3d</Filter>
+    </ClCompile>
+    <ClCompile Include="rendering\src\d3d\D3D11_VBO.cpp">
+      <Filter>Rendering\Source Files\d3d</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\application.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\component.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\glacier_engine.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\internal\engine_context.h">
+      <Filter>Header Files\Internal</Filter>
+    </ClInclude>
+    <ClInclude Include="include\internal\service.h">
+      <Filter>Header Files\Internal</Filter>
+    </ClInclude>
+    <ClInclude Include="include\internal\types.h">
+      <Filter>Header Files\Internal</Filter>
+    </ClInclude>
+    <ClInclude Include="windowing\include\window.h">
+      <Filter>Windowing\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="windowing\include\windowing_service.h">
+      <Filter>Windowing\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="windowing\include\windowing_service_locator.h">
+      <Filter>Windowing\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="windowing\include\windowing_types.h">
+      <Filter>Windowing\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="windowing\include\win32\win32_utils.h">
+      <Filter>Windowing\Header Files\win32</Filter>
+    </ClInclude>
+    <ClInclude Include="windowing\include\win32\win32_window.h">
+      <Filter>Windowing\Header Files\win32</Filter>
+    </ClInclude>
+    <ClInclude Include="windowing\include\d3d\D3D11_window.h">
+      <Filter>Windowing\Header Files\d3d</Filter>
+    </ClInclude>
+    <ClInclude Include="rendering\include\d3d\D3D11_context.h">
+      <Filter>Rendering\Header Files\d3d</Filter>
+    </ClInclude>
+    <ClInclude Include="rendering\include\d3d\D3D11_IBO.h">
+      <Filter>Rendering\Header Files\d3d</Filter>
+    </ClInclude>
+    <ClInclude Include="rendering\include\d3d\D3D11_render_target.h">
+      <Filter>Rendering\Header Files\d3d</Filter>
+    </ClInclude>
+    <ClInclude Include="rendering\include\d3d\D3D11_renderer.h">
+      <Filter>Rendering\Header Files\d3d</Filter>
+    </ClInclude>
+    <ClInclude Include="rendering\include\d3d\D3D11_shader.h">
+      <Filter>Rendering\Header Files\d3d</Filter>
+    </ClInclude>
+    <ClInclude Include="rendering\include\d3d\D3D11_VBO.h">
+      <Filter>Rendering\Header Files\d3d</Filter>
+    </ClInclude>
+    <ClInclude Include="rendering\include\GAPI_context.h">
+      <Filter>Rendering\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="rendering\include\GAPI_context_locator.h">
+      <Filter>Rendering\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="rendering\include\IBO.h">
+      <Filter>Rendering\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="rendering\include\mesh.h">
+      <Filter>Rendering\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="rendering\include\render_target.h">
+      <Filter>Rendering\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="rendering\include\renderer.h">
+      <Filter>Rendering\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="rendering\include\shader.h">
+      <Filter>Rendering\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="rendering\include\VBO.h">
+      <Filter>Rendering\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="rendering\include\vertex.h">
+      <Filter>Rendering\Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
