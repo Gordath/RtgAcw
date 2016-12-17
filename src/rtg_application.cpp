@@ -24,12 +24,12 @@ bool RtgApplication::initialize(int* argc, char* argv[])
 
 void RtgApplication::update()
 {
-	
+	std::cout << "Updating" << std::endl;
 }
 
 void RtgApplication::draw()
 {
-	
+	std::cout << "Drawing" << std::endl;
 }
 
 int RtgApplication::run()
@@ -47,7 +47,8 @@ int RtgApplication::run()
 			}
 		}
 		else {
-			
+			update();
+			draw();
 		}
 
 	}

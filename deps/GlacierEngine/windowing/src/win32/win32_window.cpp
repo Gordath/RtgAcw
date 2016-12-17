@@ -96,7 +96,7 @@ namespace Glacier
 
 		ShowWindow(_handle, SW_SHOWDEFAULT);
 		UpdateWindow(_handle);
-		ShowCursor(_show_cursor);
+		ShowCursor(m_show_cursor);
 	}
 
 	LRESULT CALLBACK Win32Window::win_proc(HWND handle, UINT msg, WPARAM wparam, LPARAM lparam)
@@ -113,27 +113,27 @@ namespace Glacier
 			set_changed_size(true);
 			break;
 		case WM_KEYDOWN:
-			std::cout << "WindowID: " << _win_id << " Keydown!!" << std::endl;
+			std::cout << "WindowID: " << m_win_id << " Keydown!!" << std::endl;
 			if (wparam < 256) {
-				if (_callbacks._keyboard_func) {
-					_callbacks._keyboard_func(wparam, _mouse_pos.x, _mouse_pos.y);
+				if (m_callbacks._keyboard_func) {
+					m_callbacks._keyboard_func(wparam, m_mouse_pos.x, m_mouse_pos.y);
 				}
 			}
 			else {
-				if (_callbacks._special_func) {
-					_callbacks._special_func(wparam, _mouse_pos.x, _mouse_pos.y);
+				if (m_callbacks._special_func) {
+					m_callbacks._special_func(wparam, m_mouse_pos.x, m_mouse_pos.y);
 				}
 			}
 			break;
 		case WM_KEYUP:
 			if (wparam < 256) {
-				if (_callbacks._keyboard_up_func) {
-					_callbacks._keyboard_up_func(wparam, _mouse_pos.x, _mouse_pos.y);
+				if (m_callbacks._keyboard_up_func) {
+					m_callbacks._keyboard_up_func(wparam, m_mouse_pos.x, m_mouse_pos.y);
 				}
 			}
 			else {
-				if (_callbacks._special_up_func) {
-					_callbacks._special_up_func(wparam, _mouse_pos.x, _mouse_pos.y);
+				if (m_callbacks._special_up_func) {
+					m_callbacks._special_up_func(wparam, m_mouse_pos.x, m_mouse_pos.y);
 				}
 			}
 			break;
@@ -141,13 +141,13 @@ namespace Glacier
 			set_mouse_position(Vec2i{LOWORD(lparam), HIWORD(lparam)});
 
 			if (wparam & (MK_LBUTTON | MK_MBUTTON | MK_RBUTTON)) {
-				if (_callbacks._motion_func) {
-					_callbacks._motion_func(_mouse_pos.x, _mouse_pos.y);
+				if (m_callbacks._motion_func) {
+					m_callbacks._motion_func(m_mouse_pos.x, m_mouse_pos.y);
 				}
 			}
 			else {
-				if (_callbacks._passive_motion_func) {
-					_callbacks._passive_motion_func(_mouse_pos.x, _mouse_pos.y);
+				if (m_callbacks._passive_motion_func) {
+					m_callbacks._passive_motion_func(m_mouse_pos.x, m_mouse_pos.y);
 				}
 			}
 			break;

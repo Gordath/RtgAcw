@@ -36,7 +36,7 @@ namespace Glacier
 		//Create win32 GL window.
 #endif
 #elif defined(__APPLE__)
-		//create Apply GL window.
+		//create Apple GL window.
 #else
 		//create Linux GL window.
 #endif
@@ -47,10 +47,10 @@ namespace Glacier
 
 	void WindowingService::destroy_window(unsigned int win_id)
 	{
-		auto it{std::find_if(_windows.begin(), _windows.end(),
-		                     [win_id](Window* win) -> bool {
-			                     return win_id == win->get_id();
-		                     })};
+		auto it{ std::find_if(_windows.begin(), _windows.end(),
+		                      [win_id](Window* win) -> bool {
+			                      return win_id == win->get_id();
+		                      }) };
 		delete *it;
 		_windows.erase(it);
 	}

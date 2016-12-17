@@ -11,8 +11,8 @@ namespace Glacier
 	{
 		//Describe the swapchain
 		DXGI_SWAP_CHAIN_DESC swap_chain_desc;
-		swap_chain_desc.BufferDesc.Width = _size.x;
-		swap_chain_desc.BufferDesc.Height = _size.y;
+		swap_chain_desc.BufferDesc.Width = m_size.x;
+		swap_chain_desc.BufferDesc.Height = m_size.y;
 		swap_chain_desc.BufferDesc.RefreshRate.Numerator = 60;
 		swap_chain_desc.BufferDesc.RefreshRate.Denominator = 1;
 		swap_chain_desc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
@@ -75,7 +75,7 @@ namespace Glacier
 
 		ID3D11Texture2D* backbuffer;
 		_swap_chain->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<void**>(&backbuffer));
-		_render_target = std::make_unique<D3D11RenderTarget>(_size, _enable_MSAA, _sample_count, backbuffer);
+		_render_target = std::make_unique<D3D11RenderTarget>(m_size, _enable_MSAA, _sample_count, backbuffer);
 		
 		if (!_render_target->create()) {
 			return false;
@@ -86,8 +86,8 @@ namespace Glacier
 		D3D11_VIEWPORT viewport;
 		viewport.TopLeftX = 0.0f;
 		viewport.TopLeftY = 0.0f;
-		viewport.Width = static_cast<float>(_size.x);
-		viewport.Height = static_cast<float>(_size.y);
+		viewport.Width = static_cast<float>(m_size.x);
+		viewport.Height = static_cast<float>(m_size.y);
 		viewport.MinDepth = 0.0f;
 		viewport.MaxDepth = 1.0f;
 

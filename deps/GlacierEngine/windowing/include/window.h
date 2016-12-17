@@ -9,84 +9,83 @@ namespace Glacier
 {
 	class Window {
 	protected:
-		std::string				_title;
-		Vec2i					_size;
-		Vec2i					_position;
-		unsigned int			_win_id = 0;
+		std::string m_title;
+		Vec2i m_size;
+		Vec2i m_position;
+		unsigned int m_win_id = 0;
 
-		Vec2i					_mouse_pos;
+		Vec2i m_mouse_pos;
 
-		bool					_focused;
-		bool					_minimized;
-		bool					_resizeable;
-		bool					_show_cursor;
+		bool m_focused;
+		bool m_minimized;
+		bool m_resizeable;
+		bool m_show_cursor;
 
-		bool					_changed_size;
-		bool					_redisplay;
+		bool m_changed_size;
+		bool m_redisplay;
 
-		WindowFunctionCallbacks _callbacks;
-	
+		WindowFunctionCallbacks m_callbacks;
+
 	public:
-		Window(const std::string &title,
-			   const Vec2i &size, 
-			   const Vec2i &position,
-			   const unsigned int window_id,
-			   const bool focused,
-			   const bool minimized,
-			   const bool resizeable,
-			   const bool show_cursor) : _title(title),
-			                            _size(size),
-		                                _position(position),
-										_win_id(window_id),
-		                                _focused(focused), 
-		                                _minimized(minimized),
-			                            _resizeable(resizeable),
-										_show_cursor(show_cursor)				
-		{ }
+		Window(const std::string& title,
+		       const Vec2i& size,
+		       const Vec2i& position,
+		       const unsigned int window_id,
+		       const bool focused,
+		       const bool minimized,
+		       const bool resizeable,
+		       const bool show_cursor) : m_title(title),
+		                                 m_size(size),
+		                                 m_position(position),
+		                                 m_win_id(window_id),
+		                                 m_focused(focused),
+		                                 m_minimized(minimized),
+		                                 m_resizeable(resizeable),
+		                                 m_show_cursor(show_cursor)
+		{
+		}
 
-		Window(const Window &win) = delete;
+		Window(const Window& win) = delete;
 
-		Window &operator=(const Window &win) = delete;
+		Window& operator=(const Window& win) = delete;
 
 		virtual ~Window() = default;
 
-		const std::string &get_title() const;
+		const std::string& get_title() const noexcept { return m_title; }
 
-		void set_size(const Vec2i &size);
+		void set_size(const Vec2i& size) noexcept { m_size = size; }
 
-		const Vec2i &get_size() const;
+		const Vec2i& get_size() const noexcept { return m_size; }
 
-		unsigned int get_id() const;
+		unsigned int get_id() const noexcept { return m_win_id; }
 
-		const Vec2i &get_mouse_position() const;
+		const Vec2i& get_mouse_position() const noexcept { return m_mouse_pos; }
 
-		void set_mouse_position(const Vec2i &mouse_pos);
+		void set_mouse_position(const Vec2i& mouse_pos) noexcept { m_mouse_pos = mouse_pos; }
 
-		void set_focus(const bool focus);
+		void set_focus(const bool focus) noexcept { m_focused = focus; }
 
-		bool is_focused() const;
+		bool is_focused() const noexcept { return m_focused; }
 
-		void set_minimized(const bool minimized);
+		void set_minimized(const bool minimized) noexcept { m_minimized = minimized; }
 
-		bool is_minimized() const;
+		bool is_minimized() const noexcept { return m_minimized; }
 
-		void set_resizable(const bool resizeable);
+		void set_resizable(const bool resizeable) noexcept { m_resizeable = resizeable; }
 
-		bool is_resizeable() const;
+		bool is_resizeable() const noexcept { return m_resizeable; }
 
-		void set_changed_size(const bool state);
+		void set_changed_size(const bool state) noexcept { m_changed_size = state; }
 
-		bool changed_size() const;
+		bool changed_size() const noexcept { return m_changed_size; }
 
-		void set_redisplay(const bool redisplay);
+		void set_redisplay(const bool redisplay) noexcept { m_redisplay = redisplay; }
 
-		void show_cursor(bool show);
+		void show_cursor(bool show) noexcept { m_show_cursor = show; }
 
-		bool must_redisplay() const;
+		void set_window_callbacks(const WindowFunctionCallbacks& callbacks) noexcept { m_callbacks = callbacks; }
 
-		void set_window_callbacks(const WindowFunctionCallbacks &cbs);
-
-		const WindowFunctionCallbacks &get_callbacks() const;
+		const WindowFunctionCallbacks& get_callbacks() const noexcept { return m_callbacks; }
 	};
 }
 
