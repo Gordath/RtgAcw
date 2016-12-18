@@ -88,6 +88,8 @@ namespace Glacier
 		void set_window_callbacks(const WindowFunctionCallbacks& callbacks) noexcept { m_callbacks = callbacks; }
 
 		const WindowFunctionCallbacks& get_callbacks() const noexcept { return m_callbacks; }
+
+		virtual void swap_buffers() const noexcept = 0;
 	};
 }
 

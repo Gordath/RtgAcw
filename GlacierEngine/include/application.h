@@ -18,11 +18,11 @@ namespace Glacier
 
 		virtual ~Application() = default;
 
-		virtual bool initialize(int* argc, char* argv[]) = 0;
+		virtual bool initialize(int* argc, char* argv[]);
 
 		virtual void update() noexcept = 0;
 
-		virtual void draw() noexcept = 0;
+		virtual void draw() const noexcept = 0;
 
 		virtual int  run() noexcept = 0;
 	};

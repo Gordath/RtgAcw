@@ -7,7 +7,7 @@
 namespace Glacier
 {
 	// Private Methods -----------------------------------------------------------------------------------------------------------------------------
-	bool D3D11Window::create_D3D11_swap_chain(const D3D11Context* ctx)
+	bool D3D11Window::create_swap_chain(const D3D11Context* ctx)
 	{
 		//Describe the swapchain
 		DXGI_SWAP_CHAIN_DESC swap_chain_desc;
@@ -45,7 +45,7 @@ namespace Glacier
 		ComPtr<IDXGIAdapter> dxgi_adapter{ nullptr };
 		h_result = dxgi_device->GetAdapter(dxgi_adapter.GetAddressOf());
 
-		//Now get the factory interface that was used to create the _device.
+		//Now get the factory interface that was used to create the m_device.
 		ComPtr<IDXGIFactory> dxgi_factory{ nullptr };
 		h_result = dxgi_adapter->GetParent(__uuidof(IDXGIFactory), reinterpret_cast<void**>(dxgi_factory.GetAddressOf()));
 
@@ -53,8 +53,69 @@ namespace Glacier
 		h_result = dxgi_factory->CreateSwapChain(device.Get(), &swap_chain_desc, m_swap_chain.ReleaseAndGetAddressOf());
 
 		if (FAILED(h_result)) {
-			std::wstring err_msg{ L"DXGISwapChain creation failed." };
-			MessageBox(_handle, err_msg.c_str(), nullptr, 0);
+			MessageBox(_handle, L"DXGISwapChain creation failed.", nullptr, 0);
+			return false;
+		}
+
+		return true;
+	}
+
+	bool D3D11Window::create_render_target_view(const D3D11Context* ctx) noexcept
+	{
+		HRESULT res{ 0 };
+
+		// get the address of the back buffer
+		ComPtr<ID3D11Texture2D> backbuffer;
+		res = m_swap_chain->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<void**>(backbuffer.GetAddressOf()));
+
+		if (FAILED(res)) {
+			std::cerr << "Failed to get the adress of the back buffer." << std::endl;
+			return false;
+		}
+		
+		// use the back buffer address to create the render target
+		ComPtr<ID3D11Device> device{ ctx->get_device() };
+		res = device->CreateRenderTargetView(backbuffer.Get(), nullptr, m_render_target.ReleaseAndGetAddressOf());
+
+		if (FAILED(res)) {
+			std::cerr << "Window render target view creation failed." << std::endl;
+			return false;
+		}
+
+		return true;
+	}
+
+	bool D3D11Window::create_depth_stencil_view(const D3D11Context* ctx) noexcept
+	{
+		D3D11_TEXTURE2D_DESC depth_attachment_desc;
+		ZeroMemory(&depth_attachment_desc, sizeof(depth_attachment_desc));
+		depth_attachment_desc.Width = m_size.x;
+		depth_attachment_desc.Height = m_size.y;
+		depth_attachment_desc.MipLevels = 1;
+		depth_attachment_desc.ArraySize = 1;
+		depth_attachment_desc.Format = DXGI_FORMAT_D32_FLOAT;
+		depth_attachment_desc.SampleDesc.Count = m_sample_count;
+		depth_attachment_desc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+
+		HRESULT res{ 0 };
+		ComPtr<ID3D11Texture2D> depth;
+		ComPtr<ID3D11Device> device{ ctx->get_device() };
+		res = device->CreateTexture2D(&depth_attachment_desc, nullptr, depth.GetAddressOf());
+
+		if (FAILED(res)) {
+			std::cerr << "Failed to create the depth stencil view texture." << std::endl;
+			return false;
+		}
+
+		D3D11_DEPTH_STENCIL_VIEW_DESC dsvd;
+		ZeroMemory(&dsvd, sizeof(dsvd));
+		dsvd.Format = DXGI_FORMAT_D32_FLOAT;
+		dsvd.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2DMS;
+
+		res = device->CreateDepthStencilView(depth.Get(), &dsvd, m_depth_stencil.ReleaseAndGetAddressOf());
+
+		if (FAILED(res)) {
+			std::cerr << "Window depth stencil view creation failed." << std::endl;
 			return false;
 		}
 
@@ -69,19 +130,17 @@ namespace Glacier
 			return false;
 		}
 
-		if (!create_D3D11_swap_chain(ctx)) {
+		if (!create_swap_chain(ctx)) {
 			return false;
 		}
 
-		ComPtr<ID3D11Texture2D> backbuffer;
-		m_swap_chain->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<void**>(backbuffer.GetAddressOf()));
-		m_render_target = std::make_unique<D3D11RenderTarget>(m_size, m_enable_MSAA, m_sample_count, backbuffer.Get());
-		
-		if (!m_render_target->create()) {
+		if (!create_render_target_view(ctx)) {
 			return false;
 		}
 
-		m_render_target->bind();
+		if (!create_depth_stencil_view(ctx)) {
+			return false;
+		}
 
 		D3D11_VIEWPORT viewport;
 		viewport.TopLeftX = 0.0f;
@@ -98,24 +157,4 @@ namespace Glacier
 	}
 
 	// --------------------------------------------------------------------------------------------------------------------------------------------
-
-	void D3D11Window::enable_MSAA(bool state)
-	{
-		m_enable_MSAA = state;
-	}
-
-	bool D3D11Window::MSAA_enabled() const
-	{
-		return m_enable_MSAA;
-	}
-
-	int D3D11Window::get_sample_count() const
-	{
-		return m_sample_count;
-	}
-
-	unsigned int D3D11Window::get_MSAA_quality() const
-	{
-		return _MSAA_quality;
-	}
 }

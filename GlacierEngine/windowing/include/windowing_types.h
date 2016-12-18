@@ -8,7 +8,7 @@ namespace Glacier
 	using KeyboardUpFunc = void(*)(unsigned char, int, int);
 	using SpecialFunc = void(*)(int, int, int);
 	using SpecialUpFunc = void(*)(int, int, int);
-	using MouseFunc = void(*)(int, int, int, int);
+	using MouseFunc = void(*)(int, bool, int, int);
 	using MotionFunc = void(*)(int, int);
 	using PassiveMotionFunc = void(*)(int, int);
 

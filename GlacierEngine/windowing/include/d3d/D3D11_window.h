@@ -3,7 +3,6 @@
 #include <D3D/d3d11.h>
 #include "GAPI_context_locator.h"
 #include "D3D11_render_target.h"
-#include <memory>
 #include "win32_window.h"
 
 namespace Glacier
@@ -12,14 +11,19 @@ namespace Glacier
 
 	class D3D11Window : public Win32Window, protected GAPIContextLocator {
 	private:
-		std::unique_ptr<D3D11RenderTarget> m_render_target;
+		ComPtr<ID3D11RenderTargetView> m_render_target;
+		ComPtr<ID3D11DepthStencilView> m_depth_stencil;
 		ComPtr<IDXGISwapChain> m_swap_chain;
 
 		bool m_enable_MSAA = false;
 		int m_sample_count = 4;
-		unsigned int _MSAA_quality;
+		unsigned int m_MSAA_quality;
 
-		bool create_D3D11_swap_chain(const D3D11Context* ctx);
+		bool create_swap_chain(const D3D11Context* ctx);
+
+		bool create_render_target_view(const D3D11Context* ctx) noexcept;
+
+		bool create_depth_stencil_view(const D3D11Context* ctx) noexcept;
 
 		bool initialize();
 
@@ -49,11 +53,13 @@ namespace Glacier
 			initialize();
 		}
 
-		void enable_MSAA(bool state);
-		bool MSAA_enabled() const;
+		void enable_MSAA(bool state) noexcept { m_enable_MSAA = state; }
+		bool MSAA_enabled() const noexcept { return m_enable_MSAA; }
 
-		int get_sample_count() const;
-		unsigned int get_MSAA_quality() const;
+		int get_sample_count() const noexcept { return m_sample_count; }
+		unsigned int get_MSAA_quality() const noexcept { return m_MSAA_quality; }
+
+		void swap_buffers() const noexcept override { m_swap_chain->Present(1, 0); }
 	};
 }
 

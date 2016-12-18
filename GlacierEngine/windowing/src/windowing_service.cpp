@@ -6,7 +6,7 @@ namespace Glacier
 {
 	void WindowingService::add_window(class Window* window)
 	{
-		_windows.push_back(window);
+		m_windows.push_back(window);
 	}
 
 	void WindowingService::create(const std::wstring& title,
@@ -26,7 +26,7 @@ namespace Glacier
 		window = new D3D11Window(title,
 		                         size,
 		                         position,
-		                         _windows.size(),
+		                         m_windows.size(),
 		                         focused,
 		                         minimized,
 		                         resizeable,
@@ -49,17 +49,17 @@ namespace Glacier
 
 	void WindowingService::destroy_window(unsigned int win_id)
 	{
-		auto it{ std::find_if(_windows.begin(), _windows.end(),
+		auto it{ std::find_if(m_windows.begin(), m_windows.end(),
 		                      [win_id](Window* win) -> bool {
 			                      return win_id == win->get_id();
 		                      }) };
 		delete *it;
-		_windows.erase(it);
+		m_windows.erase(it);
 	}
 
-	Window* WindowingService::get_window(unsigned int win_id) const
+	Window* WindowingService::get_window(unsigned int win_id) const noexcept
 	{
-		for (Window* win : _windows) {
+		for (Window* win : m_windows) {
 			if (win->get_id() == win_id) {
 				return win;
 			}
@@ -68,9 +68,9 @@ namespace Glacier
 		return nullptr;
 	}
 
-	Window* WindowingService::get_window(const std::wstring& title) const
+	Window* WindowingService::get_window(const std::wstring& title) const noexcept
 	{
-		for (Window* win : _windows) {
+		for (Window* win : m_windows) {
 			if (win->get_title() == title) {
 				return win;
 			}
@@ -79,8 +79,16 @@ namespace Glacier
 		return nullptr;
 	}
 
-	size_t WindowingService::get_window_count() const
+	size_t WindowingService::get_window_count() const noexcept
 	{
-		return _windows.size();
+		return m_windows.size();
+	}
+
+
+	void WindowingService::swap_buffers() const noexcept
+	{
+		for (const auto window : m_windows) {
+			window->swap_buffers();
+		}
 	}
 }

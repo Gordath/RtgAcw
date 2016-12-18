@@ -2,7 +2,7 @@
 #define GLACIER_GLACIER_ENGINE_H_
 
 #include "application.h"
-#include "internal/types.h"
+#include "internal/math_utils.h"
 #include "../windowing/include/windowing_service.h"
 
 

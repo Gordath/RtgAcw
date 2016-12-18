@@ -165,6 +165,7 @@
     <ClInclude Include="include\component.h" />
     <ClInclude Include="include\glacier_engine.h" />
     <ClInclude Include="include\internal\engine_context.h" />
+    <ClInclude Include="include\internal\math_utils.h" />
     <ClInclude Include="include\internal\service.h" />
     <ClInclude Include="include\internal\types.h" />
     <ClInclude Include="rendering\include\d3d\D3D11_context.h" />

@@ -175,5 +175,8 @@
     <ClInclude Include="rendering\include\vertex.h">
       <Filter>Rendering\Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\internal\math_utils.h">
+      <Filter>Header Files\Internal</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

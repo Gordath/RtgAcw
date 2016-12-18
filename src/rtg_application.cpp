@@ -4,25 +4,58 @@
 
 using namespace Glacier;
 
+
+// Private methods -----------------------------------------------------------------------------------------------------------------------------
+void RtgApplication::reshape(int x, int y)
+{
+	//TODO: Call Renderer's reshape.
+}
+
+void RtgApplication::key_down(unsigned char key, int x, int y)
+{
+	//TODO: Call SceneManager's key down.
+}
+
+void RtgApplication::key_up(unsigned char key, int x, int y)
+{
+	//TODO: Call SceneManager's key up.
+}
+
+void RtgApplication::mouse_click(int button, bool state, int x, int y)
+{
+	//TODO: Call SceneManager's mouse click.
+}
+
+void RtgApplication::mouse_motion(int x, int y)
+{
+	//TODO: Call SceneManager's mouse motion.
+}
+
+void RtgApplication::passive_mouse_motion(int x, int y)
+{
+	//TODO: Call SceneManager's passive mouse motion.
+}
+// ---------------------------------------------------------------------------------------------------------------------------------------------
+
+
 RtgApplication::~RtgApplication()
 {
 }
 
 bool RtgApplication::initialize(int* argc, char* argv[])
 {
-	if (!_engine_context.initialize()) {
-		std::cerr << "RtgApplication initialization failed!" << std::endl;
+	if (!Application::initialize(argc, argv)) {
 		return false;
 	}
 
 	WindowingService* windowing_service{ get_windowing_service() };
 
 	WindowFunctionCallbacks callbacks;
-	callbacks.passive_motion_func = [](int x, int y) { std::cout << "Passive motion:" << x << " " << y << std::endl; };
-	callbacks.motion_func = [](int x, int y) { std::cout << "Motion:" << x << " " << y << std::endl; };
-	callbacks.reshape_func = [](int x, int y) { std::cout << "Reshape:" << x << " " << y << std::endl; };
-	callbacks.keyboard_func = [](unsigned char key, int x, int y) { std::cout << "Keyboard:" << key << " " << x << " " << y << std::endl; };
-	callbacks.keyboard_up_func = [](unsigned char key, int x, int y) { std::cout << "KeyboardUp:" << key << " " << x << " " << y << std::endl; };
+	callbacks.passive_motion_func = passive_mouse_motion;
+	callbacks.motion_func = mouse_motion;
+	callbacks.reshape_func = reshape;
+	callbacks.keyboard_func = key_down;
+	callbacks.keyboard_up_func = key_up;
 
 	windowing_service->create(L"D3D test",
 	                          Vec2i{ 256, 256 },
@@ -40,12 +73,15 @@ bool RtgApplication::initialize(int* argc, char* argv[])
 
 void RtgApplication::update() noexcept
 {
-	//std::cout << "Updating" << std::endl;
+	//TODO: The scene manager will call update here.
 }
 
-void RtgApplication::draw() noexcept
+void RtgApplication::draw() const noexcept
 {
-	//std::cout << "Drawing" << std::endl;
+	//TODO: The scene manager will call draw here.
+
+	WindowingService* windowing_service{ get_windowing_service() };
+	windowing_service->swap_buffers();
 }
 
 int RtgApplication::run() noexcept
@@ -64,6 +100,7 @@ int RtgApplication::run() noexcept
 		}
 		else {
 			update();
+			draw();
 		}
 
 	}

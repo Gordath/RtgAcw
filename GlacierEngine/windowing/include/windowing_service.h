@@ -10,7 +10,7 @@ namespace Glacier
 {
 	class WindowingService : public Service {
 	private:
-		std::vector<Window*> _windows;
+		std::vector<Window*> m_windows;
 
 	public:
 		WindowingService() = default;
@@ -35,11 +35,13 @@ namespace Glacier
 		//TODO: figure out a nice data structure for traversing and removing windows.
 		void destroy_window(unsigned int win_id);
 
-		Window* get_window(unsigned int win_id) const;
+		Window* get_window(unsigned int win_id) const noexcept;
 
-		Window* get_window(const std::wstring& title) const;
+		Window* get_window(const std::wstring& title) const noexcept;
 
-		size_t get_window_count() const;
+		size_t get_window_count() const noexcept;
+
+		void swap_buffers() const noexcept;
 	};
 }
 

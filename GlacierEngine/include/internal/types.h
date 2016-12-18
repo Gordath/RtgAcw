@@ -2,6 +2,7 @@
 #define GLACIER_TYPES_H_
 
 #include "GLM/glm.hpp"
+#include "GLM/gtc/constants.inl"
 #include "wrl.h"
 
 namespace Glacier
