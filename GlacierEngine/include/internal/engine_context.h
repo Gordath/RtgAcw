@@ -8,15 +8,15 @@ namespace Glacier
 {
 	class EngineContext {
 	private:
-		static GAPIContext*			_GAPI_context;
-		static WindowingService*	_windowing_service;
+		static GAPIContext* m_GAPI_context;
+		static WindowingService* m_windowing_service;
 
 	public:
 		EngineContext() = default;
 
-		EngineContext(const EngineContext &context) = delete;
+		EngineContext(const EngineContext& context) = delete;
 
-		EngineContext& operator=(const EngineContext &context) = delete;
+		EngineContext& operator=(const EngineContext& context) = delete;
 
 		static bool initialize();
 	};

@@ -6,27 +6,26 @@
 
 namespace Glacier
 {
-	GAPIContext* EngineContext::_GAPI_context;
+	GAPIContext* EngineContext::m_GAPI_context{ nullptr };
 
-	WindowingService* EngineContext::_windowing_service;
+	WindowingService* EngineContext::m_windowing_service{ nullptr };
 
 	bool EngineContext::initialize()
 	{
 #if defined(GLACIERENGINE_BUILD_D3D)
-		_GAPI_context = new D3D11Context;
+		m_GAPI_context = new D3D11Context;
 #else
 		//Allocate GL context
 #endif
-		if(!_GAPI_context->create()) {
+		if (!m_GAPI_context->create()) {
 			std::cerr << "Failed to initialize the engine's Graphics Context!" << std::endl;
 			return false;
 		}
-		GAPIContextLocator::provide(_GAPI_context);
+		GAPIContextLocator::provide(m_GAPI_context);
 
-		_windowing_service = new WindowingService;
-		WindowingServiceLocator::provide(_windowing_service);
+		m_windowing_service = new WindowingService;
+		WindowingServiceLocator::provide(m_windowing_service);
 
 		return true;
 	}
-
 }

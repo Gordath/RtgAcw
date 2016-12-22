@@ -18,22 +18,22 @@ namespace Glacier
 		vertex_data.pSysMem = vertices.data();
 		vertex_data.SysMemPitch = 0;
 		vertex_data.SysMemSlicePitch = 0;
-		
-		D3D11Context *ctx{ dynamic_cast<D3D11Context*>(get_GAPI_context()) };
+
+		D3D11Context* ctx{ dynamic_cast<D3D11Context*>(get_GAPI_context()) };
 		if (!ctx) {
 			std::cerr << "Failed to create the D3D11VBO: Graphics API context is not of type -> D3D11Context!" << std::endl;
 			return false;
 		}
 
 		ComPtr<ID3D11Device> device{ ctx->get_device() };
-		HRESULT res = device->CreateBuffer(&buffer_desc, &vertex_data, _vertex_buffer.ReleaseAndGetAddressOf());
-		
+		HRESULT res = device->CreateBuffer(&buffer_desc, &vertex_data, m_vertex_buffer.ReleaseAndGetAddressOf());
+
 		if (FAILED(res)) {
 			std::cerr << "Failed to create the D3D11VBO." << std::endl;
 			return false;
 		}
 
-		_vertex_count = vertices.size();
+		m_vertex_count = vertices.size();
 
 		return true;
 	}
@@ -43,6 +43,6 @@ namespace Glacier
 		D3D11Context* ctx{ static_cast<D3D11Context*>(get_GAPI_context()) };
 
 		ComPtr<ID3D11DeviceContext> device_context{ ctx->get_device_context() };
-		device_context->Draw(_vertex_count, 0);
+		device_context->Draw(m_vertex_count, 0);
 	}
 }

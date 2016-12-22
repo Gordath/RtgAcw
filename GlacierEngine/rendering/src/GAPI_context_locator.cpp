@@ -2,17 +2,15 @@
 
 namespace Glacier
 {
-	GAPIContext* GAPIContextLocator::_context;
+	GAPIContext* GAPIContextLocator::m_context;
 
 	GAPIContext* GAPIContextLocator::get_GAPI_context()
 	{
-		return _context;
+		return m_context;
 	}
 
 	void GAPIContextLocator::provide(GAPIContext* context)
 	{
-		_context = context;
+		m_context = context;
 	}
-
 }
-

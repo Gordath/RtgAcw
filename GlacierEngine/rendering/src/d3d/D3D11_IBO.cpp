@@ -4,7 +4,7 @@
 
 namespace Glacier
 {
-	bool D3D11IBO::create(const std::vector<unsigned int> &indices)
+	bool D3D11IBO::create(const std::vector<unsigned int>& indices)
 	{
 		D3D11_BUFFER_DESC buffer_desc;
 		buffer_desc.Usage = D3D11_USAGE_DEFAULT;
@@ -27,23 +27,23 @@ namespace Glacier
 
 		ComPtr<ID3D11Device> device{ ctx->get_device() };
 
-		HRESULT res = device->CreateBuffer(&buffer_desc, &index_data, _index_buffer.ReleaseAndGetAddressOf());
+		HRESULT res = device->CreateBuffer(&buffer_desc, &index_data, m_index_buffer.ReleaseAndGetAddressOf());
 		if (FAILED(res)) {
 			std::cerr << "Failed to create the D3D11IBO." << std::endl;
 			return false;
 		}
 
-		_index_count = indices.size();
+		m_index_count = indices.size();
 
 		return true;
 	}
 
 	void D3D11IBO::draw() const
 	{
-		D3D11Context *ctx{ static_cast<D3D11Context*>(get_GAPI_context()) };
+		D3D11Context* ctx{ static_cast<D3D11Context*>(get_GAPI_context()) };
 
 		ComPtr<ID3D11DeviceContext> device_context{ ctx->get_device_context() };
 
-		device_context->DrawIndexed(_index_count, 0, 0);
+		device_context->DrawIndexed(m_index_count, 0, 0);
 	}
 }

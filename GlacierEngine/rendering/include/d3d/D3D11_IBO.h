@@ -3,12 +3,14 @@
 #include "IBO.h"
 #include "internal/types.h"
 #include <D3D/d3d11.h>
+#include "GAPI_context_locator.h"
 
 namespace Glacier
 {
-	class D3D11IBO : public IBO {
+	class D3D11IBO : public IBO,
+	                 protected GAPIContextLocator {
 	private:
-		ComPtr<ID3D11Buffer> _index_buffer;
+		ComPtr<ID3D11Buffer> m_index_buffer;
 
 	public:
 		bool create(const std::vector<unsigned int>& indices) override;

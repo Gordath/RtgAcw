@@ -7,7 +7,7 @@ namespace Glacier
 {
 	class GAPIContextLocator {
 	private:
-		static GAPIContext* _context;
+		static GAPIContext* m_context;
 
 	protected:
 		static GAPIContext* get_GAPI_context();

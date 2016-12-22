@@ -6,8 +6,8 @@ namespace Glacier
 {
 	bool D3D11RenderTarget::create()
 	{
-		D3D11Context *ctx{ dynamic_cast<D3D11Context*>(get_GAPI_context()) };
-		
+		D3D11Context* ctx{ dynamic_cast<D3D11Context*>(get_GAPI_context()) };
+
 		if (!ctx) {
 			std::cerr << "Cannot create D3D11RenderTarget: Graphics API context is not of type -> D3D11Context!" << std::endl;
 			return false;
@@ -18,8 +18,8 @@ namespace Glacier
 		HRESULT res{ 0 };
 		if (!_color_attachment) {
 			D3D11_TEXTURE2D_DESC color_attachment_desc;
-			color_attachment_desc.Width = _size.x;
-			color_attachment_desc.Height = _size.y;
+			color_attachment_desc.Width = m_size.x;
+			color_attachment_desc.Height = m_size.y;
 			color_attachment_desc.MipLevels = 1;
 			color_attachment_desc.ArraySize = 1;
 			color_attachment_desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
@@ -27,8 +27,7 @@ namespace Glacier
 			if (_MSAA) {
 				color_attachment_desc.SampleDesc.Count = _sample_count;
 				color_attachment_desc.SampleDesc.Quality = ctx->get_MSAA_quality(_sample_count) - 1;
-			}
-			else {
+			} else {
 				color_attachment_desc.SampleDesc.Count = 1;
 				color_attachment_desc.SampleDesc.Quality = 0;
 			}
@@ -47,15 +46,15 @@ namespace Glacier
 		}
 
 		res = device->CreateRenderTargetView(_color_attachment.Get(), nullptr, _render_target_view.ReleaseAndGetAddressOf());
-		if(FAILED(res)) {
+		if (FAILED(res)) {
 			std::cerr << "Failed to create the D3D11RenderTarget render target view!" << std::endl;
 			return false;
 		}
 
 
 		D3D11_TEXTURE2D_DESC depth_attachment_desc;
-		depth_attachment_desc.Width = _size.x;
-		depth_attachment_desc.Height = _size.y;
+		depth_attachment_desc.Width = m_size.x;
+		depth_attachment_desc.Height = m_size.y;
 		depth_attachment_desc.MipLevels = 1;
 		depth_attachment_desc.ArraySize = 1;
 		depth_attachment_desc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
@@ -63,8 +62,7 @@ namespace Glacier
 		if (_MSAA) {
 			depth_attachment_desc.SampleDesc.Count = _sample_count;
 			depth_attachment_desc.SampleDesc.Quality = ctx->get_MSAA_quality(_sample_count) - 1;
-		}
-		else {
+		} else {
 			depth_attachment_desc.SampleDesc.Count = 1;
 			depth_attachment_desc.SampleDesc.Quality = 0;
 		}
@@ -93,7 +91,7 @@ namespace Glacier
 
 	bool D3D11RenderTarget::bind() const
 	{
-		D3D11Context *ctx{ dynamic_cast<D3D11Context*>(get_GAPI_context())};
+		D3D11Context* ctx{ dynamic_cast<D3D11Context*>(get_GAPI_context()) };
 
 		if (!ctx) {
 			std::cerr << "Cannot bind D3D11RenderTarget: Graphics API context is not of type -> D3D11Context!" << std::endl;
@@ -108,7 +106,7 @@ namespace Glacier
 
 	bool D3D11RenderTarget::unbind() const
 	{
-		D3D11Context *ctx{ dynamic_cast<D3D11Context*>(get_GAPI_context()) };
+		D3D11Context* ctx{ dynamic_cast<D3D11Context*>(get_GAPI_context()) };
 
 		if (!ctx) {
 			std::cerr << "Cannot bind D3D11RenderTarget: Graphics API context is not of type -> D3D11Context!" << std::endl;
@@ -120,6 +118,4 @@ namespace Glacier
 
 		return true;
 	}
-
 }
-

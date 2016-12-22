@@ -11,26 +11,26 @@ namespace Glacier
 {
 	class Mesh {
 	private:
-		std::vector<Vertex>			_vertices;
-		std::vector<unsigned int>	_indices;
+		std::vector<Vertex> m_vertices;
+		std::vector<unsigned int> m_indices;
 
-		std::unique_ptr<VBO>		_vbo;
-		std::unique_ptr<IBO>		_ibo;
+		std::unique_ptr<VBO> m_vbo;
+		std::unique_ptr<IBO> m_ibo;
 
-		const std::string			_name;
+		const std::string m_name;
 
 	public:
 		Mesh();
 
 		void initiaze_buffer_objects() const;
 
-		void set_vertex_data(const Vertex *vertices, int vertex_count);
+		void set_vertex_data(const Vertex* vertices, int vertex_count);
 
 		Vertex* get_vertex_data() const;
 
-		void add_vertex(const Vertex &vertex);
+		void add_vertex(const Vertex& vertex);
 
-		void set_index_data(const unsigned int *indices, int index_count);
+		void set_index_data(const unsigned int* indices, int index_count);
 
 		unsigned int* get_index_data() const;
 

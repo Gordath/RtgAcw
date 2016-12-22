@@ -3,16 +3,22 @@
 #include "shader.h"
 #include "internal/types.h"
 #include <D3D/d3d11.h>
+#include "GAPI_context_locator.h"
 
 namespace Glacier
 {
-	class D3D11Shader : public Shader {
+	class D3D11Shader : public Shader,
+	                    protected GAPIContextLocator {
 	private:
-		ComPtr<ID3DBlob> _shader_blob;
+		ComPtr<ID3DBlob> m_shader_blob;
 
-		bool compile(const std::string &sdr) override;
 	public:
+		ID3DBlob* get_blob() const noexcept
+		{
+			return m_shader_blob.Get();
+		}
 
+		bool load(const std::wstring& file_name) noexcept override;
 	};
 }
 

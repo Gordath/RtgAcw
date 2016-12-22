@@ -7,22 +7,22 @@ namespace Glacier
 	// Private Methods -----------------------------------------------------------------
 	bool D3D11Context::create_D3D11_device_and_context()
 	{
-		unsigned int device_flags{0};
+		unsigned int device_flags{ 0 };
 
 #if defined(DEBUG) || defined(_DEBUG)
 		device_flags |= D3D11_CREATE_DEVICE_DEBUG;
 #endif
 
 		std::array<D3D_FEATURE_LEVEL, 3> feature_levels = {
-			   {D3D_FEATURE_LEVEL_11_0,
+			{ D3D_FEATURE_LEVEL_11_0,
 				D3D_FEATURE_LEVEL_10_1,
-				D3D_FEATURE_LEVEL_10_0}
+				D3D_FEATURE_LEVEL_10_0 }
 		};
 
 		D3D_FEATURE_LEVEL feature_level;
 
 		if (!_device) {
-			HRESULT h_result{0};
+			HRESULT h_result{ 0 };
 			h_result = D3D11CreateDevice(nullptr,
 			                             D3D_DRIVER_TYPE_HARDWARE,
 			                             nullptr,
@@ -77,8 +77,8 @@ namespace Glacier
 	{
 		unsigned int quality;
 		_device->CheckMultisampleQualityLevels(DXGI_FORMAT_R8G8B8A8_UNORM,
-			sample_count,
-			&quality);
+		                                       sample_count,
+		                                       &quality);
 		assert(quality > 0);
 
 		return quality;

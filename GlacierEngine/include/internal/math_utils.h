@@ -39,6 +39,28 @@ namespace Glacier
 		{
 			return glm::length(vec);
 		}
+
+		inline Mat4f transpose(const Mat4f& mat)
+		{
+			return glm::transpose(mat);
+		}
+
+		inline Mat4f inverse(const Mat4f& mat)
+		{
+			return glm::inverse(mat);
+		}
+
+		template<typename T>
+		T to_radians(T degrees)
+		{
+			return glm::radians(degrees);
+		}
+
+		template<typename T>
+		T to_degrees(T radians)
+		{
+			return glm::degrees(radians);
+		}
 	}
 }
 

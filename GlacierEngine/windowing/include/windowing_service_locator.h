@@ -6,7 +6,7 @@ namespace Glacier
 {
 	class WindowingServiceLocator {
 	private:
-		static WindowingService* _windowing_service;
+		static WindowingService* m_windowing_service;
 
 	protected:
 		static WindowingService* get_windowing_service();

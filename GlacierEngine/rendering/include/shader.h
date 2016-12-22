@@ -1,18 +1,20 @@
 #ifndef GLACIER_ENGINE_SHADER_H_
 #define GLACIER_ENGINE_SHADER_H_
-#include <string>
-#include "GAPI_context_locator.h"
+#include "resource.h"
 
 namespace Glacier
 {
-	class Shader : protected GAPIContextLocator {
-	protected:
-		virtual bool compile(const std::string &sdr) = 0;
+	enum ShaderType {
+		VERTEX_SHADER,
+		HULL_SHADER,
+		DOMAIN_SHADER,
+		GEOMETRY_SHADER,
+		FRAGMENT_SHADER,
+		SHADER_COUNT
+	};
 
-	public:
-		virtual ~Shader() = default;
+	class Shader : public Resource {
 
-		virtual bool load(const std::string &sdr) = 0;
 	};
 }
 

@@ -1,6 +1,5 @@
 #include "rtg_application.h"
 #include <Windows.h>
-#include <iostream>
 
 using namespace Glacier;
 

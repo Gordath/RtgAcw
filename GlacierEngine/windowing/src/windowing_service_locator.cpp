@@ -2,15 +2,15 @@
 
 namespace Glacier
 {
-	WindowingService* WindowingServiceLocator::_windowing_service;
+	WindowingService* WindowingServiceLocator::m_windowing_service{ nullptr };
 
 	void WindowingServiceLocator::provide(WindowingService* service)
 	{
-		_windowing_service = service;
+		m_windowing_service = service;
 	}
 
 	WindowingService* WindowingServiceLocator::get_windowing_service()
 	{
-		return _windowing_service;
+		return m_windowing_service;
 	}
 }

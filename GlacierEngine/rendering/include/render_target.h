@@ -7,11 +7,12 @@ namespace Glacier
 {
 	class RenderTarget : protected GAPIContextLocator {
 	protected:
-		Vec2i _size;
+		Vec2i m_size;
 
 	public:
-		RenderTarget(const Vec2i &size) : _size(size)
-		{ }
+		RenderTarget(const Vec2i& size) : m_size{ size }
+		{
+		}
 
 		virtual ~RenderTarget() = default;
 

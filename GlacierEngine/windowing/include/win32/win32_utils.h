@@ -4,13 +4,13 @@
 #include <Windows.h>
 
 template<typename T>
-inline void set_window_long_ptr(HWND handle, int index, T* val)
+void set_window_long_ptr(HWND handle, int index, T* val)
 {
 	SetWindowLongPtr(handle, index, reinterpret_cast<LONG_PTR>(val));
 }
 
 template<typename T>
-inline T* get_window_long_ptr(HWND handle, int index)
+T* get_window_long_ptr(HWND handle, int index)
 {
 	return reinterpret_cast<T*>(GetWindowLongPtr(handle, index));
 }

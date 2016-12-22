@@ -15,8 +15,8 @@ namespace Glacier
 		ComPtr<ID3D11DepthStencilView> m_depth_stencil;
 		ComPtr<IDXGISwapChain> m_swap_chain;
 
-		bool m_enable_MSAA = false;
-		int m_sample_count = 4;
+		bool m_enable_MSAA{ false };
+		int m_sample_count{ 4 };
 		unsigned int m_MSAA_quality;
 
 		bool create_swap_chain(const D3D11Context* ctx);
@@ -38,28 +38,45 @@ namespace Glacier
 		            const bool show_cursor,
 		            const bool enable_MSAA,
 		            const int MSAA_sample_count,
-		            const WindowFunctionCallbacks& callbacks) : Win32Window(title,
-		                                                                    size,
-		                                                                    position,
-		                                                                    window_id,
-		                                                                    focused,
-		                                                                    minimized,
-		                                                                    resizeable,
-		                                                                    show_cursor,
-		                                                                    callbacks),
-		                                                        m_enable_MSAA(enable_MSAA),
-		                                                        m_sample_count(MSAA_sample_count)
+		            const WindowFunctionCallbacks& callbacks) : Win32Window{ title,
+			                                                        size,
+			                                                        position,
+			                                                        window_id,
+			                                                        focused,
+			                                                        minimized,
+			                                                        resizeable,
+			                                                        show_cursor,
+			                                                        callbacks },
+		                                                        m_enable_MSAA{ enable_MSAA },
+		                                                        m_sample_count{ MSAA_sample_count }
 		{
 			initialize();
 		}
 
-		void enable_MSAA(bool state) noexcept { m_enable_MSAA = state; }
-		bool MSAA_enabled() const noexcept { return m_enable_MSAA; }
+		void enable_MSAA(bool state) noexcept
+		{
+			m_enable_MSAA = state;
+		}
 
-		int get_sample_count() const noexcept { return m_sample_count; }
-		unsigned int get_MSAA_quality() const noexcept { return m_MSAA_quality; }
+		bool MSAA_enabled() const noexcept
+		{
+			return m_enable_MSAA;
+		}
 
-		void swap_buffers() const noexcept override { m_swap_chain->Present(1, 0); }
+		int get_sample_count() const noexcept
+		{
+			return m_sample_count;
+		}
+
+		unsigned int get_MSAA_quality() const noexcept
+		{
+			return m_MSAA_quality;
+		}
+
+		void swap_buffers() const noexcept override
+		{
+			m_swap_chain->Present(1, 0);
+		}
 	};
 }
 

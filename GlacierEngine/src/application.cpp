@@ -3,12 +3,12 @@
 
 namespace Glacier
 {
-	EngineContext Application::_engine_context;
+	EngineContext Application::m_engine_context;
 
 
 	bool Application::initialize(int* argc, char* argv[])
 	{
-		if (!_engine_context.initialize()) {
+		if (!m_engine_context.initialize()) {
 			std::cerr << "Application initialization failed!" << std::endl;
 			return false;
 		}

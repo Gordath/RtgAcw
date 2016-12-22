@@ -9,7 +9,7 @@ namespace Glacier
 	protected:
 		bool _terminate{ false };
 
-		static EngineContext _engine_context;
+		static EngineContext m_engine_context;
 
 	public:
 		Application() = default;
@@ -24,7 +24,7 @@ namespace Glacier
 
 		virtual void draw() const noexcept = 0;
 
-		virtual int  run() noexcept = 0;
+		virtual int run() noexcept = 0;
 	};
 
 #if defined(_MSC_VER)

@@ -1,16 +1,17 @@
 #include "win32_window.h"
 #include <sstream>
 #include <iostream>
+#include "win32_utils.h"
 
 namespace Glacier
 {
-	const std::wstring Win32Window::WindowClass::_win_class_name{ L"GlacierWindowClass" };
-	int Win32Window::WindowClass::_count{ 0 };
+	const std::wstring Win32Window::WindowClass::m_win_class_name{ L"GlacierWindowClass" };
+	int Win32Window::WindowClass::m_count{ 0 };
 
 	// Private Class implementation ----------------------------------------------------------------
 	Win32Window::WindowClass::WindowClass()
 	{
-		if (_count <= 0) {
+		if (m_count <= 0) {
 			WNDCLASSEX wc = { 0 };
 			wc.cbSize = sizeof(WNDCLASSEX);
 			wc.cbClsExtra = 0;
@@ -23,26 +24,26 @@ namespace Glacier
 			wc.hCursor = LoadCursor(nullptr, IDC_ARROW);
 			wc.hbrBackground = static_cast<HBRUSH>(GetStockObject(WHITE_BRUSH));
 			wc.lpszMenuName = nullptr;
-			wc.lpszClassName = _win_class_name.c_str();
+			wc.lpszClassName = m_win_class_name.c_str();
 
 			if (!::RegisterClassEx(&wc)) {
 				std::ostringstream ostr;
 
-				ostr << "Unable to register window class '" << _win_class_name.c_str() << "'";
+				ostr << "Unable to register window class '" << m_win_class_name.c_str() << "'";
 
 				throw std::runtime_error(ostr.str().c_str());
 			}
 		}
 
-		++_count;
+		++m_count;
 	}
 
 	Win32Window::WindowClass::~WindowClass()
 	{
-		--_count;
+		--m_count;
 
-		if (_count >= 0) {
-			UnregisterClass(_win_class_name.c_str(), ::GetModuleHandle(nullptr));
+		if (m_count >= 0) {
+			UnregisterClass(m_win_class_name.c_str(), ::GetModuleHandle(nullptr));
 		}
 	}
 
@@ -85,28 +86,28 @@ namespace Glacier
 		_flags = window_flags_enable & ~window_flags_disable;
 		_flags_ex = window_flags_ex_enable & ~window_flags_ex_disable;
 
-		_handle = ::CreateWindowEx(_flags_ex,
-		                           WindowClass::_win_class_name.c_str(),
-		                           title.c_str(),
-		                           _flags,
-		                           position.x,
-		                           position.y,
-		                           size.x,
-		                           size.y,
-		                           _parent,
-		                           _menu,
-		                           ::GetModuleHandle(nullptr),
-		                           this); //Carry the window class pointer.
+		m_handle = ::CreateWindowEx(_flags_ex,
+		                            WindowClass::m_win_class_name.c_str(),
+		                            title.c_str(),
+		                            _flags,
+		                            position.x,
+		                            position.y,
+		                            size.x,
+		                            size.y,
+		                            m_parent,
+		                            m_menu,
+		                            ::GetModuleHandle(nullptr),
+		                            this); //Carry the window class pointer.
 
-		if (!_handle) {
+		if (!m_handle) {
 			char buff[256];
 			snprintf(buff, 256, "Error creating window with name: '%s'", title);
 
 			throw std::runtime_error(buff);
 		}
 
-		ShowWindow(_handle, SW_SHOWDEFAULT);
-		UpdateWindow(_handle);
+		ShowWindow(m_handle, SW_SHOWDEFAULT);
+		UpdateWindow(m_handle);
 		ShowCursor(m_show_cursor);
 	}
 
@@ -129,8 +130,7 @@ namespace Glacier
 				if (m_callbacks.keyboard_func) {
 					m_callbacks.keyboard_func(wparam, m_mouse_pos.x, m_mouse_pos.y);
 				}
-			}
-			else {
+			} else {
 				if (m_callbacks.special_func) {
 					m_callbacks.special_func(wparam, m_mouse_pos.x, m_mouse_pos.y);
 				}
@@ -141,8 +141,7 @@ namespace Glacier
 				if (m_callbacks.keyboard_up_func) {
 					m_callbacks.keyboard_up_func(wparam, m_mouse_pos.x, m_mouse_pos.y);
 				}
-			}
-			else {
+			} else {
 				if (m_callbacks.special_up_func) {
 					m_callbacks.special_up_func(wparam, m_mouse_pos.x, m_mouse_pos.y);
 				}
@@ -154,8 +153,7 @@ namespace Glacier
 				if (m_callbacks.motion_func) {
 					m_callbacks.motion_func(m_mouse_pos.x, m_mouse_pos.y);
 				}
-			}
-			else {
+			} else {
 				if (m_callbacks.passive_motion_func) {
 					m_callbacks.passive_motion_func(m_mouse_pos.x, m_mouse_pos.y);
 				}

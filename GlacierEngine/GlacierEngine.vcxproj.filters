@@ -48,6 +48,12 @@
     <Filter Include="Rendering\Header Files\d3d">
       <UniqueIdentifier>{f75a2076-bb5b-42bc-8e36-07b5077c7d75}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Components">
+      <UniqueIdentifier>{39f6d4c7-3270-483a-b754-b16d00f88ef0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Components">
+      <UniqueIdentifier>{8bb06ec6-65e4-4f61-be76-0aa1f63e7bbf}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\application.cpp">
@@ -89,12 +95,21 @@
     <ClCompile Include="rendering\src\d3d\D3D11_VBO.cpp">
       <Filter>Rendering\Source Files\d3d</Filter>
     </ClCompile>
+    <ClCompile Include="src\rendering_component.cpp">
+      <Filter>Source Files\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="rendering\src\d3d\D3D11_texture.cpp">
+      <Filter>Rendering\Source Files\d3d</Filter>
+    </ClCompile>
+    <ClCompile Include="rendering\src\d3d\D3D11_shader_program.cpp">
+      <Filter>Rendering\Source Files\d3d</Filter>
+    </ClCompile>
+    <ClCompile Include="src\resource_manager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\application.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\component.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\glacier_engine.h">
@@ -178,5 +193,35 @@
     <ClInclude Include="include\internal\math_utils.h">
       <Filter>Header Files\Internal</Filter>
     </ClInclude>
+    <ClInclude Include="include\object.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\component.h">
+      <Filter>Header Files\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="include\rendering_component.h">
+      <Filter>Header Files\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="include\resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\resource_manager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\texture.h">
+      <Filter>Rendering\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="rendering\include\d3d\D3D11_texture.h">
+      <Filter>Rendering\Header Files\d3d</Filter>
+    </ClInclude>
+    <ClInclude Include="rendering\include\shader_program.h">
+      <Filter>Rendering\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="rendering\include\d3d\D3D11_shader_program.h">
+      <Filter>Rendering\Header Files\d3d</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ClassDiagram.cd" />
   </ItemGroup>
 </Project>
