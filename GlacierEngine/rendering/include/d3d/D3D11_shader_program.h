@@ -10,6 +10,7 @@ namespace Glacier
 	class D3D11ShaderProgram : public ShaderProgram,
 	                           protected GAPIContextLocator {
 	private:
+		ComPtr<ID3D11InputLayout> m_input_layout;
 		ComPtr<ID3D11VertexShader> m_vertex_shader;
 		ComPtr<ID3D11HullShader> m_hull_shader;
 		ComPtr<ID3D11DomainShader> m_domain_shader;
@@ -21,7 +22,8 @@ namespace Glacier
 		            const std::wstring& hs,
 		            const std::wstring& ds,
 		            const std::wstring& gs,
-		            const std::wstring& fs) noexcept override;
+		            const std::wstring& fs,
+		            unsigned int input_layout_mask) noexcept override;
 
 		void bind() const noexcept override;
 	};
