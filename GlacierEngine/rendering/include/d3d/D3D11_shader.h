@@ -3,12 +3,10 @@
 #include "shader.h"
 #include "internal/types.h"
 #include <D3D/d3d11.h>
-#include "GAPI_context_locator.h"
 
 namespace Glacier
 {
-	class D3D11Shader : public Shader,
-	                    protected GAPIContextLocator {
+	class D3D11Shader : public Shader {
 	private:
 		ComPtr<ID3DBlob> m_shader_blob;
 

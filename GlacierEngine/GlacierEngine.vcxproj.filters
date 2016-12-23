@@ -71,12 +71,6 @@
     <ClCompile Include="windowing\src\windowing_service.cpp">
       <Filter>Windowing\Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="windowing\src\windowing_service_locator.cpp">
-      <Filter>Windowing\Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="rendering\src\GAPI_context_locator.cpp">
-      <Filter>Rendering\Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="rendering\src\mesh.cpp">
       <Filter>Rendering\Source Files</Filter>
     </ClCompile>
@@ -118,9 +112,6 @@
     <ClInclude Include="include\internal\engine_context.h">
       <Filter>Header Files\Internal</Filter>
     </ClInclude>
-    <ClInclude Include="include\internal\service.h">
-      <Filter>Header Files\Internal</Filter>
-    </ClInclude>
     <ClInclude Include="include\internal\types.h">
       <Filter>Header Files\Internal</Filter>
     </ClInclude>
@@ -128,9 +119,6 @@
       <Filter>Windowing\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="windowing\include\windowing_service.h">
-      <Filter>Windowing\Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="windowing\include\windowing_service_locator.h">
       <Filter>Windowing\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="windowing\include\windowing_types.h">
@@ -164,9 +152,6 @@
       <Filter>Rendering\Header Files\d3d</Filter>
     </ClInclude>
     <ClInclude Include="rendering\include\GAPI_context.h">
-      <Filter>Rendering\Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="rendering\include\GAPI_context_locator.h">
       <Filter>Rendering\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="rendering\include\IBO.h">

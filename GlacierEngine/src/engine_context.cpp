@@ -1,14 +1,10 @@
 #include "internal/engine_context.h"
 #include "D3D11_context.h"
 #include <iostream>
-#include "GAPI_context_locator.h"
-#include "windowing_service_locator.h"
 
 namespace Glacier
 {
 	GAPIContext* EngineContext::m_GAPI_context{ nullptr };
-
-	WindowingService* EngineContext::m_windowing_service{ nullptr };
 
 	bool EngineContext::initialize()
 	{
@@ -21,11 +17,14 @@ namespace Glacier
 			std::cerr << "Failed to initialize the engine's Graphics Context!" << std::endl;
 			return false;
 		}
-		GAPIContextLocator::provide(m_GAPI_context);
-
-		m_windowing_service = new WindowingService;
-		WindowingServiceLocator::provide(m_windowing_service);
 
 		return true;
 	}
+
+#if defined(GLACIERENGINE_BUILD_D3D)
+	D3D11Context* EngineContext::get_GAPI_context() noexcept
+	{
+		return static_cast<D3D11Context*>(m_GAPI_context);
+	}
+#endif
 }

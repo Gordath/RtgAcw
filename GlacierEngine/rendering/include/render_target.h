@@ -1,11 +1,10 @@
 #ifndef GLACIER_ENGINE_RENDER_TARGET_H_
 #define GLACIER_ENGINE_RENDER_TARGET_H_
-#include "GAPI_context_locator.h"
 #include "internal/types.h"
 
 namespace Glacier
 {
-	class RenderTarget : protected GAPIContextLocator {
+	class RenderTarget {
 	protected:
 		Vec2i m_size;
 

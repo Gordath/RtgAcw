@@ -1,6 +1,7 @@
 #include "D3D11_VBO.h"
 #include "D3D11_context.h"
 #include <iostream>
+#include "internal/engine_context.h"
 
 namespace Glacier
 {
@@ -19,11 +20,7 @@ namespace Glacier
 		vertex_data.SysMemPitch = 0;
 		vertex_data.SysMemSlicePitch = 0;
 
-		D3D11Context* ctx{ dynamic_cast<D3D11Context*>(get_GAPI_context()) };
-		if (!ctx) {
-			std::cerr << "Failed to create the D3D11VBO: Graphics API context is not of type -> D3D11Context!" << std::endl;
-			return false;
-		}
+		D3D11Context* ctx{ EngineContext::get_GAPI_context() };
 
 		ComPtr<ID3D11Device> device{ ctx->get_device() };
 		HRESULT res = device->CreateBuffer(&buffer_desc, &vertex_data, m_vertex_buffer.ReleaseAndGetAddressOf());
@@ -40,7 +37,7 @@ namespace Glacier
 
 	void D3D11VBO::draw() const
 	{
-		D3D11Context* ctx{ static_cast<D3D11Context*>(get_GAPI_context()) };
+		D3D11Context* ctx{ EngineContext::get_GAPI_context() };
 
 		ComPtr<ID3D11DeviceContext> device_context{ ctx->get_device_context() };
 		device_context->Draw(m_vertex_count, 0);

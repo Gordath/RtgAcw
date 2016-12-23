@@ -2,14 +2,13 @@
 #define GLACIER_ENGINE_CONTEXT_H_
 
 #include "../rendering/include/GAPI_context.h"
-#include "../windowing/include/windowing_service.h"
+#include "../rendering/include/d3d/D3D11_context.h"
 
 namespace Glacier
 {
 	class EngineContext {
 	private:
 		static GAPIContext* m_GAPI_context;
-		static WindowingService* m_windowing_service;
 
 	public:
 		EngineContext() = default;
@@ -19,6 +18,11 @@ namespace Glacier
 		EngineContext& operator=(const EngineContext& context) = delete;
 
 		static bool initialize();
+
+#if defined(GLACIERENGINE_BUILD_D3D)
+		static D3D11Context* get_GAPI_context() noexcept;
+#endif
+
 	};
 }
 

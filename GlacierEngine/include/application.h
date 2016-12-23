@@ -1,11 +1,10 @@
 #ifndef GLACIER_ENGINE_APPLICATION_H_
 #define GLACIER_ENGINE_APPLICATION_H_
-#include "../windowing/include/windowing_service_locator.h"
 #include "internal/engine_context.h"
 
 namespace Glacier
 {
-	class Application : protected WindowingServiceLocator {
+	class Application {
 	protected:
 		bool _terminate{ false };
 

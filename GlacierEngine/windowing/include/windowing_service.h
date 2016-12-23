@@ -3,14 +3,13 @@
 
 
 #include "window.h"
-#include "internal/service.h"
 #include <vector>
 
 namespace Glacier
 {
-	class WindowingService : public Service {
+	class WindowingService {
 	private:
-		std::vector<Window*> m_windows;
+		static std::vector<Window*> m_windows;
 
 	public:
 		WindowingService() = default;
@@ -19,9 +18,9 @@ namespace Glacier
 
 		WindowingService& operator=(const WindowingService& service) = delete;
 
-		void add_window(Window* window);
+		static void add_window(Window* window);
 
-		void create(const std::wstring& title,
+		static void create(const std::wstring& title,
 		            const Vec2i& size,
 		            const Vec2i& position,
 		            const bool focused,
@@ -33,15 +32,15 @@ namespace Glacier
 		            const WindowFunctionCallbacks& callbacks);
 
 		//TODO: figure out a nice data structure for traversing and removing windows.
-		void destroy_window(unsigned int win_id);
+		static void destroy_window(unsigned int win_id);
 
-		Window* get_window(unsigned int win_id) const noexcept;
+		static Window* get_window(unsigned int win_id) noexcept;
 
-		Window* get_window(const std::wstring& title) const noexcept;
+		static Window* get_window(const std::wstring& title) noexcept;
 
-		size_t get_window_count() const noexcept;
+		static size_t get_window_count() noexcept;
 
-		void swap_buffers() const noexcept;
+		static void swap_buffers() noexcept;
 	};
 }
 

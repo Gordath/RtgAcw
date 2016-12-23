@@ -47,8 +47,6 @@ bool RtgApplication::initialize(int* argc, char* argv[])
 		return false;
 	}
 
-	WindowingService* windowing_service{ get_windowing_service() };
-
 	WindowFunctionCallbacks callbacks;
 	callbacks.passive_motion_func = passive_mouse_motion;
 	callbacks.motion_func = mouse_motion;
@@ -56,7 +54,7 @@ bool RtgApplication::initialize(int* argc, char* argv[])
 	callbacks.keyboard_func = key_down;
 	callbacks.keyboard_up_func = key_up;
 
-	windowing_service->create(L"D3D test",
+	WindowingService::create(L"D3D test",
 	                          Vec2i{ 256, 256 },
 	                          Vec2i{ 250, 250 },
 	                          true,
@@ -79,8 +77,7 @@ void RtgApplication::draw() const noexcept
 {
 	//TODO: The scene manager will call draw here.
 
-	WindowingService* windowing_service{ get_windowing_service() };
-	windowing_service->swap_buffers();
+	WindowingService::swap_buffers();
 }
 
 int RtgApplication::run() noexcept

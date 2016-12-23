@@ -1,14 +1,12 @@
 #ifndef GLACIER_D3D11_SHADER_PROGRAM_H_
 #define GLACIER_D3D11_SHADER_PROGRAM_H_
 #include "shader_program.h"
-#include "GAPI_context_locator.h"
 #include "internal/types.h"
 #include "D3D11_IBO.h"
 
 namespace Glacier
 {
-	class D3D11ShaderProgram : public ShaderProgram,
-	                           protected GAPIContextLocator {
+	class D3D11ShaderProgram : public ShaderProgram {
 	private:
 		ComPtr<ID3D11InputLayout> m_input_layout;
 		ComPtr<ID3D11VertexShader> m_vertex_shader;

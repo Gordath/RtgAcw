@@ -4,6 +4,8 @@
 
 namespace Glacier
 {
+	std::vector<Window*> WindowingService::m_windows;
+
 	void WindowingService::add_window(class Window* window)
 	{
 		m_windows.push_back(window);
@@ -57,7 +59,7 @@ namespace Glacier
 		m_windows.erase(it);
 	}
 
-	Window* WindowingService::get_window(unsigned int win_id) const noexcept
+	Window* WindowingService::get_window(unsigned int win_id) noexcept
 	{
 		for (Window* win : m_windows) {
 			if (win->get_id() == win_id) {
@@ -68,7 +70,7 @@ namespace Glacier
 		return nullptr;
 	}
 
-	Window* WindowingService::get_window(const std::wstring& title) const noexcept
+	Window* WindowingService::get_window(const std::wstring& title) noexcept
 	{
 		for (Window* win : m_windows) {
 			if (win->get_title() == title) {
@@ -79,13 +81,13 @@ namespace Glacier
 		return nullptr;
 	}
 
-	size_t WindowingService::get_window_count() const noexcept
+	size_t WindowingService::get_window_count() noexcept
 	{
 		return m_windows.size();
 	}
 
 
-	void WindowingService::swap_buffers() const noexcept
+	void WindowingService::swap_buffers() noexcept
 	{
 		for (const auto window : m_windows) {
 			window->swap_buffers();

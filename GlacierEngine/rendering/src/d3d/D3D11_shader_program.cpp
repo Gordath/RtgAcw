@@ -3,6 +3,7 @@
 #include "D3D11_shader.h"
 #include "resource_manager.h"
 #include "vertex.h"
+#include "internal/engine_context.h"
 
 namespace Glacier
 {
@@ -13,7 +14,7 @@ namespace Glacier
 	                                const std::wstring& fs,
 	                                unsigned int input_layout_mask) noexcept
 	{
-		D3D11Context* GAPI_context{ static_cast<D3D11Context*>(get_GAPI_context()) };
+		D3D11Context* GAPI_context{ EngineContext::get_GAPI_context() };
 
 		ComPtr<ID3D11Device> device{ GAPI_context->get_device() };
 
@@ -75,7 +76,6 @@ namespace Glacier
 			if (FAILED(res)) {
 				std::cerr << "Hull shader creation failed!" << std::endl;
 			}
-			//TODO: get the blob and create the actual d3d shader.
 		}
 
 		if (!ds.empty()) {
@@ -123,7 +123,7 @@ namespace Glacier
 
 	void D3D11ShaderProgram::bind() const noexcept
 	{
-		D3D11Context* context{ static_cast<D3D11Context*>(get_GAPI_context()) };
+		D3D11Context* context{ EngineContext::get_GAPI_context() };
 
 		ComPtr<ID3D11DeviceContext> device_context{ context->get_device_context() };
 

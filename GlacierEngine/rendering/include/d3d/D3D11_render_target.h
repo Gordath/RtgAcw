@@ -6,30 +6,29 @@
 
 namespace Glacier
 {
-	class D3D11RenderTarget : public RenderTarget
-	{
+	class D3D11RenderTarget : public RenderTarget {
 	private:
-		ComPtr<ID3D11RenderTargetView>   _render_target_view;
-		ComPtr<ID3D11DepthStencilView>   _depth_buffer_view;
+		ComPtr<ID3D11RenderTargetView> m_render_target_view;
+		ComPtr<ID3D11DepthStencilView> m_depth_buffer_view;
 
-		ComPtr<ID3D11Texture2D>		     _color_attachment;
-		ComPtr<ID3D11Texture2D>			 _depth_attachment;
+		ComPtr<ID3D11Texture2D> m_color_attachment;
+		ComPtr<ID3D11Texture2D> m_depth_attachment;
 
-		ComPtr<ID3D11ShaderResourceView> _color_attachment_srv; //TODO: initialize this.
-		ComPtr<ID3D11ShaderResourceView> _depth_attachment_srv; //TODO: initialize this.
+		ComPtr<ID3D11ShaderResourceView> m_color_attachment_srv; //TODO: initialize this.
+		ComPtr<ID3D11ShaderResourceView> m_depth_attachment_srv; //TODO: initialize this.
 
-		bool						     _MSAA = false;
-		int							     _sample_count = 1;
+		bool m_MSAA = false;
+		int m_sample_count = 1;
 
 	public:
 		D3D11RenderTarget(const Vec2i& size,
 		                  bool MSAA,
 		                  int sample_count,
 		                  ID3D11Texture2D* back_buffer = nullptr) : RenderTarget(size),
-		                                                                        _MSAA(MSAA),
-		                                                                        _sample_count(sample_count)
+		                                                            m_MSAA(MSAA),
+		                                                            m_sample_count(sample_count)
 		{
-			_color_attachment.Attach(back_buffer);
+			m_color_attachment.Attach(back_buffer);
 		}
 
 		bool create() override;

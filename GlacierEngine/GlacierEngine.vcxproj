@@ -153,7 +153,6 @@
     <ClCompile Include="rendering\src\d3d\D3D11_shader_program.cpp" />
     <ClCompile Include="rendering\src\d3d\D3D11_texture.cpp" />
     <ClCompile Include="rendering\src\d3d\D3D11_VBO.cpp" />
-    <ClCompile Include="rendering\src\GAPI_context_locator.cpp" />
     <ClCompile Include="rendering\src\mesh.cpp" />
     <ClCompile Include="src\application.cpp" />
     <ClCompile Include="src\engine_context.cpp" />
@@ -162,7 +161,6 @@
     <ClCompile Include="windowing\src\d3d\D3D11_window.cpp" />
     <ClCompile Include="windowing\src\win32\win32_window.cpp" />
     <ClCompile Include="windowing\src\windowing_service.cpp" />
-    <ClCompile Include="windowing\src\windowing_service_locator.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\application.h" />
@@ -170,7 +168,6 @@
     <ClInclude Include="include\glacier_engine.h" />
     <ClInclude Include="include\internal\engine_context.h" />
     <ClInclude Include="include\internal\math_utils.h" />
-    <ClInclude Include="include\internal\service.h" />
     <ClInclude Include="include\internal\types.h" />
     <ClInclude Include="include\object.h" />
     <ClInclude Include="include\rendering_component.h" />
@@ -186,7 +183,6 @@
     <ClInclude Include="rendering\include\d3d\D3D11_texture.h" />
     <ClInclude Include="rendering\include\d3d\D3D11_VBO.h" />
     <ClInclude Include="rendering\include\GAPI_context.h" />
-    <ClInclude Include="rendering\include\GAPI_context_locator.h" />
     <ClInclude Include="rendering\include\IBO.h" />
     <ClInclude Include="rendering\include\mesh.h" />
     <ClInclude Include="rendering\include\renderer.h" />
@@ -200,7 +196,6 @@
     <ClInclude Include="windowing\include\win32\win32_window.h" />
     <ClInclude Include="windowing\include\window.h" />
     <ClInclude Include="windowing\include\windowing_service.h" />
-    <ClInclude Include="windowing\include\windowing_service_locator.h" />
     <ClInclude Include="windowing\include\windowing_types.h" />
   </ItemGroup>
   <ItemGroup>

@@ -2,6 +2,7 @@
 #include <assert.h>
 #include "D3D11_context.h"
 #include <iostream>
+#include "internal/engine_context.h"
 
 
 namespace Glacier
@@ -124,11 +125,7 @@ namespace Glacier
 
 	bool D3D11Window::initialize()
 	{
-		D3D11Context* ctx = dynamic_cast<D3D11Context*>(get_GAPI_context());
-		if (!ctx) {
-			std::cerr << "Cannot create D3D11RenderTargetView: Graphics API context is not of type -> D3D11Context!" << std::endl;
-			return false;
-		}
+		D3D11Context* ctx{ EngineContext::get_GAPI_context() };
 
 		if (!create_swap_chain(ctx)) {
 			return false;

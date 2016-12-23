@@ -3,12 +3,10 @@
 #include "VBO.h"
 #include <D3D/d3d11.h>
 #include "internal/types.h"
-#include "GAPI_context_locator.h"
 
 namespace Glacier
 {
-	class D3D11VBO : public VBO,
-	                 protected GAPIContextLocator {
+	class D3D11VBO : public VBO {
 	private:
 		ComPtr<ID3D11Buffer> m_vertex_buffer;
 

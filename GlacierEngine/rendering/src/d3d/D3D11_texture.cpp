@@ -1,12 +1,14 @@
 #include "D3D11_texture.h"
 #include <D3D/D3DX11tex.h>
 #include <iostream>
+#include "D3D11_context.h"
+#include "internal/engine_context.h"
 
 namespace Glacier
 {
 	bool D3D11_texture::load(const std::wstring& file_name) noexcept
 	{
-		D3D11Context* context{ static_cast<D3D11Context*>(get_GAPI_context()) };
+		D3D11Context* context{ EngineContext::get_GAPI_context() };
 
 		ComPtr<ID3D11Device> device{ context->get_device() };
 
@@ -28,7 +30,7 @@ namespace Glacier
 
 	void D3D11_texture::bind() const noexcept
 	{
-		D3D11Context* GAPI_context{ static_cast<D3D11Context*>(get_GAPI_context()) };
+		D3D11Context* GAPI_context{ EngineContext::get_GAPI_context() };
 
 		ComPtr<ID3D11DeviceContext> device_context{ GAPI_context->get_device_context() };
 

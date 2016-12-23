@@ -1,7 +1,6 @@
 #ifndef GLACIER_ENGINE_D3D11WINDOW_H_
 #define GLACIER_ENGINE_D3D11WINDOW_H_
 #include <D3D/d3d11.h>
-#include "GAPI_context_locator.h"
 #include "D3D11_render_target.h"
 #include "win32_window.h"
 
@@ -9,7 +8,7 @@ namespace Glacier
 {
 	class D3D11Context;
 
-	class D3D11Window : public Win32Window, protected GAPIContextLocator {
+	class D3D11Window : public Win32Window {
 	private:
 		ComPtr<ID3D11RenderTargetView> m_render_target;
 		ComPtr<ID3D11DepthStencilView> m_depth_stencil;
