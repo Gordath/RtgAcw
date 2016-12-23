@@ -101,6 +101,12 @@
     <ClCompile Include="src\resource_manager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="rendering\src\d3d\D3D11_shader.cpp">
+      <Filter>Rendering\Source Files\d3d</Filter>
+    </ClCompile>
+    <ClCompile Include="src\shader_program_manager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\application.h">
@@ -204,6 +210,9 @@
     </ClInclude>
     <ClInclude Include="rendering\include\d3d\D3D11_shader_program.h">
       <Filter>Rendering\Header Files\d3d</Filter>
+    </ClInclude>
+    <ClInclude Include="include\shader_program_manager.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

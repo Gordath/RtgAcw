@@ -16,12 +16,12 @@ namespace Glacier
 		ComPtr<ID3D11PixelShader> m_pixel_shader;
 
 	public:
-		void create(const std::wstring& vs,
+		bool create(unsigned int input_layout_mask,
+		            const std::wstring& vs,
+		            const std::wstring& fs,
 		            const std::wstring& hs,
 		            const std::wstring& ds,
-		            const std::wstring& gs,
-		            const std::wstring& fs,
-		            unsigned int input_layout_mask) noexcept override;
+		            const std::wstring& gs) noexcept override;
 
 		void bind() const noexcept override;
 	};

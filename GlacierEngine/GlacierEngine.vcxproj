@@ -72,6 +72,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug - Direct X|Win32'">
     <LinkIncremental>true</LinkIncremental>
     <IncludePath>$(SolutionDir)deps\include;$(SolutionDir)GlacierEngine\include;$(SolutionDir)GlacierEngine\rendering\include;$(SolutionDir)GlacierEngine\rendering\include\d3d;$(SolutionDir)GlacierEngine\windowing\include;$(SolutionDir)GlacierEngine\windowing\include\d3d;$(SolutionDir)GlacierEngine\windowing\include\win32;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)deps\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug - Direct X|x64'">
     <LinkIncremental>true</LinkIncremental>
@@ -95,7 +96,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <Lib>
-      <AdditionalDependencies>d3d11.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>d3d11.lib;d3dx11.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug - Direct X|x64'">
@@ -150,6 +151,7 @@
     <ClCompile Include="rendering\src\d3d\D3D11_IBO.cpp" />
     <ClCompile Include="rendering\src\d3d\D3D11_renderer.cpp" />
     <ClCompile Include="rendering\src\d3d\D3D11_render_target.cpp" />
+    <ClCompile Include="rendering\src\d3d\D3D11_shader.cpp" />
     <ClCompile Include="rendering\src\d3d\D3D11_shader_program.cpp" />
     <ClCompile Include="rendering\src\d3d\D3D11_texture.cpp" />
     <ClCompile Include="rendering\src\d3d\D3D11_VBO.cpp" />
@@ -158,6 +160,7 @@
     <ClCompile Include="src\engine_context.cpp" />
     <ClCompile Include="src\rendering_component.cpp" />
     <ClCompile Include="src\resource_manager.cpp" />
+    <ClCompile Include="src\shader_program_manager.cpp" />
     <ClCompile Include="windowing\src\d3d\D3D11_window.cpp" />
     <ClCompile Include="windowing\src\win32\win32_window.cpp" />
     <ClCompile Include="windowing\src\windowing_service.cpp" />
@@ -173,6 +176,7 @@
     <ClInclude Include="include\rendering_component.h" />
     <ClInclude Include="include\resource.h" />
     <ClInclude Include="include\resource_manager.h" />
+    <ClInclude Include="include\shader_program_manager.h" />
     <ClInclude Include="include\texture.h" />
     <ClInclude Include="rendering\include\d3d\D3D11_context.h" />
     <ClInclude Include="rendering\include\d3d\D3D11_IBO.h" />

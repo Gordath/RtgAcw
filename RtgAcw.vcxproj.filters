@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="sdr">
+      <UniqueIdentifier>{c1c2f944-7ff2-4eef-b569-025381de5d87}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp">
@@ -26,5 +29,13 @@
     <ClInclude Include="include\rtg_application.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="sdr\test.ps.hlsl">
+      <Filter>sdr</Filter>
+    </FxCompile>
+    <FxCompile Include="sdr\test.vs.hlsl">
+      <Filter>sdr</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>

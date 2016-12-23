@@ -1,5 +1,7 @@
 #include "rtg_application.h"
 #include <Windows.h>
+#include "shader_program_manager.h"
+#include "../GlacierEngine/rendering/include/shader_program.h"
 
 using namespace Glacier;
 
@@ -65,6 +67,10 @@ bool RtgApplication::initialize(int* argc, char* argv[])
 	                          4,
 	                          callbacks);
 
+	if (!ShaderProgramManager::create("test_Prog", IL_POSITION | IL_NORMAL, L"test.vs.hlsl", L"test.ps.hlsl")) {
+		return false;
+	}
+
 	return true;
 }
 
@@ -76,6 +82,7 @@ void RtgApplication::update() noexcept
 void RtgApplication::draw() const noexcept
 {
 	//TODO: The scene manager will call draw here.
+	ShaderProgramManager::get("test_Prog")->bind();
 
 	WindowingService::swap_buffers();
 }

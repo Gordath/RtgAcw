@@ -12,6 +12,8 @@ namespace Glacier
 		IL_COLOR = 0x20
 	};
 
+	static const std::wstring SHADER_PATH{ L"sdr\\" };
+
 	class ShaderProgram {
 	protected:
 		Shader* m_shaders[SHADER_COUNT];
@@ -19,12 +21,12 @@ namespace Glacier
 	public:
 		virtual ~ShaderProgram() = default;
 
-		virtual void create(const std::wstring& vs,
-		                    const std::wstring& hs,
-		                    const std::wstring& ds,
-		                    const std::wstring& gs,
-		                    const std::wstring& fs,
-		                    unsigned int input_layout_mask) noexcept = 0;
+		virtual bool create(unsigned int input_layout_mask,
+		                    const std::wstring& vs,
+		                    const std::wstring& fs = L"",
+		                    const std::wstring& hs = L"",
+		                    const std::wstring& ds = L"",
+		                    const std::wstring& gs = L"") noexcept = 0;
 
 		virtual void bind() const noexcept = 0;
 	};
