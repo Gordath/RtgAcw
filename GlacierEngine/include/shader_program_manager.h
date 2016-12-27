@@ -6,13 +6,15 @@
 
 namespace Glacier
 {
-	using ShaderProgramMap = std::map<std::string, std::shared_ptr<ShaderProgram>>;
+	using ShaderProgramMap = std::map<std::string, ShaderProgram*>;
 
 	class ShaderProgramManager {
 	private:
 		static ShaderProgramMap shader_program_by_name;
 
 	public:
+		~ShaderProgramManager();
+
 		static bool create(const std::string& prog_name,
 		                   unsigned int input_layout_mask,
 		                   const std::wstring& vs,
@@ -21,7 +23,7 @@ namespace Glacier
 		                   const std::wstring& ds = L"",
 		                   const std::wstring& gs = L"") noexcept;
 
-		static std::shared_ptr<ShaderProgram> get(const std::string& prog_name) noexcept;
+		static ShaderProgram* get(const std::string& prog_name) noexcept;
 	};
 }
 

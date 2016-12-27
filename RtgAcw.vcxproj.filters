@@ -24,9 +24,15 @@
     <ClCompile Include="src\rtg_application.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\main_scene.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\rtg_application.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\main_scene.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

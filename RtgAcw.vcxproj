@@ -150,9 +150,11 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\main_scene.cpp" />
     <ClCompile Include="src\rtg_application.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\main_scene.h" />
     <ClInclude Include="include\rtg_application.h" />
   </ItemGroup>
   <ItemGroup>

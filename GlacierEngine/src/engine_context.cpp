@@ -5,6 +5,7 @@
 namespace Glacier
 {
 	GAPIContext* EngineContext::m_GAPI_context{ nullptr };
+	std::unique_ptr<RenderSystem> EngineContext::m_render_system{ std::make_unique<RenderSystem>() };
 
 	bool EngineContext::initialize()
 	{

@@ -12,13 +12,12 @@ namespace Glacier
 
 		ComPtr<ID3D11Device> device{ context->get_device() };
 
-		HRESULT res{ 0 };
-		res = D3DX11CreateShaderResourceViewFromFile(device.Get(),
-		                                             file_name.c_str(),
-		                                             nullptr,
-		                                             nullptr,
-		                                             m_shader_resource_view.ReleaseAndGetAddressOf(),
-		                                             nullptr);
+		HRESULT res{ D3DX11CreateShaderResourceViewFromFile(device.Get(),
+													 file_name.c_str(),
+													 nullptr,
+													 nullptr,
+													 m_shader_resource_view.ReleaseAndGetAddressOf(),
+													 nullptr) };
 
 		if (FAILED(res)) {
 			std::wcerr << L"Failed to create texture from file " + file_name + L"! Shader resource view creation failed." << std::endl;

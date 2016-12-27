@@ -107,6 +107,12 @@
     <ClCompile Include="src\shader_program_manager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="rendering\src\render_system.cpp">
+      <Filter>Rendering\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\scene.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\application.h">
@@ -212,6 +218,18 @@
       <Filter>Rendering\Header Files\d3d</Filter>
     </ClInclude>
     <ClInclude Include="include\shader_program_manager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="rendering\include\render_system.h">
+      <Filter>Rendering\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\scene.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\system.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\timer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

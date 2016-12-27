@@ -19,6 +19,11 @@ namespace Glacier
 
 		virtual ~Component() = default;
 
+		const std::string& get_type() const noexcept
+		{
+			return m_type;
+		}
+
 		virtual void setup() noexcept = 0;
 
 		virtual void update(float dt, long time = 0) noexcept = 0;

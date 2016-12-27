@@ -1,14 +1,17 @@
 #ifndef GLACIER_ENGINE_APPLICATION_H_
 #define GLACIER_ENGINE_APPLICATION_H_
 #include "internal/engine_context.h"
+#include "timer.h"
 
 namespace Glacier
 {
 	class Application {
 	protected:
-		bool _terminate{ false };
+		bool m_terminate{ false };
 
 		static EngineContext m_engine_context;
+
+		Timer timer;
 
 	public:
 		Application() = default;

@@ -1,10 +1,14 @@
 #include "rtg_application.h"
 #include <Windows.h>
 #include "shader_program_manager.h"
-#include "../GlacierEngine/rendering/include/shader_program.h"
+#include "scene.h"
+#include "main_scene.h"
+#include "timer.h"
+#include <iostream>
 
 using namespace Glacier;
 
+static Scene* scene{ nullptr };
 
 // Private methods -----------------------------------------------------------------------------------------------------------------------------
 void RtgApplication::reshape(int x, int y)
@@ -14,7 +18,7 @@ void RtgApplication::reshape(int x, int y)
 
 void RtgApplication::key_down(unsigned char key, int x, int y)
 {
-	//TODO: Call SceneManager's key down.
+	
 }
 
 void RtgApplication::key_up(unsigned char key, int x, int y)
@@ -71,6 +75,8 @@ bool RtgApplication::initialize(int* argc, char* argv[])
 		return false;
 	}
 
+	scene = new MainScene;
+
 	return true;
 }
 
@@ -84,6 +90,8 @@ void RtgApplication::draw() const noexcept
 	//TODO: The scene manager will call draw here.
 	ShaderProgramManager::get("test_Prog")->bind();
 
+	scene->draw();
+
 	WindowingService::swap_buffers();
 }
 
@@ -91,7 +99,7 @@ int RtgApplication::run() noexcept
 {
 	MSG msg;
 
-	while (!_terminate) {
+	while (!m_terminate) {
 
 		if (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE)) {
 			TranslateMessage(&msg);

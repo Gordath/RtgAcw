@@ -6,6 +6,15 @@ namespace Glacier
 {
 	ShaderProgramMap ShaderProgramManager::shader_program_by_name;
 
+	ShaderProgramManager::~ShaderProgramManager()
+	{
+		for (auto it : shader_program_by_name) {
+			delete it.second;
+		}
+
+		shader_program_by_name.clear();
+	}
+
 	bool ShaderProgramManager::create(const std::string& prog_name,
 	                                  unsigned input_layout_mask,
 	                                  const std::wstring& vs,
@@ -14,17 +23,15 @@ namespace Glacier
 	                                  const std::wstring& ds,
 	                                  const std::wstring& gs) noexcept
 	{
-		ShaderProgram* prog_check{ shader_program_by_name[prog_name].get() };
+		ShaderProgram* sdr_prog{ shader_program_by_name[prog_name] };
 
-		if (prog_check) {
+		if (sdr_prog) {
 			std::cerr << "A shader program with the name provided already exists. Skipping creation." << std::endl;
 			return false;
 		}
 
-		std::shared_ptr<ShaderProgram> sdr_prog;
-
 #if defined(GLACIERENGINE_BUILD_D3D)
-		sdr_prog = std::make_shared<D3D11ShaderProgram>();
+		sdr_prog = new D3D11ShaderProgram;
 #endif
 
 		if (!sdr_prog->create(input_layout_mask,
@@ -41,7 +48,7 @@ namespace Glacier
 		return true;
 	}
 
-	std::shared_ptr<ShaderProgram> ShaderProgramManager::get(const std::string& prog_name) noexcept
+	ShaderProgram* ShaderProgramManager::get(const std::string& prog_name) noexcept
 	{
 		return shader_program_by_name[prog_name];
 	}

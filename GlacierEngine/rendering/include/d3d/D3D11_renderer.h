@@ -6,7 +6,10 @@
 namespace Glacier
 {
 	class D3D11Renderer : public Renderer {
-		
+	public:
+		bool initialize() noexcept override;
+
+		void draw(RenderingComponent* rendering_component, float delta_time) override;
 	};
 }
 

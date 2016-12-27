@@ -156,10 +156,12 @@
     <ClCompile Include="rendering\src\d3d\D3D11_texture.cpp" />
     <ClCompile Include="rendering\src\d3d\D3D11_VBO.cpp" />
     <ClCompile Include="rendering\src\mesh.cpp" />
+    <ClCompile Include="rendering\src\render_system.cpp" />
     <ClCompile Include="src\application.cpp" />
     <ClCompile Include="src\engine_context.cpp" />
     <ClCompile Include="src\rendering_component.cpp" />
     <ClCompile Include="src\resource_manager.cpp" />
+    <ClCompile Include="src\scene.cpp" />
     <ClCompile Include="src\shader_program_manager.cpp" />
     <ClCompile Include="windowing\src\d3d\D3D11_window.cpp" />
     <ClCompile Include="windowing\src\win32\win32_window.cpp" />
@@ -176,8 +178,11 @@
     <ClInclude Include="include\rendering_component.h" />
     <ClInclude Include="include\resource.h" />
     <ClInclude Include="include\resource_manager.h" />
+    <ClInclude Include="include\scene.h" />
     <ClInclude Include="include\shader_program_manager.h" />
+    <ClInclude Include="include\system.h" />
     <ClInclude Include="include\texture.h" />
+    <ClInclude Include="include\timer.h" />
     <ClInclude Include="rendering\include\d3d\D3D11_context.h" />
     <ClInclude Include="rendering\include\d3d\D3D11_IBO.h" />
     <ClInclude Include="rendering\include\d3d\D3D11_renderer.h" />
@@ -190,6 +195,7 @@
     <ClInclude Include="rendering\include\IBO.h" />
     <ClInclude Include="rendering\include\mesh.h" />
     <ClInclude Include="rendering\include\renderer.h" />
+    <ClInclude Include="rendering\include\render_system.h" />
     <ClInclude Include="rendering\include\render_target.h" />
     <ClInclude Include="rendering\include\shader.h" />
     <ClInclude Include="rendering\include\shader_program.h" />

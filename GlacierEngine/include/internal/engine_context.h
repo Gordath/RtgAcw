@@ -3,12 +3,14 @@
 
 #include "../rendering/include/GAPI_context.h"
 #include "../rendering/include/d3d/D3D11_context.h"
+#include "../rendering/include/render_system.h"
 
 namespace Glacier
 {
 	class EngineContext {
 	private:
 		static GAPIContext* m_GAPI_context;
+		static std::unique_ptr<RenderSystem> m_render_system;
 
 	public:
 		EngineContext() = default;
@@ -23,6 +25,7 @@ namespace Glacier
 		static D3D11Context* get_GAPI_context() noexcept;
 #endif
 
+		static RenderSystem* get_render_system() noexcept { return m_render_system.get(); }
 	};
 }
 
