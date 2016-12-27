@@ -11,9 +11,11 @@ namespace Glacier
 		ComPtr<ID3D11Buffer> m_vertex_buffer;
 
 	public:
-		bool create(const std::vector<Vertex>& vertices) override;
+		bool create(const std::vector<Vertex>& vertices) noexcept override;
 
-		void draw() const override;
+		void bind() const noexcept override;
+
+		void draw() const noexcept override;
 	};
 }
 

@@ -11,9 +11,11 @@ namespace Glacier
 		ComPtr<ID3D11Buffer> m_index_buffer;
 
 	public:
-		bool create(const std::vector<unsigned int>& indices) override;
+		bool create(const std::vector<unsigned int>& indices) noexcept override;
 
-		void draw() const override;
+		void bind() const noexcept override;
+
+		void draw() const noexcept override;
 	};
 }
 

@@ -12,9 +12,11 @@ namespace Glacier
 	public:
 		virtual ~VBO() = default;
 
-		virtual bool create(const std::vector<Vertex> &vertices) = 0;
+		virtual bool create(const std::vector<Vertex> &vertices) noexcept = 0;
+
+		virtual void bind() const noexcept = 0;
 		
-		virtual void draw() const = 0;
+		virtual void draw() const noexcept = 0;
 	};
 }
 

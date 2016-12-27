@@ -11,9 +11,11 @@ namespace Glacier
 	public:
 		virtual ~IBO() = default;
 
-		virtual bool create(const std::vector<unsigned int>& indices) = 0;
+		virtual bool create(const std::vector<unsigned int>& indices) noexcept = 0;
 
-		virtual void draw() const = 0;
+		virtual void bind() const noexcept = 0;
+
+		virtual void draw() const noexcept = 0;
 	};
 }
 

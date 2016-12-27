@@ -2,40 +2,56 @@
 #include "D3D11_context.h"
 #include <iostream>
 #include "internal/engine_context.h"
+#include <minwinbase.h>
 
 namespace Glacier
 {
-	bool D3D11VBO::create(const std::vector<Vertex>& vertices)
+	bool D3D11VBO::create(const std::vector<Vertex>& vertices) noexcept
 	{
 		D3D11_BUFFER_DESC buffer_desc;
-		buffer_desc.Usage = D3D11_USAGE_DEFAULT;
+		ZeroMemory(&buffer_desc, sizeof(buffer_desc));
+		buffer_desc.Usage = D3D11_USAGE_DYNAMIC;
 		buffer_desc.ByteWidth = sizeof(Vertex) * vertices.size();
 		buffer_desc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-		buffer_desc.CPUAccessFlags = 0;
-		buffer_desc.MiscFlags = 0;
-		buffer_desc.StructureByteStride = 0;
+		buffer_desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 
-		D3D11_SUBRESOURCE_DATA vertex_data;
-		vertex_data.pSysMem = vertices.data();
-		vertex_data.SysMemPitch = 0;
-		vertex_data.SysMemSlicePitch = 0;
 
 		D3D11Context* ctx{ EngineContext::get_GAPI_context() };
 
 		ComPtr<ID3D11Device> device{ ctx->get_device() };
-		HRESULT res = device->CreateBuffer(&buffer_desc, &vertex_data, m_vertex_buffer.ReleaseAndGetAddressOf());
+		HRESULT res = device->CreateBuffer(&buffer_desc, nullptr, m_vertex_buffer.ReleaseAndGetAddressOf());
 
 		if (FAILED(res)) {
 			std::cerr << "Failed to create the D3D11VBO." << std::endl;
 			return false;
 		}
 
+		ComPtr<ID3D11DeviceContext> device_context{ ctx->get_device_context() };
+		
+		D3D11_MAPPED_SUBRESOURCE ms;
+		device_context->Map(m_vertex_buffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &ms);
+		memcpy(ms.pData, vertices.data(), sizeof(Vertex) * vertices.size());
+		device_context->Unmap(m_vertex_buffer.Get(), 0);
+
 		m_vertex_count = vertices.size();
 
 		return true;
 	}
 
-	void D3D11VBO::draw() const
+
+	void D3D11VBO::bind() const noexcept
+	{
+		D3D11Context* GAPI_context{ EngineContext::get_GAPI_context() };
+
+		ComPtr<ID3D11DeviceContext> device_context{ GAPI_context->get_device_context() };
+
+		UINT stride{ sizeof(Vertex) };
+		UINT offset{ 0 };
+		device_context->IASetVertexBuffers(0, 1, m_vertex_buffer.GetAddressOf(), &stride, &offset);
+		device_context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	}
+
+	void D3D11VBO::draw() const noexcept
 	{
 		D3D11Context* ctx{ EngineContext::get_GAPI_context() };
 
