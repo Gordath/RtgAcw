@@ -136,3 +136,4 @@ Contact GitHub API Training Shop Blog About
 *.lastbuildstate
 *.idb
 *.cd
+sdr/*.compilation_errors.txt

@@ -158,7 +158,9 @@
     <ClCompile Include="rendering\src\mesh.cpp" />
     <ClCompile Include="rendering\src\render_system.cpp" />
     <ClCompile Include="src\application.cpp" />
+    <ClCompile Include="src\component.cpp" />
     <ClCompile Include="src\engine_context.cpp" />
+    <ClCompile Include="src\mesh_utils.cpp" />
     <ClCompile Include="src\rendering_component.cpp" />
     <ClCompile Include="src\resource_manager.cpp" />
     <ClCompile Include="src\scene.cpp" />
@@ -174,6 +176,7 @@
     <ClInclude Include="include\internal\engine_context.h" />
     <ClInclude Include="include\internal\math_utils.h" />
     <ClInclude Include="include\internal\types.h" />
+    <ClInclude Include="include\mesh_utils.h" />
     <ClInclude Include="include\object.h" />
     <ClInclude Include="include\rendering_component.h" />
     <ClInclude Include="include\resource.h" />

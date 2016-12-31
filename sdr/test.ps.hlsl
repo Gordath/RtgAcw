@@ -1,5 +1,8 @@
+struct VOut {
+	float4 position : SV_POSITION;
+};
 
-float4 main() : SV_TARGET
+float4 main(VOut input) : SV_TARGET
 {
-	return float4(1.0, 1.0, 0.0, 1.0);
+	return float4(1.0, 0.0, 0.0, 1.0);
 }

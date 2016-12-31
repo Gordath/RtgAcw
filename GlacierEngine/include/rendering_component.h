@@ -2,6 +2,7 @@
 #define GLACIER_RENDERING_COMPONENT_H_
 #include "component.h"
 #include "mesh.h"
+#include "object.h"
 
 namespace Glacier
 {
@@ -9,7 +10,7 @@ namespace Glacier
 	private:
 		Mesh* m_mesh{ nullptr };
 		
-		//MAterial
+		//TODO: MAterial
 
 		bool m_should_draw{ true };
 
@@ -23,6 +24,41 @@ namespace Glacier
 		void update(float dt, long time) noexcept override;
 
 		void teardown() noexcept override;
+
+		void set_mesh(Mesh* mesh) noexcept
+		{
+			m_mesh = mesh;
+		}
+
+		Mesh* get_mesh() const noexcept
+		{
+			return m_mesh;
+		}
+
+		bool should_draw() const noexcept
+		{
+			return m_should_draw;
+		}
+
+		const Vec3f& get_position() const noexcept
+		{
+			return m_parent->get_position();
+		}
+
+		const Vec3f& get_euler_angles() const noexcept
+		{
+			return m_parent->get_euler_angles();
+		}
+
+		const Vec3f& get_scale() const noexcept
+		{
+			return m_parent->get_scale();
+		}
+
+		const Mat4f& get_xform() const noexcept
+		{
+			return m_parent->get_xform();
+		}
 	};
 }
 

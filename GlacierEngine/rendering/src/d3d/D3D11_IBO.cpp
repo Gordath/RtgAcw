@@ -39,7 +39,6 @@ namespace Glacier
 		return true;
 	}
 
-
 	void D3D11IBO::bind() const noexcept
 	{
 		D3D11Context* GAPI_context{ EngineContext::get_GAPI_context() };

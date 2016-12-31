@@ -1,7 +1,18 @@
 #include "render_system.h"
+#include <iostream>
 
 namespace Glacier
 {
+	bool RenderSystem::initialize() noexcept
+	{
+		if (!m_renderer->initialize()) {
+			std::cerr << "Render system initialization failed." << std::endl;
+			return false;
+		}
+
+		return true;
+	}
+
 	void RenderSystem::process(const std::vector<Object*>& objects, float delta_time) const noexcept
 	{
 		std::vector<RenderingComponent*> rendering_components;
@@ -13,9 +24,6 @@ namespace Glacier
 			}
 		}
 
-		m_renderer->draw(nullptr, delta_time);
-
-		//TODO: figure out how this is going to work with the render passes
-
+		m_renderer->draw(rendering_components, delta_time);
 	}
 }

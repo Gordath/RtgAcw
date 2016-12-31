@@ -72,7 +72,7 @@ namespace Glacier
 
 		void swap_buffers() const noexcept override
 		{
-			m_swap_chain->Present(1, 0);
+			m_swap_chain->Present(0, 0);
 		}
 	};
 }

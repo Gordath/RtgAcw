@@ -61,7 +61,7 @@ bool RtgApplication::initialize(int* argc, char* argv[])
 	callbacks.keyboard_up_func = key_up;
 
 	WindowingService::create(L"D3D test",
-	                          Vec2i{ 256, 256 },
+	                          Vec2i{ 1024, 768 },
 	                          Vec2i{ 250, 250 },
 	                          true,
 	                          false,
@@ -71,11 +71,12 @@ bool RtgApplication::initialize(int* argc, char* argv[])
 	                          4,
 	                          callbacks);
 
-	if (!ShaderProgramManager::create("test_Prog", IL_POSITION | IL_NORMAL, L"test.vs.hlsl", L"test.ps.hlsl")) {
+	if (!ShaderProgramManager::create("test_Prog", IL_POSITION | IL_NORMAL | IL_TANGENT | IL_TEXCOORD | IL_COLOR, L"test.vs.hlsl", L"test.ps.hlsl")) {
 		return false;
 	}
 
 	scene = new MainScene;
+	scene->initialize();
 
 	return true;
 }

@@ -10,6 +10,8 @@ namespace Glacier
 	public:
 		virtual ~System() = default;
 
+		virtual bool initialize() noexcept = 0;
+
 		virtual void process(const std::vector<Object*>& objects, float delta_time) const noexcept = 0;
 	};
 }

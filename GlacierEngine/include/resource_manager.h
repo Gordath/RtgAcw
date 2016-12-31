@@ -10,6 +10,8 @@ namespace Glacier
 	static const std::wstring MODELS_PATH{ L"data\\models\\" };
 	static const std::wstring TEXTURE_PATH{ L"data\\textures\\" };
 
+	static int id = 0;
+
 	class ResourceManager {
 	private:
 		static std::map<std::wstring, Resource*> m_resources_by_name;
@@ -37,14 +39,11 @@ namespace Glacier
 		template<typename T>
 		static bool load(const std::wstring& fileName)
 		{
-			static int id = 0;
 			T* resource{ new T };
 
 			if (resource->load(fileName)) {
-				m_resources_by_name[fileName] = resource;
 				resource->set_id(id);
-
-				m_resources_by_id[id++] = resource;
+				register_resource(resource, fileName);
 
 				return true;
 			}
@@ -69,6 +68,22 @@ namespace Glacier
 			}
 
 			return res;
+		}
+
+		static void register_resource(Resource* resource, const std::wstring& name)
+		{
+			if (!resource) {
+				std::cerr << "Resource registration failed: Cannot register a null resource." << std::endl;
+				return;
+			}
+
+			if (name.empty()) {
+				std::cerr << "Resource registration failed: Cannot register a resource without providing a name." << std::endl;
+				return;
+			}
+
+			m_resources_by_name[name] = resource;
+			m_resources_by_id[id++] = resource;
 		}
 	};
 }

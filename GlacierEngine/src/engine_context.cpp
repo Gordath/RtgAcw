@@ -19,6 +19,10 @@ namespace Glacier
 			return false;
 		}
 
+		if (!m_render_system->initialize()) {
+			return false;
+		}
+
 		return true;
 	}
 
