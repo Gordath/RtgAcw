@@ -10,6 +10,10 @@ namespace Glacier
 	using Vec2i = glm::ivec2;
 	using Vec3i = glm::ivec3;
 	using Vec4i = glm::ivec4;
+	
+	using Vec2ui = glm::uvec2;
+	using Vec3ui = glm::uvec3;
+	using Vec4ui = glm::uvec4;
 
 	using Vec2f = glm::vec2;
 	using Vec3f = glm::vec3;

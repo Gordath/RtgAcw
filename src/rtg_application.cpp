@@ -5,6 +5,7 @@
 #include "main_scene.h"
 #include "timer.h"
 #include <iostream>
+#include "scene_manager.h"
 
 using namespace Glacier;
 
@@ -18,22 +19,22 @@ void RtgApplication::reshape(int x, int y)
 
 void RtgApplication::key_down(unsigned char key, int x, int y)
 {
-	
+	SceneManager::on_key_down(key, x, y);
 }
 
 void RtgApplication::key_up(unsigned char key, int x, int y)
 {
-	//TODO: Call SceneManager's key up.
+	SceneManager::on_key_up(key, x, y);
 }
 
 void RtgApplication::mouse_click(int button, bool state, int x, int y)
 {
-	//TODO: Call SceneManager's mouse click.
+	SceneManager::on_mouse_click(button, state, x, y);
 }
 
 void RtgApplication::mouse_motion(int x, int y)
 {
-	//TODO: Call SceneManager's mouse motion.
+	SceneManager::on_mouse_motion(x, y);
 }
 
 void RtgApplication::passive_mouse_motion(int x, int y)
@@ -76,7 +77,7 @@ bool RtgApplication::initialize(int* argc, char* argv[])
 	}
 
 	scene = new MainScene;
-	scene->initialize();
+	SceneManager::push_scene(scene);
 
 	return true;
 }
@@ -84,14 +85,14 @@ bool RtgApplication::initialize(int* argc, char* argv[])
 void RtgApplication::update() noexcept
 {
 	//TODO: The scene manager will call update here.
+	SceneManager::update(m_timer.get_delta(), m_timer.get_msec());
 }
 
 void RtgApplication::draw() const noexcept
 {
-	//TODO: The scene manager will call draw here.
 	ShaderProgramManager::get("test_Prog")->bind();
 
-	scene->draw();
+	SceneManager::draw();
 
 	WindowingService::swap_buffers();
 }

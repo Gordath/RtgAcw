@@ -11,7 +11,22 @@ namespace Glacier
 
 		constexpr double PI_D{ glm::pi<double>() };
 
-		static Mat4f identity_matrix{ glm::mat4{1.0f} };
+		static Mat4f identity_matrix{ glm::mat4{ 1.0f } };
+
+		inline Vec2f normalize(const Vec2f& vec)
+		{
+			return glm::normalize(vec);
+		}
+
+		inline Vec3f normalize(const Vec3f& vec)
+		{
+			return glm::normalize(vec);
+		}
+
+		inline Vec4f normalize(const Vec4f& vec)
+		{
+			return glm::normalize(vec);
+		}
 
 		inline float lengthf(const Vec2f& vec)
 		{
@@ -71,6 +86,11 @@ namespace Glacier
 		inline const Mat4f& perspective_lh(const Mat4f& matrix, float fov, float width, float height, float near_plane, float far_plane)
 		{
 			return glm::perspectiveFovLH(fov, width, height, near_plane, far_plane);
+		}
+
+		inline Vec3f spherical_to_cartesian(float theta, float phi, float radius = 1.0f)
+		{
+			return Vec3f{ radius * sin(theta) * sin(phi), radius * cos(phi), radius * cos(theta) * sin(phi) };
 		}
 
 		template<typename T>

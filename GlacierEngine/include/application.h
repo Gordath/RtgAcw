@@ -11,7 +11,7 @@ namespace Glacier
 
 		static EngineContext m_engine_context;
 
-		Timer timer;
+		Timer m_timer;
 
 	public:
 		Application() = default;

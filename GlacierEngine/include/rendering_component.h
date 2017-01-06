@@ -3,6 +3,7 @@
 #include "component.h"
 #include "mesh.h"
 #include "object.h"
+#include "material.h"
 
 namespace Glacier
 {
@@ -10,7 +11,7 @@ namespace Glacier
 	private:
 		Mesh* m_mesh{ nullptr };
 		
-		//TODO: MAterial
+		Material m_material;
 
 		bool m_should_draw{ true };
 
@@ -33,6 +34,16 @@ namespace Glacier
 		Mesh* get_mesh() const noexcept
 		{
 			return m_mesh;
+		}
+
+		void set_material(const Material& material) noexcept
+		{
+			m_material = material;
+		}
+
+		const Material& get_material() const noexcept
+		{
+			return m_material;
 		}
 
 		bool should_draw() const noexcept

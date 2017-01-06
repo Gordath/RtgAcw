@@ -6,6 +6,8 @@ namespace Glacier
 {
 	GAPIContext* EngineContext::m_GAPI_context{ nullptr };
 	std::unique_ptr<RenderSystem> EngineContext::m_render_system{ std::make_unique<RenderSystem>() };
+	std::unique_ptr<CameraSystem> EngineContext::m_camera_system{ std::make_unique<CameraSystem>() };
+	std::unique_ptr<LightSystem> EngineContext::m_light_system{ std::make_unique<LightSystem>() };
 
 	bool EngineContext::initialize()
 	{
@@ -20,6 +22,14 @@ namespace Glacier
 		}
 
 		if (!m_render_system->initialize()) {
+			return false;
+		}
+
+		if (!m_camera_system->initialize()) {
+			return false;
+		}
+
+		if (!m_light_system->initialize()) {
 			return false;
 		}
 

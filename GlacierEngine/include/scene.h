@@ -1,7 +1,6 @@
 #ifndef GLACIER_SCENE_H_
 #define GLACIER_SCENE_H_
 #include <vector>
-#include <memory>
 #include "object.h"
 
 namespace Glacier
@@ -15,14 +14,18 @@ namespace Glacier
 
 		virtual void initialize() = 0;
 
-		virtual void on_key_down(int key, int x, int y) noexcept = 0;
+		virtual void on_key_down(unsigned char key, int x, int y) noexcept = 0;
 
-		virtual void on_key_up(int key, int x, int y) noexcept = 0;
+		virtual void on_key_up(unsigned char key, int x, int y) noexcept = 0;
+
+		virtual void on_mouse_motion(int x, int y) noexcept = 0;
+
+		virtual void on_mouse_click(int button, bool state, int x, int y) = 0;
 
 		// Respond to messages
 		//virtual void OnMessage(Message* msg);
 
-		virtual void update(float delta_time, long time) noexcept;
+		virtual void update(float delta_time, long time = 0) noexcept;
 
 		virtual void draw() const noexcept = 0;
 	};

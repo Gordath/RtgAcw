@@ -6,7 +6,7 @@ namespace Glacier
 {
 	class Renderer {
 	protected:
-		virtual void draw(Mesh* mesh /*TODO:Add material and shit*/) noexcept = 0;
+		virtual void draw(Mesh* mesh /*TODO:Add material and shit*/, const Mat4f& model) noexcept = 0;
 
 	public:
 		virtual ~Renderer() = default;
@@ -17,7 +17,7 @@ namespace Glacier
 		{
 			for (const auto rendering_component : rendering_components) {
 				if (rendering_component->should_draw() && rendering_component->get_mesh()) {
-					draw(rendering_component->get_mesh());
+					draw(rendering_component->get_mesh(), rendering_component->get_xform());
 				}
 			}
 		}

@@ -16,12 +16,12 @@ namespace Glacier
 		auto it{ m_objects.begin() };
 		
 		while (it != m_objects.end()) {
-			auto game_object{ *it };
-			if (!game_object->is_alive()) {
-				delete game_object;
+			auto object{ *it };
+			if (!object->is_alive()) {
+				delete object;
 				it = m_objects.erase(it);
 			} else {
-				//TODO: maybe update the game objects here if they actually need an update method.
+				object->update(delta_time, time);
 				++it;
 			}
 		}

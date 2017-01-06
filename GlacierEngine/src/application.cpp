@@ -13,7 +13,7 @@ namespace Glacier
 			return false;
 		}
 
-		timer.start();
+		m_timer.start();
 
 		return true;
 	}

@@ -7,10 +7,10 @@
 namespace Glacier
 {
 	static std::map<std::wstring, std::string> shader_profiles{
-		{L"vs", "vs_4_0"},
-		{L"hs", "hs_4_0"},
-		{L"ds", "ds_4_0"},
-		{L"ps", "ps_4_0"}
+		{L"vs", "vs_5_0"},
+		{L"hs", "hs_5_0"},
+		{L"ds", "ds_5_0"},
+		{L"ps", "ps_5_0"}
 	};
 
 	bool D3D11Shader::load(const std::wstring& file_name) noexcept

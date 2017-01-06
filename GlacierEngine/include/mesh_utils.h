@@ -6,7 +6,14 @@ namespace Glacier
 {
 	namespace MeshUtils
 	{
-		Mesh* generate_cube();
+		Mesh* generate_cube(float size, VertexWinding vertex_winding = VertexWinding::CLOCKWISE) noexcept;
+
+		Mesh* generate_uv_sphere(float radius,
+		                         int slices,
+		                         int stacks,
+		                         float u_range,
+		                         float v_range,
+		                         VertexWinding vertex_winding = VertexWinding::CLOCKWISE) noexcept;
 	}
 }
 
