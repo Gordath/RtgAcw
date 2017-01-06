@@ -48,7 +48,7 @@ namespace Glacier
 			return m_indices.size();
 		}
 
-		void initiaze_buffer_objects() const noexcept;
+		void initiaze_buffer_objects(PrimitiveTopology primitive_topology = PrimitiveTopology::TRIANGLE_LIST) const noexcept;
 
 		void set_vertex_data(const Vertex* vertices, int vertex_count) noexcept;
 

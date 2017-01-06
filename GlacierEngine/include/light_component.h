@@ -6,7 +6,6 @@
 namespace Glacier
 {
 	struct LightDesc {
-		bool enabled{ true };
 		Vec4f ambient_intensity;
 		Vec4f diffuse_intensity{1.0f, 1.0f, 1.0f, 1.0f};
 		Vec4f specular_intensity{1.0f, 1.0f, 1.0f, 1.0f};
@@ -15,7 +14,7 @@ namespace Glacier
 		float spot_exponent;
 		Vec3f attenuation{1.0f, 0.0f, 0.0f};
 		Vec3f position;
-		bool directional;
+		Vec4ui flags; //directional, enabled, 0, 0
 	};
 
 	class LightComponent : public Component {
@@ -46,16 +45,6 @@ namespace Glacier
 		const LightDesc& get_light_description() const noexcept
 		{
 			return m_light_desc;
-		}
-
-		void set_enabled(bool state) noexcept
-		{
-			m_light_desc.enabled = state;
-		}
-
-		bool is_enabled() const noexcept
-		{
-			return m_light_desc.enabled;
 		}
 
 		void set_ambient_intensity(const Vec4f& ambient_intensity) noexcept
@@ -116,16 +105,6 @@ namespace Glacier
 		float get_spot_exponent() const noexcept
 		{
 			return m_light_desc.spot_exponent;
-		}
-
-		void set_directional(bool state) noexcept
-		{
-			m_light_desc.directional = state;
-		}
-
-		bool is_directional() const noexcept
-		{
-			return m_light_desc.directional;
 		}
 	};
 }

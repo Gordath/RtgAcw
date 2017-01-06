@@ -236,57 +236,39 @@ namespace Glacier
 			return m;
 		}
 
-		Mesh* generate_uv_sphere(float radius,
-			int slices,
-			int stacks,
-			float u_range,
-			float v_range,
-			VertexWinding vertex_winding) noexcept
+		Mesh* generate_uv_sphere(float radius, int resolution) noexcept
 		{
-			//TODO: generate a freaking sphere.
-
-			if (slices < 4) {
-				slices = 4;
+			if (resolution < 2) {
+				resolution = 2;
 			}
 
-			if (stacks < 2) {
-				stacks = 2;
-			}
+			Mesh* m{ new Mesh };
 
-			int uverts{ slices + 1 };
-			int vverts{ stacks + 1 };
+			float alpha, beta;       
+			for (alpha = 0.0; alpha < MathUtils::PI_F; alpha += MathUtils::PI_F / resolution) {
+				for (beta = 0.0; beta < 2.01 * MathUtils::PI_F; beta += MathUtils::PI_F / resolution) {
+					Vertex	v1, v2;
+					v1.position.x = radius * sin(beta) * sin(alpha);
+					v1.position.y = radius * cos(alpha);
+					v1.position.z = radius * cos(beta) * sin(alpha);
 
-			int num_verts{ uverts * vverts };
-			int num_quads{ slices * stacks };
-			int num_tri{ num_quads * 2 };
+					v1.normal = v1.position;
 
+					m->add_vertex(v1);
 
-			float du = u_range / static_cast<float>(uverts - 1);
-			float dv = v_range / static_cast<float>(vverts - 1);
+					v2.position.x = radius * sin(beta) * sin(alpha + MathUtils::PI_F / resolution);
+					v2.position.y = radius * cos(alpha + MathUtils::PI_F / resolution);
+					v2.position.z = radius * cos(beta) * sin(alpha + MathUtils::PI_F / resolution);
 
-			float u = 0.0f;
-			for (int i = 0; i < uverts; i++) {
-				float theta = u * 2.0 * MathUtils::PI_F;
+					v2.normal = v2.position;
 
-				float v = 0.0;
-				for (int j = 0; j < vverts; j++) {
-					float phi = v * MathUtils::PI_F;
-
-					Vec3f position{ MathUtils::spherical_to_cartesian(theta, phi) };
-
-					Vec3f normal{ position };
-
-					Vec3f tangent{
-						MathUtils::normalize(
-							MathUtils::spherical_to_cartesian(theta + 0.1f, MathUtils::PI_F / 2.0f) -
-							MathUtils::spherical_to_cartesian(theta - 0.1f, MathUtils::PI_F / 2.0f)
-						)
-					};
-
-					Vec2f texcoord{ u * u_range, v * v_range };
+					m->add_vertex(v2);
 				}
 			}
-			return nullptr;
+
+			m->initiaze_buffer_objects(PrimitiveTopology::TRIANGLE_STRIP);
+
+			return m;
 		}
 	}
 }

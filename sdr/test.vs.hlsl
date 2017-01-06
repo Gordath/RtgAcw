@@ -27,7 +27,6 @@ struct VOut {
 };
 
 struct Light {
-	bool enabled;
 	float4 ambient_intensity;
 	float4 diffuse_intensity;
 	float4 specular_intensity;
@@ -36,7 +35,7 @@ struct Light {
 	float spot_exponent;
 	float3 attenuation;
 	float3 position;
-	bool directional;
+	uint4 flags;
 };
 
 StructuredBuffer<Light> lights;

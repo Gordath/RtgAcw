@@ -19,7 +19,6 @@ cbuffer uniforms {
 };
 
 struct Light {
-	bool enabled;
 	float4 ambient_intensity;
 	float4 diffuse_intensity;
 	float4 specular_intensity;
@@ -28,7 +27,7 @@ struct Light {
 	float spot_exponent;
 	float3 attenuation;
 	float3 position;
-	bool directional;
+	uint4 flags;
 };
 
 StructuredBuffer<Light> lights : register(t0);
@@ -41,7 +40,7 @@ Texture2D ambient_occlusion_tex : register(t5);
 
 float3 get_light_vector(Light light, float3 pos)
 {
-	if (!light.directional) {
+	if (light.flags.x == 0) { //not directional
 		return light.position - pos;
 	}
 	
@@ -57,7 +56,28 @@ void calculate_lighting(StructuredBuffer<Light> lights,
 						inout float4 diffuse_light,
 						inout float4 specular_light)
 {
-	uint buffer_size = 0;	uint dummy = 0;	lights.GetDimensions(buffer_size, dummy);	for (uint i = 0; i < light_count.x; i++) {		if (lights[i].enabled) {			float3 light_vector = normalize(get_light_vector(lights[i], view_position));						float n_dot_l = max(dot(normal.xyz, light_vector), 0.0);			if (n_dot_l > 0.0) {				if (!lights[i].directional) {				}				float3 h = normalize(view_direction + light_vector);				float n_dot_h = max(dot(normal, h), 0.0);				float exponent = 60.0;				float4 lit_result = lit(n_dot_l, n_dot_h, exponent);				ambient_light += lights[i].ambient_intensity * lit_result.x;				diffuse_light += lights[i].diffuse_intensity * lit_result.y;				specular_light += lights[i].specular_intensity * lit_result.z;			}		}	}
+	for (uint i = 0; i < light_count.x; i++) {
+		if (lights[i].flags.y == 1) { //is enabled
+			float3 light_vector = normalize(get_light_vector(lights[i], view_position));
+			
+			float n_dot_l = max(dot(normal.xyz, light_vector), 0.0);
+
+			if (lights[i].flags.x == 0) { //not directional
+
+			}
+
+			float3 h = normalize(view_direction + light_vector);
+			float n_dot_h = max(dot(normal, h), 0.0);
+			float exponent = 60.0;
+
+			float4 lit_result = lit(n_dot_l, n_dot_h, exponent);
+
+			ambient_light += lights[i].ambient_intensity * lit_result.x;
+			diffuse_light += lights[i].diffuse_intensity * lit_result.y;
+			specular_light += lights[i].specular_intensity * lit_result.z;
+		}
+	}
+
 }
 
 float4 main(VOut input) : SV_TARGET

@@ -6,7 +6,7 @@
 
 namespace Glacier
 {
-	bool D3D11VBO::create(const std::vector<Vertex>& vertices) noexcept
+	bool D3D11VBO::create(const std::vector<Vertex>& vertices, PrimitiveTopology primitive_topology) noexcept
 	{
 		D3D11_BUFFER_DESC buffer_desc;
 		ZeroMemory(&buffer_desc, sizeof(buffer_desc));
@@ -35,6 +35,8 @@ namespace Glacier
 
 		m_vertex_count = vertices.size();
 
+		m_primitive_topology = primitive_topology;
+
 		return true;
 	}
 
@@ -48,7 +50,18 @@ namespace Glacier
 		UINT stride{ sizeof(Vertex) };
 		UINT offset{ 0 };
 		device_context->IASetVertexBuffers(0, 1, m_vertex_buffer.GetAddressOf(), &stride, &offset);
-		device_context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+		switch (m_primitive_topology) {
+		case PrimitiveTopology::TRIANGLE_LIST:
+			device_context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+			break;
+		case PrimitiveTopology::TRIANGLE_STRIP:
+			device_context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
+			break;
+		default:
+			break;
+		}
+		
 	}
 
 	void D3D11VBO::draw() const noexcept

@@ -14,10 +14,10 @@ namespace Glacier
 #endif
 	}
 
-	void Mesh::initiaze_buffer_objects() const noexcept
+	void Mesh::initiaze_buffer_objects(PrimitiveTopology primitive_topology) const noexcept
 	{
 		if (m_vertices.size()) {
-			m_vbo->create(m_vertices);
+			m_vbo->create(m_vertices, primitive_topology);
 		}
 
 		if (m_indices.size()) {

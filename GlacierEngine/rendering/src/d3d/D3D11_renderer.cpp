@@ -110,7 +110,7 @@ namespace Glacier
 
 		D3D11_MAPPED_SUBRESOURCE lms;
 		device_context->Map(m_light_structured_buffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &lms);
-		memcpy(lms.pData, lights.data(), lights.size() * sizeof(LightDesc));
+		memcpy(lms.pData, &lights[0], lights.size() * sizeof(LightDesc));
 		device_context->Unmap(m_light_structured_buffer.Get(), 0);
 
 		device_context->VSSetShaderResources(0, 1, m_light_srv.GetAddressOf());
