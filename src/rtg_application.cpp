@@ -72,7 +72,7 @@ bool RtgApplication::initialize(int* argc, char* argv[])
 	                          4,
 	                          callbacks);
 
-	if (!ShaderProgramManager::create("test_Prog", IL_POSITION | IL_NORMAL | IL_TANGENT | IL_TEXCOORD | IL_COLOR, L"test.vs.hlsl", L"test.ps.hlsl")) {
+	if (!ShaderProgramManager::create("sdrprog_default", IL_POSITION | IL_NORMAL | IL_TANGENT | IL_TEXCOORD | IL_COLOR, L"test.vs.hlsl", L"test.ps.hlsl")) {
 		return false;
 	}
 
@@ -84,13 +84,12 @@ bool RtgApplication::initialize(int* argc, char* argv[])
 
 void RtgApplication::update() noexcept
 {
-	//TODO: The scene manager will call update here.
 	SceneManager::update(m_timer.get_delta(), m_timer.get_msec());
 }
 
 void RtgApplication::draw() const noexcept
 {
-	ShaderProgramManager::get("test_Prog")->bind();
+	ShaderProgramManager::get("sdrprog_default")->bind();
 
 	SceneManager::draw();
 

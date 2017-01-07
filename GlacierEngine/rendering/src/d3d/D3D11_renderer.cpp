@@ -17,7 +17,6 @@ namespace Glacier
 		Vec4f diffuse;
 		Vec4f specular;
 		Vec4f view_position;
-
 		Vec4ui light_count;
 	};
 
@@ -72,24 +71,23 @@ namespace Glacier
 		return true;
 	}
 
-	void D3D11Renderer::draw(const std::vector<RenderingComponent*>& rendering_components, float delta_time)
+	void D3D11Renderer::draw(std::vector<RenderingComponent*>& rendering_components, float delta_time)
 	{
 		D3D11Context* GAPI_context{ EngineContext::get_GAPI_context() };
 
 		ComPtr<ID3D11DeviceContext> device_context{ GAPI_context->get_device_context() };
 
-		float cl_col[4]{ 0.2f, 0.2f, 0.2f, 0.0f };
+		float cl_col[4]{ 0.0f, 0.0f, 0.0f, 0.0f };
 		device_context->ClearRenderTargetView(GAPI_context->get_default_render_target_view(), cl_col);
 		device_context->ClearDepthStencilView(GAPI_context->get_default_depth_stencil_view(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
 		Renderer::draw(rendering_components, delta_time);
 	}
 
-	void D3D11Renderer::draw(Mesh* mesh, const Mat4f& model) noexcept
+	void D3D11Renderer::draw(Mesh* mesh, const Material& material, const Mat4f& model) noexcept
 	{
 		CameraSystem* camera_system{ EngineContext::get_camera_system() };
 
-		//This is a temporary test.
 		Mat4f view{ camera_system->get_active_camera_view_matrix() };
 
 		Mat4f projection{ camera_system->get_active_camera_projection_matrix() };
@@ -97,9 +95,6 @@ namespace Glacier
 		Mat4f MVP{ MathUtils::transpose(projection * view * model) };
 		Mat4f MV{ MathUtils::transpose(view * model) };
 		Mat4f ITMV{ MathUtils::transpose(MathUtils::inverse(MV)) };
-
-		Vec4f diff{ 1.0f, 0.0f, 0.0f ,1.0f };
-		Vec4f specular{ 1.0f, 1.0f, 1.0f, 1.0f };
 
 		D3D11Context* GAPI_context{ EngineContext::get_GAPI_context() };
 		ComPtr<ID3D11DeviceContext> device_context{ GAPI_context->get_device_context() };
@@ -123,8 +118,8 @@ namespace Glacier
 		memcpy(&uniforms.V, &view[0][0], sizeof(Mat4f));
 		memcpy(&uniforms.P, &projection[0][0], sizeof(Mat4f));
 		memcpy(&uniforms.ITMV, &ITMV[0][0], sizeof(Mat4f));
-		memcpy(&uniforms.diffuse, &diff.data, sizeof(Vec4f));
-		memcpy(&uniforms.specular, &specular.data, sizeof(Vec4f));
+		memcpy(&uniforms.diffuse, &material.diffuse.data, sizeof(Vec4f));
+		memcpy(&uniforms.specular, &material.specular.data, sizeof(Vec4f));
 		uniforms.view_position = Vec4f{ 0.0f, 0.0f, 0.0f, 0.0f };
 		uniforms.light_count = Vec4i{lights.size(), 0, 0, 0};
 

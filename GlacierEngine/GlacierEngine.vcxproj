@@ -147,6 +147,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="rendering\src\d3d\D3D11_blend_state.cpp" />
     <ClCompile Include="rendering\src\d3d\D3D11_context.cpp" />
     <ClCompile Include="rendering\src\d3d\D3D11_IBO.cpp" />
     <ClCompile Include="rendering\src\d3d\D3D11_renderer.cpp" />
@@ -156,6 +157,7 @@
     <ClCompile Include="rendering\src\d3d\D3D11_texture.cpp" />
     <ClCompile Include="rendering\src\d3d\D3D11_VBO.cpp" />
     <ClCompile Include="rendering\src\mesh.cpp" />
+    <ClCompile Include="rendering\src\render_state_manager.cpp" />
     <ClCompile Include="rendering\src\render_system.cpp" />
     <ClCompile Include="src\application.cpp" />
     <ClCompile Include="src\camera_component.cpp" />
@@ -196,6 +198,7 @@
     <ClInclude Include="include\system.h" />
     <ClInclude Include="include\texture.h" />
     <ClInclude Include="include\timer.h" />
+    <ClInclude Include="rendering\include\d3d\D3D11_blend_state.h" />
     <ClInclude Include="rendering\include\d3d\D3D11_context.h" />
     <ClInclude Include="rendering\include\d3d\D3D11_IBO.h" />
     <ClInclude Include="rendering\include\d3d\D3D11_renderer.h" />
@@ -209,6 +212,8 @@
     <ClInclude Include="rendering\include\material.h" />
     <ClInclude Include="rendering\include\mesh.h" />
     <ClInclude Include="rendering\include\renderer.h" />
+    <ClInclude Include="rendering\include\render_state.h" />
+    <ClInclude Include="rendering\include\render_state_manager.h" />
     <ClInclude Include="rendering\include\render_system.h" />
     <ClInclude Include="rendering\include\render_target.h" />
     <ClInclude Include="rendering\include\shader.h" />

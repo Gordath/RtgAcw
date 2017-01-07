@@ -90,7 +90,7 @@ namespace Glacier
 			m_xform = MathUtils::translate(m_xform, m_position);
 			m_xform = MathUtils::rotate(m_xform, MathUtils::to_radians(m_euler_angles.x), Vec3f{1.0f, 0.0f, 0.0f});
 			m_xform = MathUtils::rotate(m_xform, MathUtils::to_radians(m_euler_angles.y), Vec3f{ 0.0f, 1.0f, 0.0f });
-			m_xform = MathUtils::rotate(m_xform, MathUtils::to_radians(m_euler_angles.z), Vec3f{ 1.0f, 0.0f, 1.0f });
+			m_xform = MathUtils::rotate(m_xform, MathUtils::to_radians(m_euler_angles.z), Vec3f{ 0.0f, 0.0f, 1.0f });
 			m_xform = MathUtils::scale(m_xform, m_scale);
 
 			if (m_parent) {

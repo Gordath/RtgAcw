@@ -1,6 +1,7 @@
 #include "internal/engine_context.h"
 #include "D3D11_context.h"
 #include <iostream>
+#include "render_state_manager.h"
 
 namespace Glacier
 {
@@ -32,6 +33,8 @@ namespace Glacier
 		if (!m_light_system->initialize()) {
 			return false;
 		}
+
+		RenderStateManager::initialize();
 
 		return true;
 	}

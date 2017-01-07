@@ -99,8 +99,11 @@ float4 main(VOut input) : SV_TARGET
 		diff_light,
 		spec_light);
 
-	float4 diff_color = float4(1.0, 0.0, 0.0, 1.0) * diff_light;
-	float4 spec_color = float4(1.0, 1.0, 1.0, 1.0) * spec_light;
+	float4 diff_color = diffuse * diff_light;
+	float4 spec_color = specular * spec_light;
 
-	return diff_color + spec_color + amb_light;
+	float4 final_color = diff_color + spec_color + amb_light;
+	final_color.a = diffuse.a;
+
+	return final_color;
 }

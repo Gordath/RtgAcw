@@ -9,7 +9,7 @@ namespace Glacier
 		Texture* textures[SUPPORTED_TEX_COUNT];
 		Vec4f diffuse;
 		Vec4f specular;
-		float shininess;
+		std::string shader_program_name{ "sdrprog_default" };
 	};
 }
 

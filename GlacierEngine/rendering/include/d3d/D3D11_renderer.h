@@ -13,12 +13,12 @@ namespace Glacier
 		ComPtr<ID3D11ShaderResourceView> m_light_srv;
 
 	protected:
-		void draw(Mesh* mesh, const Mat4f& model) noexcept override;
+		void draw(Mesh* mesh, const Material& material, const Mat4f& model) noexcept override;
 	
 	public:
 		bool initialize() noexcept override;
 
-		void draw(const std::vector<RenderingComponent*>& rendering_components, float delta_time) override;
+		void draw(std::vector<RenderingComponent*>& rendering_components, float delta_time) override;
 
 	};
 }
