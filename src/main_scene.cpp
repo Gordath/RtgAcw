@@ -32,7 +32,7 @@ void MainScene::depth_pass() noexcept
 
 void MainScene::color_pass() const noexcept
 {
-	float clear_color[4]{ 0.0f, 0.0f, 0.0f, 1.0f };
+	float clear_color[4]{ 0.05f, 0.05f, 0.05f, 1.0f };
 
 	m_color_pass_rt.bind();
 	m_color_pass_rt.clear(clear_color);
@@ -79,19 +79,19 @@ void MainScene::color_pass() const noexcept
 
 			Mat4f model{ rendering_component->get_xform() };
 
-			Mat4f MVP{ MathUtils::transpose(projection * view * model) };
-			Mat4f MV{ MathUtils::transpose(view * model) };
-			Mat4f ITMV{ MathUtils::inverse(MV) };
+			Mat4f MVP{ projection * view * model };
+			Mat4f MV{ view * model };
+			Mat4f ITMV{ MathUtils::transpose(MathUtils::inverse(MV)) };
 
 			Material material{ rendering_component->get_material() };
 
 			ColorPassUniformBuffer uniforms;
-			uniforms.MVP = MVP;
-			uniforms.MV = MV;
-			uniforms.M = model;
-			uniforms.V = view;
-			uniforms.P = projection;
-			uniforms.ITMV = ITMV;
+			uniforms.MVP = MathUtils::transpose(MVP);
+			uniforms.MV = MathUtils::transpose(MV);
+			uniforms.M = MathUtils::transpose(model);
+			uniforms.V = MathUtils::transpose(view);
+			uniforms.P = MathUtils::transpose(projection);
+			uniforms.ITMV = MathUtils::transpose(ITMV);
 			uniforms.diffuse = material.diffuse;
 			uniforms.specular = material.specular;
 
