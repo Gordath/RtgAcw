@@ -96,20 +96,21 @@ float4 main(VOut input) : SV_TARGET
 {
 
 	float3 n = normalize(input.normal);
-	float3 v = normalize(input.view_direction);
+	//float3 v = normalize(input.view_direction);
 
 	float3 l = normalize(input.lpos);
 
-	float3 h = normalize(v + l);
+	//float3 h = normalize(v + l);
 
 	float n_dot_l = max(dot(n, l), 0.0);
 
-	float n_dot_h = max(dot(n, h), 0.0);
+	//float n_dot_h = max(dot(n, h), 0.0);
 
-	float4 lit_result = lit(n_dot_l, n_dot_h, 60.0);
+	//float4 lit_result = lit(n_dot_l, n_dot_h, 60.0);
 
-	float4 diff_col = diffuse * lit_result.y;
-	float4 spec_col = specular * lit_result.z;
+	float4 diff_col = diffuse * n_dot_l;//lit_result.y;
+	diff_col.a = 1.0;
+	//float4 spec_col = specular * lit_result.z;
 	
 	return diff_col;// + spec_col;
 
