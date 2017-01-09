@@ -13,6 +13,8 @@ using namespace Glacier;
 static Object* sub1_root{ nullptr };
 static Object* sub1_oar_root{ nullptr };
 
+static float cam_theta, cam_phi, cam_dist = 6;
+
 struct ColorPassUniformBuffer {
 	Mat4f MVP;
 	Mat4f MV;
@@ -60,12 +62,18 @@ void MainScene::color_pass() const noexcept
 
 	RenderStateManager::set(RenderStateType::BLEND_ALPHA);
 
+	Mat4f cam_matrix = Mat4f(1.0);
+	cam_matrix = MathUtils::rotate(cam_matrix, MathUtils::to_radians(cam_theta), Vec3f(0, 1, 0));
+	cam_matrix = MathUtils::rotate(cam_matrix, MathUtils::to_radians(cam_phi), Vec3f(1, 0, 0));
+	cam_matrix = MathUtils::translate(cam_matrix, Vec3f(0, 0, -cam_dist));
+
 	for (auto rendering_component : rendering_components) {
 
 		if (rendering_component->get_mesh() && rendering_component->should_draw()) {
 			CameraSystem* camera_system{ EngineContext::get_camera_system() };
 
-			Mat4f view{ camera_system->get_active_camera_view_matrix() };
+			//Mat4f view{ camera_system->get_active_camera_cam_matrix() };
+			Mat4f view = MathUtils::inverse(cam_matrix);
 
 			Mat4f projection{ camera_system->get_active_camera_projection_matrix() };
 
@@ -73,7 +81,7 @@ void MainScene::color_pass() const noexcept
 
 			Mat4f MVP{ MathUtils::transpose(projection * view * model) };
 			Mat4f MV{ MathUtils::transpose(view * model) };
-			Mat4f ITMV{ MathUtils::transpose(MathUtils::inverse(MV)) };
+			Mat4f ITMV{ MathUtils::inverse(MV) };
 
 			Material material{ rendering_component->get_material() };
 
@@ -331,7 +339,7 @@ void MainScene::initialize()
 	Object* cam{ new Object{ "camera1" } };
 	CameraComponent* cc{ new CameraComponent{ cam, MathUtils::to_radians(60.0f), 1024, 768, 0.1f, 1000.0f } };
 
-	cam->set_position(Vec3f(0.0f, 0.0f, -20.0f));
+	//cam->set_position(Vec3f(0.0f, 0.0f, -20.0f));
 
 	m_objects.push_back(cam);
 
@@ -429,11 +437,18 @@ void MainScene::on_mouse_motion(int x, int y) noexcept
 {
 	int dx = x - prev_x;
 	int dy = y - prev_y;
+	prev_x = x;
+	prev_y = y;
 
 	if(!dx && !dy) return;
 
 	if(bnstate[0]) {
 		EngineContext::get_camera_system()->get_active_camera()->set_euler_angles(Vec3f{ dy * 0.5, dx * 0.5, 0 });
+
+		cam_theta += dx * 0.5;
+		cam_phi += dy * 0.5;
+		if(cam_phi < -90) cam_phi = -90;
+		if(cam_phi > 90) cam_phi = 90;
 	}
 }
 
@@ -442,7 +457,6 @@ void MainScene::on_mouse_click(int button, bool state, int x, int y)
 	prev_x = x;
 	prev_y = y;
 	bnstate[button] = state;
-	printf("button %d %s\n", button, state ? "down" : "up");
 }
 
 void MainScene::update(float delta_time, long time) noexcept

@@ -111,7 +111,7 @@ float4 main(VOut input) : SV_TARGET
 	float4 diff_col = diffuse * lit_result.y;
 	float4 spec_col = specular * lit_result.z;
 	
-	return diff_col + spec_col;
+	return diff_col;// + spec_col;
 
 	/*float4 amb_light = float4(0.0, 0.0, 0.0, 1.0);
 	float4 diff_light = float4(0.0, 0.0, 0.0, 1.0);
