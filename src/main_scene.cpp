@@ -413,13 +413,27 @@ void MainScene::on_key_up(unsigned char key, int x, int y) noexcept
 	}
 }
 
+static int prev_x, prev_y;
+static int bnstate[8];
+
 void MainScene::on_mouse_motion(int x, int y) noexcept
 {
-	EngineContext::get_camera_system()->get_active_camera()->set_euler_angles(Vec3f{ y, x, 0 });
+	int dx = x - prev_x;
+	int dy = y - prev_y;
+
+	if(!dx && !dy) return;
+
+	if(bnstate[0]) {
+		EngineContext::get_camera_system()->get_active_camera()->set_euler_angles(Vec3f{ dy * 0.5, dx * 0.5, 0 });
+	}
 }
 
 void MainScene::on_mouse_click(int button, bool state, int x, int y)
 {
+	prev_x = x;
+	prev_y = y;
+	bnstate[button] = state;
+	printf("button %d %s\n", button, state ? "down" : "up");
 }
 
 void MainScene::update(float delta_time, long time) noexcept

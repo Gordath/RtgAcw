@@ -57,12 +57,13 @@ bool RtgApplication::initialize(int* argc, char* argv[])
 	WindowFunctionCallbacks callbacks;
 	callbacks.passive_motion_func = passive_mouse_motion;
 	callbacks.motion_func = mouse_motion;
+	callbacks.mouse_func = mouse_click;
 	callbacks.reshape_func = reshape;
 	callbacks.keyboard_func = key_down;
 	callbacks.keyboard_up_func = key_up;
 
 	WindowingService::create(L"D3D test",
-	                          Vec2i{ 2048, 2048 },
+	                          Vec2i{ 1280, 800 },
 	                          Vec2i{ 250, 250 },
 	                          true,
 	                          false,
