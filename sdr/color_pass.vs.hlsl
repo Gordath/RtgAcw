@@ -2,7 +2,7 @@ struct VIn {
 	float4 position : POSITION;
 	float4 normal : NORMAL;
 	float4 tagent : TANGENT;
-	float2 texcoord : TEXCOORD;
+	float4 texcoord : TEXCOORD;
 	float4 color : COLOR;
 };
 
@@ -15,8 +15,6 @@ cbuffer uniforms {
 	float4x4 ITMV;
 	float4 diffuse;
 	float4 specular;
-	float4 view_position;
-	uint4 light_count;
 };
 
 struct VOut {
@@ -24,32 +22,22 @@ struct VOut {
 	float3 normal : NORMAL;
 	float3 view_direction : VIEW_DIRECTION;
 	float3 view_space_pos : VIEW_SPACE_POS;
+	float3 lpos : LPOS;
 };
-
-struct Light {
-	float4 ambient_intensity;
-	float4 diffuse_intensity;
-	float4 specular_intensity;
-	float spot_cutoff;
-	float3 spot_direction;
-	float spot_exponent;
-	float3 attenuation;
-	float3 position;
-	uint4 flags;
-};
-
-StructuredBuffer<Light> lights;
 
 VOut main(VIn input)
 {
 	VOut output;
 
 	output.position = mul(input.position, MVP);
-	output.normal = mul(input.normal, ITMV).xyz;
+	output.normal = mul(input.normal.xyz, (float3x3)ITMV);
+
+	float4 lpos = mul(float4(0.0, 0.0, -20.0, 1.0), V);
 
 	float3 vpos = mul(input.position, MV).xyz;
 	output.view_space_pos = vpos;
 	output.view_direction = -vpos;
+	output.lpos = lpos.xyz - vpos;
 
 	return output;
 }

@@ -8,9 +8,7 @@ namespace Glacier
 {
 	class D3D11Renderer : public Renderer {
 	private:
-		ComPtr<ID3D11Buffer> m_uniform_buffer;
-		ComPtr<ID3D11Buffer> m_light_structured_buffer;
-		ComPtr<ID3D11ShaderResourceView> m_light_srv;
+		
 
 	protected:
 		void draw(Mesh* mesh, const Material& material, const Mat4f& model) noexcept override;

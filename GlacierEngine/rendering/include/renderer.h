@@ -16,12 +16,7 @@ namespace Glacier
 
 		virtual void draw(std::vector<RenderingComponent*>& rendering_components, float delta_time)
 		{
-			std::sort(rendering_components.begin(),
-			          rendering_components.end(),
-			          [](auto a, auto b) {
-				          return a->get_material().diffuse.w > b->get_material().diffuse.w;
-			          }
-			);
+			
 
 			for (const auto rendering_component : rendering_components) {
 				if (rendering_component->should_draw() && rendering_component->get_mesh()) {

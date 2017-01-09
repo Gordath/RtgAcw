@@ -7,12 +7,12 @@ namespace Glacier
 {
 	struct LightDesc {
 		Vec4f ambient_intensity;
-		Vec4f diffuse_intensity{1.0f, 1.0f, 1.0f, 1.0f};
-		Vec4f specular_intensity{1.0f, 1.0f, 1.0f, 1.0f};
-		float spot_cutoff;
-		Vec3f spot_direction;
-		float spot_exponent;
-		Vec3f attenuation{1.0f, 0.0f, 0.0f};
+		Vec4f diffuse_intensity{ 1.0f, 1.0f, 1.0f, 1.0f };
+		Vec4f specular_intensity{ 1.0f, 1.0f, 1.0f, 1.0f };
+		float spot_cutoff{ 180.0f };
+		Vec3f spot_direction{ 0.0f, 0.0f, 1.0f };
+		float spot_exponent{ 0.0f }; //[0, 128]
+		Vec3f attenuation{ 1.0f, 0.0f, 0.0f };
 		Vec3f position;
 		Vec4ui flags; //directional, enabled, 0, 0
 	};

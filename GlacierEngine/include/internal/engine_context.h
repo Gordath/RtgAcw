@@ -26,7 +26,10 @@ namespace Glacier
 		static bool initialize();
 
 #if defined(GLACIERENGINE_BUILD_D3D)
-		static D3D11Context* get_GAPI_context() noexcept;
+		static D3D11Context* get_GAPI_context() noexcept
+		{
+			return static_cast<D3D11Context*>(m_GAPI_context);
+		}
 #endif
 
 		static RenderSystem* get_render_system() noexcept

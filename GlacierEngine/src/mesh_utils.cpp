@@ -14,219 +14,219 @@ namespace Glacier
 			//front
 			m->add_vertex(
 				Vertex{
-					Vec3f{ -half_size, -half_size, -half_size },
-					Vec3f{0.0f, 0.0f, -1.0f},
-					Vec3f{},
-					Vec2f{},
+					Vec4f{ -half_size, -half_size, -half_size, 1.0f },
+					Vec4f{0.0f, 0.0f, -1.0f, 0.0f},
+					Vec4f{},
+					Vec4f{},
 					Vec4f{ 1.0f, 0.0f, 0.0f, 1.0f }
 			});
 
 			m->add_vertex(
 				Vertex{
-					Vec3f{ -half_size, half_size, -half_size },
-					Vec3f{ 0.0f, 0.0f, -1.0f },
-					Vec3f{},
-					Vec2f{},
+					Vec4f{ -half_size, half_size, -half_size, 1.0f },
+					Vec4f{ 0.0f, 0.0f, -1.0f, 0.0f },
+					Vec4f{},
+					Vec4f{},
 					Vec4f{ 1.0f, 0.0f, 0.0f, 1.0f }
 			});
 
 			m->add_vertex(
 				Vertex{
-					Vec3f{ half_size, -half_size, -half_size },
-					Vec3f{ 0.0f, 0.0f, -1.0f },
-					Vec3f{},
-					Vec2f{},
+					Vec4f{ half_size, -half_size, -half_size, 1.0f },
+					Vec4f{ 0.0f, 0.0f, -1.0f, 0.0f },
+					Vec4f{},
+					Vec4f{},
 					Vec4f{ 1.0f, 0.0f, 0.0f, 1.0f }
 			});
 
 			m->add_vertex(
 				Vertex{
-					Vec3f{ half_size, half_size, -half_size },
-					Vec3f{ 0.0f, 0.0f, -1.0f },
-					Vec3f{},
-					Vec2f{},
+					Vec4f{ half_size, half_size, -half_size, 1.0f },
+					Vec4f{ 0.0f, 0.0f, -1.0f, 0.0f },
+					Vec4f{},
+					Vec4f{},
 					Vec4f{ 1.0f, 0.0f, 0.0f, 1.0f }
 			});
 
 			//right
 			m->add_vertex(
 				Vertex{
-					Vec3f{ half_size, -half_size, -half_size },
-					Vec3f{1.0f, 0.0f, 0.0f},
-					Vec3f{},
-					Vec2f{},
+					Vec4f{ half_size, -half_size, -half_size, 1.0f },
+					Vec4f{1.0f, 0.0f, 0.0f, 0.0f},
+					Vec4f{},
+					Vec4f{},
 					Vec4f{ 1.0f, 0.0f, 0.0f, 1.0f }
 			});
 
 			m->add_vertex(
 				Vertex{
-					Vec3f{ half_size, half_size, -half_size },
-					Vec3f{ 1.0f, 0.0f, 0.0f },
-					Vec3f{},
-					Vec2f{},
+					Vec4f{ half_size, half_size, -half_size, 1.0f },
+					Vec4f{ 1.0f, 0.0f, 0.0f, 0.0f },
+					Vec4f{},
+					Vec4f{},
 					Vec4f{ 1.0f, 0.0f, 0.0f, 1.0f }
 			});
 
 			m->add_vertex(
 				Vertex{
-					Vec3f{ half_size, -half_size, half_size },
-					Vec3f{ 1.0f, 0.0f, 0.0f },
-					Vec3f{},
-					Vec2f{},
+					Vec4f{ half_size, -half_size, half_size, 1.0f },
+					Vec4f{ 1.0f, 0.0f, 0.0f, 0.0f },
+					Vec4f{},
+					Vec4f{},
 					Vec4f{ 1.0f, 0.0f, 0.0f, 1.0f }
 			});
 
 			m->add_vertex(
 				Vertex{
-					Vec3f{ half_size, half_size, half_size },
-					Vec3f{ 1.0f, 0.0f, 0.0f },
-					Vec3f{},
-					Vec2f{},
+					Vec4f{ half_size, half_size, half_size, 1.0f },
+					Vec4f{ 1.0f, 0.0f, 0.0f, 0.0f },
+					Vec4f{},
+					Vec4f{},
 					Vec4f{ 1.0f, 0.0f, 0.0f, 1.0f }
 			});
 
 			//left
 			m->add_vertex(
 				Vertex{
-					Vec3f{ -half_size, -half_size, half_size },
-					Vec3f{ -1.0f, 0.0f, 0.0f },
-					Vec3f{},
-					Vec2f{},
+					Vec4f{ -half_size, -half_size, half_size, 1.0f },
+					Vec4f{ -1.0f, 0.0f, 0.0f, 0.0f },
+					Vec4f{},
+					Vec4f{},
 					Vec4f{ 1.0f, 0.0f, 0.0f, 1.0f }
 			});
 
 			m->add_vertex(
 				Vertex{
-					Vec3f{ -half_size, half_size, half_size },
-					Vec3f{ -1.0f, 0.0f, 0.0f },
-					Vec3f{},
-					Vec2f{},
+					Vec4f{ -half_size, half_size, half_size, 1.0f },
+					Vec4f{ -1.0f, 0.0f, 0.0f, 0.0f },
+					Vec4f{},
+					Vec4f{},
 					Vec4f{ 1.0f, 0.0f, 0.0f, 1.0f }
 			});
 
 			m->add_vertex(
 				Vertex{
-					Vec3f{ -half_size, -half_size, -half_size },
-					Vec3f{ -1.0f, 0.0f, 0.0f },
-					Vec3f{},
-					Vec2f{},
+					Vec4f{ -half_size, -half_size, -half_size, 1.0f },
+					Vec4f{ -1.0f, 0.0f, 0.0f, 0.0f },
+					Vec4f{},
+					Vec4f{},
 					Vec4f{ 1.0f, 0.0f, 0.0f, 1.0f }
 			});
 
 			m->add_vertex(
 				Vertex{
-					Vec3f{ -half_size, half_size, -half_size },
-					Vec3f{ -1.0f, 0.0f, 0.0f },
-					Vec3f{},
-					Vec2f{},
+					Vec4f{ -half_size, half_size, -half_size, 1.0f },
+					Vec4f{ -1.0f, 0.0f, 0.0f, 0.0f },
+					Vec4f{},
+					Vec4f{},
 					Vec4f{ 1.0f, 0.0f, 0.0f, 1.0f }
 			});
 
 			//back
 			m->add_vertex(
 				Vertex{
-					Vec3f{ half_size, -half_size, half_size },
-					Vec3f{ 0.0f, 0.0f, 1.0f },
-					Vec3f{},
-					Vec2f{},
+					Vec4f{ half_size, -half_size, half_size, 1.0f },
+					Vec4f{ 0.0f, 0.0f, 1.0f, 0.0f },
+					Vec4f{},
+					Vec4f{},
 					Vec4f{ 1.0f, 0.0f, 0.0f, 1.0f }
 			});
 			m->add_vertex(
 				Vertex{
-					Vec3f{ half_size, half_size, half_size },
-					Vec3f{ 0.0f, 0.0f, 1.0f },
-					Vec3f{},
-					Vec2f{},
+					Vec4f{ half_size, half_size, half_size, 1.0f },
+					Vec4f{ 0.0f, 0.0f, 1.0f, 0.0f },
+					Vec4f{},
+					Vec4f{},
 					Vec4f{ 1.0f, 0.0f, 0.0f, 1.0f }
 			});
 			m->add_vertex(
 				Vertex{
-					Vec3f{ -half_size, -half_size, half_size },
-					Vec3f{ 0.0f, 0.0f, 1.0f },
-					Vec3f{},
-					Vec2f{},
+					Vec4f{ -half_size, -half_size, half_size, 1.0f },
+					Vec4f{ 0.0f, 0.0f, 1.0f, 0.0f },
+					Vec4f{},
+					Vec4f{},
 					Vec4f{ 1.0f, 0.0f, 0.0f, 1.0f }
 			});
 			m->add_vertex(
 				Vertex{
-					Vec3f{ -half_size, half_size, half_size },
-					Vec3f{ 0.0f, 0.0f, 1.0f },
-					Vec3f{},
-					Vec2f{},
+					Vec4f{ -half_size, half_size, half_size, 1.0f },
+					Vec4f{ 0.0f, 0.0f, 1.0f, 0.0f },
+					Vec4f{},
+					Vec4f{},
 					Vec4f{ 1.0f, 0.0f, 0.0f, 1.0f }
 			});
 
 			//top
 			m->add_vertex(
 				Vertex{
-					Vec3f{ -half_size, half_size, -half_size },
-					Vec3f{ 0.0f, 1.0f, 0.0f },
-					Vec3f{},
-					Vec2f{},
+					Vec4f{ -half_size, half_size, -half_size, 1.0f },
+					Vec4f{ 0.0f, 1.0f, 0.0f, 0.0f },
+					Vec4f{},
+					Vec4f{},
 					Vec4f{ 1.0f, 0.0f, 0.0f, 1.0f }
 			});
 
 			m->add_vertex(
 				Vertex{
-					Vec3f{ -half_size, half_size, half_size },
-					Vec3f{ 0.0f, 1.0f, 0.0f },
-					Vec3f{},
-					Vec2f{},
+					Vec4f{ -half_size, half_size, half_size, 1.0f },
+					Vec4f{ 0.0f, 1.0f, 0.0f, 0.0f },
+					Vec4f{},
+					Vec4f{},
 					Vec4f{ 1.0f, 0.0f, 0.0f, 1.0f }
 			});
 
 			m->add_vertex(
 				Vertex{
-					Vec3f{ half_size, half_size, -half_size },
-					Vec3f{ 0.0f, 1.0f, 0.0f },
-					Vec3f{},
-					Vec2f{},
+					Vec4f{ half_size, half_size, -half_size, 1.0f },
+					Vec4f{ 0.0f, 1.0f, 0.0f, 0.0f },
+					Vec4f{},
+					Vec4f{},
 					Vec4f{ 1.0f, 0.0f, 0.0f, 1.0f }
 			});
 
 			m->add_vertex(
 				Vertex{
-					Vec3f{ half_size, half_size, half_size },
-					Vec3f{ 0.0f, 1.0f, 0.0f },
-					Vec3f{},
-					Vec2f{},
+					Vec4f{ half_size, half_size, half_size, 1.0f },
+					Vec4f{ 0.0f, 1.0f, 0.0f, 0.0f },
+					Vec4f{},
+					Vec4f{},
 					Vec4f{ 1.0f, 0.0f, 0.0f, 1.0f }
 			});
 
 			//bottom
 			m->add_vertex(
 				Vertex{
-					Vec3f{ half_size, -half_size, -half_size },
-					Vec3f{ 0.0f, -1.0f, 0.0f },
-					Vec3f{},
-					Vec2f{},
+					Vec4f{ half_size, -half_size, -half_size, 1.0f },
+					Vec4f{ 0.0f, -1.0f, 0.0f, 0.0f },
+					Vec4f{},
+					Vec4f{},
 					Vec4f{ 1.0f, 0.0f, 0.0f, 1.0f }
 			});
 
 			m->add_vertex(
 				Vertex{
-					Vec3f{ half_size, -half_size, half_size },
-					Vec3f{ 0.0f, -1.0f, 0.0f },
-					Vec3f{},
-					Vec2f{},
+					Vec4f{ half_size, -half_size, half_size, 1.0f },
+					Vec4f{ 0.0f, -1.0f, 0.0f, 0.0f },
+					Vec4f{},
+					Vec4f{},
 					Vec4f{ 1.0f, 0.0f, 0.0f, 1.0f }
 			});
 
 			m->add_vertex(
 				Vertex{
-					Vec3f{ -half_size, -half_size, -half_size },
-					Vec3f{ 0.0f, -1.0f, 0.0f },
-					Vec3f{},
-					Vec2f{},
+					Vec4f{ -half_size, -half_size, -half_size, 1.0f },
+					Vec4f{ 0.0f, -1.0f, 0.0f, 0.0f },
+					Vec4f{},
+					Vec4f{},
 					Vec4f{ 1.0f, 0.0f, 0.0f, 1.0f }
 			});
 
 			m->add_vertex(
 				Vertex{
-					Vec3f{ -half_size, -half_size, half_size },
-					Vec3f{ 0.0f, -1.0f, 0.0f },
-					Vec3f{},
-					Vec2f{},
+					Vec4f{ -half_size, -half_size, half_size, 1.0f },
+					Vec4f{ 0.0f, -1.0f, 0.0f, 0.0f },
+					Vec4f{},
+					Vec4f{},
 					Vec4f{ 1.0f, 0.0f, 0.0f, 1.0f }
 			});
 

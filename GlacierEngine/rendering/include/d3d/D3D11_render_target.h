@@ -1,6 +1,6 @@
 #ifndef GLACIER_ENGINE_D3D_RENDER_TARGET_H_
 #define GLACIER_ENGINE_D3D_RENDER_TARGET_H_
-#include "render_target.h"
+#include "../render_target.h"
 #include "internal/types.h"
 #include <D3D/d3d11.h>
 
@@ -14,28 +14,34 @@ namespace Glacier
 		ComPtr<ID3D11Texture2D> m_color_attachment;
 		ComPtr<ID3D11Texture2D> m_depth_attachment;
 
-		ComPtr<ID3D11ShaderResourceView> m_color_attachment_srv; //TODO: initialize this.
-		ComPtr<ID3D11ShaderResourceView> m_depth_attachment_srv; //TODO: initialize this.
+		ComPtr<ID3D11ShaderResourceView> m_color_attachment_srv;
 
 		bool m_MSAA = false;
 		int m_sample_count = 1;
 
 	public:
+		D3D11RenderTarget() = default;
+
 		D3D11RenderTarget(const Vec2i& size,
 		                  bool MSAA,
-		                  int sample_count,
-		                  ID3D11Texture2D* back_buffer = nullptr) : RenderTarget(size),
-		                                                            m_MSAA(MSAA),
-		                                                            m_sample_count(sample_count)
+		                  int sample_count) : RenderTarget(size),
+		                                      m_MSAA(MSAA),
+		                                      m_sample_count(sample_count)
 		{
-			m_color_attachment.Attach(back_buffer);
 		}
 
-		bool create() override;
+		bool create(const Vec2i& size) override;
 
 		bool bind() const override;
 
 		bool unbind() const override;
+
+		void clear(float* color) const noexcept;
+
+		ID3D11ShaderResourceView* get_color_attachment() const noexcept
+		{
+			return m_color_attachment_srv.Get();
+		}
 	};
 }
 

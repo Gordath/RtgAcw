@@ -39,10 +39,4 @@ namespace Glacier
 		return true;
 	}
 
-#if defined(GLACIERENGINE_BUILD_D3D)
-	D3D11Context* EngineContext::get_GAPI_context() noexcept
-	{
-		return static_cast<D3D11Context*>(m_GAPI_context);
-	}
-#endif
 }
