@@ -61,6 +61,8 @@ bool RtgApplication::initialize(int* argc, char* argv[])
 	callbacks.reshape_func = reshape;
 	callbacks.keyboard_func = key_down;
 	callbacks.keyboard_up_func = key_up;
+	callbacks.mouse_func = mouse_click;
+
 
 	WindowingService::create(L"D3D test",
 	                          Vec2i{ 1280, 800 },
