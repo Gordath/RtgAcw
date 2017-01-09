@@ -78,14 +78,23 @@ void MainScene::color_pass() const noexcept
 			Material material{ rendering_component->get_material() };
 
 			ColorPassUniformBuffer uniforms;
-			memcpy(&uniforms.MVP, &MVP[0][0], sizeof(Mat4f));
-			memcpy(&uniforms.MV, &MV[0][0], sizeof(Mat4f));
-			memcpy(&uniforms.M, &model[0][0], sizeof(Mat4f));
-			memcpy(&uniforms.V, &view[0][0], sizeof(Mat4f));
-			memcpy(&uniforms.P, &projection[0][0], sizeof(Mat4f));
-			memcpy(&uniforms.ITMV, &ITMV[0][0], sizeof(Mat4f));
-			memcpy(&uniforms.diffuse, &material.diffuse.data, sizeof(Vec4f));
-			memcpy(&uniforms.specular, &material.specular.data, sizeof(Vec4f));
+			uniforms.MVP = MVP;
+			uniforms.MV = MV;
+			uniforms.M = model;
+			uniforms.V = view;
+			uniforms.P = projection;
+			uniforms.ITMV = ITMV;
+			uniforms.diffuse = material.diffuse;
+			uniforms.specular = material.specular;
+
+//			memcpy(&uniforms.MVP, &MVP[0][0], sizeof(Mat4f));
+//			memcpy(&uniforms.MV, &MV[0][0], sizeof(Mat4f));
+//			memcpy(&uniforms.M, &model[0][0], sizeof(Mat4f));
+//			memcpy(&uniforms.V, &view[0][0], sizeof(Mat4f));
+//			memcpy(&uniforms.P, &projection[0][0], sizeof(Mat4f));
+//			memcpy(&uniforms.ITMV, &ITMV[0][0], sizeof(Mat4f));
+//			memcpy(&uniforms.diffuse, &material.diffuse.data, sizeof(Vec4f));
+//			memcpy(&uniforms.specular, &material.specular.data, sizeof(Vec4f));
 
 			D3D11_MAPPED_SUBRESOURCE ms;
 
