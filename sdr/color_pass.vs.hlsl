@@ -37,7 +37,7 @@ VOut main(VIn input)
 	float3 vpos = mul(input.position, MV).xyz;
 	output.view_space_pos = vpos;
 	output.view_direction = -vpos;
-	output.lpos = lpos.xyz;// - vpos;
+	output.lpos = lpos.xyz - vpos;
 
 	return output;
 }
