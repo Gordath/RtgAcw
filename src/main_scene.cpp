@@ -13,7 +13,7 @@ using namespace Glacier;
 static Object* sub1_root{ nullptr };
 static Object* sub1_oar_root{ nullptr };
 
-static float cam_theta, cam_phi, cam_dist = 6;
+static float cam_theta, cam_phi, cam_dist = 16;
 
 struct ColorPassUniformBuffer {
 	Mat4f MVP;
@@ -32,7 +32,7 @@ void MainScene::depth_pass() noexcept
 
 void MainScene::color_pass() const noexcept
 {
-	float clear_color[4]{ 0.05f, 0.05f, 0.05f, 1.0f };
+	float clear_color[4]{ 0.0f, 0.0f, 0.0f, 1.0f };
 
 	m_color_pass_rt.bind();
 	m_color_pass_rt.clear(clear_color);
@@ -95,15 +95,6 @@ void MainScene::color_pass() const noexcept
 			uniforms.diffuse = material.diffuse;
 			uniforms.specular = material.specular;
 
-//			memcpy(&uniforms.MVP, &MVP[0][0], sizeof(Mat4f));
-//			memcpy(&uniforms.MV, &MV[0][0], sizeof(Mat4f));
-//			memcpy(&uniforms.M, &model[0][0], sizeof(Mat4f));
-//			memcpy(&uniforms.V, &view[0][0], sizeof(Mat4f));
-//			memcpy(&uniforms.P, &projection[0][0], sizeof(Mat4f));
-//			memcpy(&uniforms.ITMV, &ITMV[0][0], sizeof(Mat4f));
-//			memcpy(&uniforms.diffuse, &material.diffuse.data, sizeof(Vec4f));
-//			memcpy(&uniforms.specular, &material.specular.data, sizeof(Vec4f));
-
 			D3D11_MAPPED_SUBRESOURCE ms;
 
 			device_context->Map(m_color_pass_uniform_buffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &ms);
@@ -128,6 +119,8 @@ void MainScene::color_pass() const noexcept
 	}
 
 	RenderStateManager::set(RenderStateType::BLEND_DISSABLED);
+
+	m_color_pass_rt.unbind();
 }
 
 void MainScene::display_to_screen() const noexcept
@@ -151,6 +144,9 @@ void MainScene::display_to_screen() const noexcept
 	dev_con->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
 
 	dev_con->Draw(4, 0);
+
+	ID3D11ShaderResourceView* null_srv{ nullptr };
+	dev_con->PSSetShaderResources(0, 1, &null_srv);
 }
 
 
@@ -225,7 +221,7 @@ void MainScene::initialize()
 
 	Object* obj{ new Object{ "globe" } };
 
-	Mesh* m{ MeshUtils::generate_uv_sphere(1.0f, 30) };
+	Mesh* m{ MeshUtils::generate_uv_sphere(1.0f, 60, 60) };
 	ResourceManager::register_resource(m, L"sphere");
 
 	m = MeshUtils::generate_cube(1.0f);
@@ -241,7 +237,18 @@ void MainScene::initialize()
 	obj->set_position(Vec3f{ 0.0f, 0.0, 0.0f });
 	obj->set_scale(Vec3f{ 5.0f, 5.0f, 5.0f });
 
-	//m_objects.push_back(obj);
+	m_objects.push_back(obj);
+
+	obj = new Object{ "ground" };
+	rc = new RenderingComponent{ obj };
+	rc->set_mesh(ResourceManager::get<Mesh>(L"cube"));
+	mat.diffuse = Vec4f{ 1.00f, 1.00f, 1.00f, 1.0f };
+	mat.specular = Vec4f{ 0.0f };
+	rc->set_material(mat);
+	obj->set_position(Vec3f{ 0.0f, -5.0, 0.0f });
+	obj->set_scale(Vec3f{ 500.0f, 0.1f, 500.0f });
+
+	m_objects.push_back(obj);
 
 	// Submarine 1 creation -------------------------------------------------------------------------------------------
 	Object* sub1_controller{ new Object{ "sub1_controller" } };
@@ -255,96 +262,99 @@ void MainScene::initialize()
 	mat2.specular = Vec4f{ 1.0f, 1.0f, 1.0f, 60.0f };
 
 	rc = new RenderingComponent{ body };
-	rc->set_mesh(ResourceManager::get<Mesh>(L"cube"));
+	rc->set_mesh(ResourceManager::get<Mesh>(L"sphere"));
 	rc->set_material(mat2);
-	//body->set_scale(Vec3f{ 1.2f, 1.0f, 1.5f });
+	body->set_scale(Vec3f{ 0.2f, 0.2f, 0.5f });
 	body->set_parent(sub1_controller);
 	m_objects.push_back(body);
 
-//	Object* top = new Object{ "sub1_top" };
-//	rc = new RenderingComponent{ top };
-//	rc->set_mesh(ResourceManager::get<Mesh>(L"cube"));
-//	rc->set_material(mat2);
-//	top->set_position(Vec3f{ 0.0, 1.0, 0.0 });
-//	top->set_scale(Vec3f{ 1.0f, 1.0f, 0.6f });
-//	top->set_parent(body);
-//	m_objects.push_back(top);
-//
-//	Object* side_fin1{ new Object{ "sub1_side_fin1" } };
-//	rc = new RenderingComponent{ side_fin1 };
-//	rc->set_mesh(ResourceManager::get<Mesh>(L"cube"));
-//	rc->set_material(mat2);
-//	side_fin1->set_position(Vec3f{ 0.0f, 0.0f, -0.7f });
-//	side_fin1->set_scale(Vec3f{ 1.5f, 0.2f, 0.4f });
-//	side_fin1->set_parent(body);
-//	m_objects.push_back(side_fin1);
-//
-//	Object* side_fin2{ new Object{ "sub1_side_fin2" } };
-//	rc = new RenderingComponent{ side_fin2 };
-//	rc->set_mesh(ResourceManager::get<Mesh>(L"cube"));
-//	rc->set_material(mat2);
-//	side_fin2->set_position(Vec3f{ 0.0f, 0.0f, -0.7f });
-//	side_fin2->set_scale(Vec3f{ 1.5f, 0.2f, 0.4f });
-//	side_fin2->set_euler_angles(Vec3f{ 0.0f, 0.0f, 90.0f });
-//	side_fin2->set_parent(body);
-//	m_objects.push_back(side_fin2);
-//
-//	Object* sub1_oar_controller{ new Object{ "sub1_oar_controller" } };
-//	sub1_oar_controller->set_parent(body);
-//	sub1_oar_root = sub1_oar_controller;
-//	m_objects.push_back(sub1_oar_controller);
-//
-//	Object* oar1{ new Object{ "sub1_oar1" } };
-//	rc = new RenderingComponent{ oar1 };
-//	rc->set_mesh(ResourceManager::get<Mesh>(L"cube"));
-//	rc->set_material(mat2);
-//	oar1->set_position(Vec3f{ 1.5f, 0.0f, -0.37f });
-//	oar1->set_scale(Vec3f{ 1.5f, 0.2f, 0.1f });
-//	oar1->set_parent(sub1_oar_controller);
-//
-//	m_objects.push_back(oar1);
-//
-//	Object* oar2{ new Object{ "sub1_oar2" } };
-//	rc = new RenderingComponent{ oar2 };
-//	rc->set_mesh(ResourceManager::get<Mesh>(L"cube"));
-//	rc->set_material(mat2);
-//	oar2->set_position(Vec3f{ 1.5f, 0.0f, 0.37f });
-//	oar2->set_scale(Vec3f{ 1.5f, 0.2f, 0.1f });
-//	oar2->set_parent(sub1_oar_controller);
-//
-//	m_objects.push_back(oar2);
-//
-//	Object* oar3{ new Object{ "sub1_oar3" } };
-//	rc = new RenderingComponent{ oar3 };
-//	rc->set_mesh(ResourceManager::get<Mesh>(L"cube"));
-//	rc->set_material(mat2);
-//	oar3->set_position(Vec3f{ -1.5f, 0.0f, -0.37f });
-//	oar3->set_scale(Vec3f{ 1.5f, 0.2f, 0.1f });
-//	oar3->set_parent(sub1_oar_controller);
-//
-//	m_objects.push_back(oar3);
-//
-//	Object* oar4{ new Object{ "sub1_oar4" } };
-//	rc = new RenderingComponent{ oar4 };
-//	rc->set_mesh(ResourceManager::get<Mesh>(L"cube"));
-//	rc->set_material(mat2);
-//	oar4->set_position(Vec3f{ -1.5f, 0.0f, 0.37f });
-//	oar4->set_scale(Vec3f{ 1.5f, 0.2f, 0.1f });
-//	oar4->set_parent(sub1_oar_controller);
-//
-//	m_objects.push_back(oar4);
+	Object* top = new Object{ "sub1_top" };
+	rc = new RenderingComponent{ top };
+	rc->set_mesh(ResourceManager::get<Mesh>(L"cube"));
+	rc->set_material(mat2);
+	top->set_position(Vec3f{ 0.0, 1.0, 0.0 });
+	top->set_scale(Vec3f{ 1.0f, 1.0f, 0.6f });
+	top->set_parent(body);
+	m_objects.push_back(top);
+
+	Object* side_fin1{ new Object{ "sub1_side_fin1" } };
+	rc = new RenderingComponent{ side_fin1 };
+	rc->set_mesh(ResourceManager::get<Mesh>(L"cube"));
+	rc->set_material(mat2);
+	side_fin1->set_position(Vec3f{ 0.0f, 0.0f, -0.7f });
+	side_fin1->set_scale(Vec3f{ 1.5f, 0.2f, 0.4f });
+	side_fin1->set_parent(body);
+	m_objects.push_back(side_fin1);
+
+	Object* side_fin2{ new Object{ "sub1_side_fin2" } };
+	rc = new RenderingComponent{ side_fin2 };
+	rc->set_mesh(ResourceManager::get<Mesh>(L"cube"));
+	rc->set_material(mat2);
+	side_fin2->set_position(Vec3f{ 0.0f, 0.0f, -0.7f });
+	side_fin2->set_scale(Vec3f{ 1.5f, 0.2f, 0.4f });
+	side_fin2->set_euler_angles(Vec3f{ 0.0f, 0.0f, 90.0f });
+	side_fin2->set_parent(body);
+	m_objects.push_back(side_fin2);
+
+	Object* sub1_oar_controller{ new Object{ "sub1_oar_controller" } };
+	sub1_oar_controller->set_parent(body);
+	sub1_oar_root = sub1_oar_controller;
+	m_objects.push_back(sub1_oar_controller);
+
+	Object* oar1{ new Object{ "sub1_oar1" } };
+	rc = new RenderingComponent{ oar1 };
+	rc->set_mesh(ResourceManager::get<Mesh>(L"cube"));
+	rc->set_material(mat2);
+	oar1->set_position(Vec3f{ 1.5f, 0.0f, -0.37f });
+	oar1->set_scale(Vec3f{ 1.5f, 0.2f, 0.1f });
+	oar1->set_parent(sub1_oar_controller);
+
+	m_objects.push_back(oar1);
+
+	Object* oar2{ new Object{ "sub1_oar2" } };
+	rc = new RenderingComponent{ oar2 };
+	rc->set_mesh(ResourceManager::get<Mesh>(L"cube"));
+	rc->set_material(mat2);
+	oar2->set_position(Vec3f{ 1.5f, 0.0f, 0.37f });
+	oar2->set_scale(Vec3f{ 1.5f, 0.2f, 0.1f });
+	oar2->set_parent(sub1_oar_controller);
+
+	m_objects.push_back(oar2);
+
+	Object* oar3{ new Object{ "sub1_oar3" } };
+	rc = new RenderingComponent{ oar3 };
+	rc->set_mesh(ResourceManager::get<Mesh>(L"cube"));
+	rc->set_material(mat2);
+	oar3->set_position(Vec3f{ -1.5f, 0.0f, -0.37f });
+	oar3->set_scale(Vec3f{ 1.5f, 0.2f, 0.1f });
+	oar3->set_parent(sub1_oar_controller);
+
+	m_objects.push_back(oar3);
+
+	Object* oar4{ new Object{ "sub1_oar4" } };
+	rc = new RenderingComponent{ oar4 };
+	rc->set_mesh(ResourceManager::get<Mesh>(L"cube"));
+	rc->set_material(mat2);
+	oar4->set_position(Vec3f{ -1.5f, 0.0f, 0.37f });
+	oar4->set_scale(Vec3f{ 1.5f, 0.2f, 0.1f });
+	oar4->set_parent(sub1_oar_controller);
+
+	m_objects.push_back(oar4);
 
 	// -----------------------------------------------------------------------------------------------------------------
 
+	float win_x = WindowingService::get_window(0)->get_size().x;
+	float win_y = WindowingService::get_window(0)->get_size().y;
+
 	Object* cam{ new Object{ "camera1" } };
-	CameraComponent* cc{ new CameraComponent{ cam, MathUtils::to_radians(60.0f), 1024, 768, 0.1f, 1000.0f } };
+	CameraComponent* cc{ new CameraComponent{ cam, MathUtils::to_radians(60.0f), win_x, win_y, 0.1f, 1000.0f } };
 
 	//cam->set_position(Vec3f(0.0f, 0.0f, -20.0f));
 
 	m_objects.push_back(cam);
 
 	Object* cam2{ new Object{ "camera2" } };
-	CameraComponent* cc2{ new CameraComponent{ cam2, MathUtils::to_radians(60.0f), 1024, 768, 0.1f, 1000.0f } };
+	CameraComponent* cc2{ new CameraComponent{ cam2, MathUtils::to_radians(60.0f), win_x, win_y, 0.1f, 1000.0f } };
 
 	cam2->set_position(Vec3f(0.0f, 0.0f, -3.0f));
 
@@ -363,9 +373,9 @@ void MainScene::initialize()
 
 	lc1->set_light_description(light_desc);
 
-	light1->set_position(Vec3f{ 0.0f, 1.0, 0.0f });
+	light1->set_position(Vec3f{ 1.0f, 1.0, -1.0f });
 
-	//m_objects.push_back(light1);
+	m_objects.push_back(light1);
 
 	Object* light2{ new Object{ "light2" } };
 
@@ -373,17 +383,17 @@ void MainScene::initialize()
 
 	LightDesc light_desc2;
 	light_desc2.ambient_intensity = Vec4f{ 0.0f, 0.0f, 0.0f, 0.0f };
-	light_desc2.diffuse_intensity = Vec4f{ 1.0f, 1.0f, 1.0f, 1.0f };
+	light_desc2.diffuse_intensity = Vec4f{ 1.0f, 1.0f, 0.0f, 1.0f };
 	light_desc2.specular_intensity = Vec4f{ 1.0f, 1.0f, 1.0f, 1.0f };
 	light_desc2.flags = Vec4ui{ 0, 1, 0, 0 };
 	light_desc2.attenuation = Vec3f{ 1.0f, 0.0f, 0.0f };
-	light_desc2.spot_cutoff = 5.0f;
+	light_desc2.spot_cutoff = 30.0f;
 	light_desc2.spot_exponent = 50.0f;
-	light_desc2.spot_direction = MathUtils::normalize(Vec3f{ 0.0f, 0.0f, 1.0f });
+	light_desc2.spot_direction = Vec3f{ 1.0f, 0.0f, 1.0f };
 
 	lc2->set_light_description(light_desc2);
 
-	light2->set_position(Vec3f{ 0.0f, 0.0, -10.0f});
+	light2->set_position(Vec3f{ -10.0f, 0.0, -10.0f});
 
 	m_objects.push_back(light2);
 
@@ -397,15 +407,15 @@ void MainScene::initialize()
 	light_desc3.specular_intensity = Vec4f{ 1.0f, 1.0f, 1.0f, 1.0f };
 	light_desc3.flags = Vec4ui{ 0, 1, 0, 0 };
 	light_desc3.attenuation = Vec3f{ 1.0f, 0.0f, 0.0f };
-	light_desc3.spot_cutoff = 10.0f;
+	light_desc3.spot_cutoff = 20.0f;
 	light_desc3.spot_exponent = 50.0f;
-	light_desc3.spot_direction = MathUtils::normalize(Vec3f{ -1.0f, 0.0f, 1.0f });
+	light_desc3.spot_direction = Vec3f{ 0.0f, -1.0f, 0.0f };
 
 	lc3->set_light_description(light_desc3);
 
-	light3->set_position(Vec3f{ 10.0f, 0.0, 0.0f });
+	light3->set_position(Vec3f{ 0.0f, 10.0, 0.0f });
 
-	//m_objects.push_back(light3);
+	m_objects.push_back(light3);
 
 	Window* win{ WindowingService::get_window(0) };
 	m_color_pass_rt.create(win->get_size());
@@ -461,8 +471,8 @@ void MainScene::on_mouse_click(int button, bool state, int x, int y)
 
 void MainScene::update(float delta_time, long time) noexcept
 {
-//	sub1_oar_root->set_euler_angles(Vec3f{ 0, cos(time / 300.0f) * 3.0f, sin(time / 300.0f) * 2.0f });
-	//sub1_root->set_position(Vec3f{ cos(MathUtils::to_radians(time / 100.0f)) * 4.0f, 0.0f, sin(MathUtils::to_radians(time / 100.0f)) * 4.0f });
+	sub1_oar_root->set_euler_angles(Vec3f{ 0, cos(time / 300.0f) * 3.0f, sin(time / 300.0f) * 2.0f });
+	sub1_root->set_position(Vec3f{ cos(MathUtils::to_radians(time / 100.0f)) * 4.0f, 0.0f, sin(MathUtils::to_radians(time / 100.0f)) * 4.0f });
 
 	Scene::update(delta_time, time);
 
@@ -488,7 +498,6 @@ void MainScene::update(float delta_time, long time) noexcept
 void MainScene::draw() const noexcept
 {
 	RenderSystem* render_system{ EngineContext::get_render_system() };
-
 
 	color_pass();
 	display_to_screen();

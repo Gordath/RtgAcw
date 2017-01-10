@@ -3,7 +3,6 @@ struct VOut {
 	float3 normal : NORMAL;
 	float3 view_direction : VIEW_DIRECTION;
 	float3 view_space_pos : VIEW_SPACE_POS;
-	float3 lpos : LPOS;
 };
 
 cbuffer uniforms {
@@ -35,7 +34,7 @@ Texture2D diffuse_tex : register(t1);
 Texture2D specular_tex : register(t2);
 Texture2D normal_tex : register(t3);
 
-/*float3 get_light_vector(Light light, float3 pos)
+float3 get_light_vector(Light light, float3 pos)
 {
 	if (light.flags.x == 0) { //not directional
 		return mul(float4(light.position.xyz, 1.0), V).xyz - pos;
@@ -68,7 +67,7 @@ void calculate_lighting(StructuredBuffer<Light> lights,
 
 			if (lights[i].flags.x == 0) { //not directional
 				
-				float3 spot_dir = normalize(mul(lights[i].spot_direction, (float3x3)ITMV));
+				float3 spot_dir = normalize(mul(lights[i].spot_direction, (float3x3)V));
 
 				float cos_cur_angle = dot(-light_vector, spot_dir);
 				float cos_outer_angle = saturate(cos(radians(lights[i].spot_cutoff)));
@@ -90,35 +89,22 @@ void calculate_lighting(StructuredBuffer<Light> lights,
 		}
 	}
 
-} */
+}
 
 float4 main(VOut input) : SV_TARGET
 {
-
 	float3 n = normalize(input.normal);
-	float3 v = normalize(input.view_direction);
 
-	float3 l = normalize(input.lpos);
-	float3 h = normalize(v + l);
+	float3 vdir = normalize(input.view_direction);
 
-	float n_dot_l = max(dot(n, l), 0.0);
-	float n_dot_h = max(dot(n, h), 0.0);
-	float4 lit_result = lit(n_dot_l, n_dot_h, 60.0);
-
-	float3 diff_col = diffuse.xyz * lit_result.y;
-	float3 spec_col = specular.xyz * lit_result.z;
-	
-	float3 color = diff_col + spec_col;
-	return float4(color.x, color.y, color.z, 1.0);
-
-	/*float4 amb_light = float4(0.0, 0.0, 0.0, 1.0);
+	float4 amb_light = float4(0.0, 0.0, 0.0, 1.0);
 	float4 diff_light = float4(0.0, 0.0, 0.0, 1.0);
 	float4 spec_light = float4(0.0, 0.0, 0.0, 1.0);
 
 	calculate_lighting(lights,
 		input.view_space_pos,
 		n,
-		v,
+		vdir,
 		60.0,
 		amb_light,
 		diff_light,
@@ -130,5 +116,5 @@ float4 main(VOut input) : SV_TARGET
 	float4 final_color = diff_color + spec_color + amb_light;
 	final_color.a = diffuse.a;
 
-	return final_color; */
+	return final_color;
 }

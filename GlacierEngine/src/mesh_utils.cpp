@@ -236,39 +236,106 @@ namespace Glacier
 			return m;
 		}
 
-		Mesh* generate_uv_sphere(float radius, int resolution) noexcept
+		Mesh* generate_uv_sphere(float radius, int slices, int stacks, float urange, float vrange) noexcept
 		{
-			if (resolution < 2) {
-				resolution = 2;
-			}
-
 			Mesh* m{ new Mesh };
 
-			float alpha, beta;       
-			for (alpha = 0.0; alpha < MathUtils::PI_F; alpha += MathUtils::PI_F / resolution) {
-				for (beta = 0.0; beta < 2.01 * MathUtils::PI_F; beta += MathUtils::PI_F / resolution) {
-					Vertex	v1, v2;
-					v1.position.x = radius * sin(beta) * sin(alpha);
-					v1.position.y = radius * cos(alpha);
-					v1.position.z = radius * cos(beta) * sin(alpha);
+			Vertex tmp_vert;
 
-					v1.normal = v1.position;
-
-					m->add_vertex(v1);
-
-					v2.position.x = radius * sin(beta) * sin(alpha + MathUtils::PI_F / resolution);
-					v2.position.y = radius * cos(alpha + MathUtils::PI_F / resolution);
-					v2.position.z = radius * cos(beta) * sin(alpha + MathUtils::PI_F / resolution);
-
-					v2.normal = v2.position;
-
-					m->add_vertex(v2);
-				}
+			if (slices < 4) {
+				slices = 4;
+			}
+				
+			if (stacks < 2) {
+				stacks = 2;
 			}
 
-			m->initiaze_buffer_objects(PrimitiveTopology::TRIANGLE_STRIP);
+			int u_verts = slices + 1;
+			int v_verts = stacks + 1;
 
+			float du = urange / static_cast<float>(u_verts - 1);
+			float dv = vrange / static_cast<float>(v_verts - 1);
+
+			float u = 0.0;
+
+			for (int i = 0; i < u_verts; i++) {
+				float theta = (u * 2.0 * MathUtils::PI_F) * urange;
+
+				float v = 0.0;
+				for (int j = 0; j < v_verts; j++) {
+					float phi = v * MathUtils::PI_F * vrange;
+					tmp_vert.position = Vec4f{ MathUtils::spherical_to_cartesian(theta, phi, radius), 1.0f };
+					tmp_vert.normal = tmp_vert.position;
+					tmp_vert.tangent = MathUtils::normalize(
+						Vec4f{ 
+							(MathUtils::spherical_to_cartesian(theta + 1.0, MathUtils::PI_F / 2.0f)
+							    - MathUtils::spherical_to_cartesian(theta - 1.0, MathUtils::PI_F / 2.0f))
+								, 1.0f 
+						});
+
+					tmp_vert.texcoord.x = u * urange;
+					tmp_vert.texcoord.y = v * vrange;
+
+					if (i < slices && j < stacks) {
+						int idx = i * v_verts + j;
+
+						int idx1 = idx;
+						int idx2 = idx + 1;
+						int idx3 = idx + v_verts + 1;
+
+						int idx4 = idx;
+						int idx5 = idx + v_verts + 1;
+						int idx6 = idx + v_verts;
+
+						m->add_index(idx1);
+						m->add_index(idx2);
+						m->add_index(idx3);
+						m->add_index(idx4);
+						m->add_index(idx5);
+						m->add_index(idx6);
+					}
+
+					m->add_vertex(tmp_vert);
+
+					v += dv;
+				}
+				u += du;
+			}
+
+			m->initiaze_buffer_objects();
 			return m;
+			
+//			if (resolution < 2) {
+//				resolution = 2;
+//			}
+//
+//			Mesh* m{ new Mesh };
+//
+//			float alpha, beta;       
+//			for (alpha = 0.0; alpha < MathUtils::PI_F; alpha += MathUtils::PI_F / resolution) {
+//				for (beta = 0.0; beta < 2.01 * MathUtils::PI_F; beta += MathUtils::PI_F / resolution) {
+//					Vertex	v1, v2;
+//					v1.position.x = radius * sin(beta) * sin(alpha);
+//					v1.position.y = radius * cos(alpha);
+//					v1.position.z = radius * cos(beta) * sin(alpha);
+//
+//					v1.normal = v1.position;
+//
+//					m->add_vertex(v1);
+//
+//					v2.position.x = radius * sin(beta) * sin(alpha + MathUtils::PI_F / resolution);
+//					v2.position.y = radius * cos(alpha + MathUtils::PI_F / resolution);
+//					v2.position.z = radius * cos(beta) * sin(alpha + MathUtils::PI_F / resolution);
+//
+//					v2.normal = v2.position;
+//
+//					m->add_vertex(v2);
+//				}
+//			}
+//
+//			m->initiaze_buffer_objects(PrimitiveTopology::TRIANGLE_STRIP);
+//
+//			return m;
 		}
 	}
 }

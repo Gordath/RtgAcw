@@ -120,7 +120,7 @@ namespace Glacier
 		D3D11Context* ctx{ EngineContext::get_GAPI_context() };
 
 		ComPtr<ID3D11DeviceContext> context{ ctx->get_device_context() };
-		context->OMSetRenderTargets(1, nullptr, nullptr);
+		context->OMSetRenderTargets(0, nullptr, nullptr);
 
 		return true;
 	}
