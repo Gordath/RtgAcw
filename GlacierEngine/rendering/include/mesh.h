@@ -6,10 +6,16 @@
 #include "VBO.h"
 #include "IBO.h"
 #include <memory>
+#include "resource.h"
 
 namespace Glacier
 {
-	class Mesh {
+	enum class VertexWinding {
+		CLOCKWISE,
+		ANTICLOCKWISE
+	};
+
+	class Mesh : public Resource {
 	private:
 		std::vector<Vertex> m_vertices;
 		std::vector<unsigned int> m_indices;
@@ -22,23 +28,43 @@ namespace Glacier
 	public:
 		Mesh();
 
-		void initiaze_buffer_objects() const;
+		VBO* get_vbo() const noexcept
+		{
+			return m_vbo.get();
+		}
 
-		void set_vertex_data(const Vertex* vertices, int vertex_count);
+		IBO* get_ibo() const noexcept
+		{
+			return m_ibo.get();
+		}
 
-		Vertex* get_vertex_data() const;
+		size_t get_vertex_count() const noexcept
+		{
+			return m_vertices.size();
+		}
 
-		void add_vertex(const Vertex& vertex);
+		size_t get_index_count() const noexcept
+		{
+			return m_indices.size();
+		}
 
-		void set_index_data(const unsigned int* indices, int index_count);
+		void initiaze_buffer_objects(PrimitiveTopology primitive_topology = PrimitiveTopology::TRIANGLE_LIST) const noexcept;
 
-		unsigned int* get_index_data() const;
+		void set_vertex_data(const Vertex* vertices, int vertex_count) noexcept;
 
-		void add_index(unsigned int index);
+		Vertex* get_vertex_data() const noexcept;
 
-		void draw() const;
+		void add_vertex(const Vertex& vertex) noexcept;
 
-		void draw_indexed() const;
+		void set_index_data(const unsigned int* indices, int index_count) noexcept;
+
+		unsigned int* get_index_data() const noexcept;
+
+		void add_index(unsigned int index) noexcept;
+
+		bool load(const std::wstring& file_name) noexcept override;
+
+		void generate_indices(VertexWinding winding) noexcept;
 	};
 }
 

@@ -1,8 +1,15 @@
 #include "rtg_application.h"
 #include <Windows.h>
+#include "shader_program_manager.h"
+#include "scene.h"
+#include "main_scene.h"
+#include "timer.h"
+#include <iostream>
+#include "scene_manager.h"
 
 using namespace Glacier;
 
+static Scene* scene{ nullptr };
 
 // Private methods -----------------------------------------------------------------------------------------------------------------------------
 void RtgApplication::reshape(int x, int y)
@@ -12,22 +19,22 @@ void RtgApplication::reshape(int x, int y)
 
 void RtgApplication::key_down(unsigned char key, int x, int y)
 {
-	//TODO: Call SceneManager's key down.
+	SceneManager::on_key_down(key, x, y);
 }
 
 void RtgApplication::key_up(unsigned char key, int x, int y)
 {
-	//TODO: Call SceneManager's key up.
+	SceneManager::on_key_up(key, x, y);
 }
 
 void RtgApplication::mouse_click(int button, bool state, int x, int y)
 {
-	//TODO: Call SceneManager's mouse click.
+	SceneManager::on_mouse_click(button, state, x, y);
 }
 
 void RtgApplication::mouse_motion(int x, int y)
 {
-	//TODO: Call SceneManager's mouse motion.
+	SceneManager::on_mouse_motion(x, y);
 }
 
 void RtgApplication::passive_mouse_motion(int x, int y)
@@ -47,17 +54,18 @@ bool RtgApplication::initialize(int* argc, char* argv[])
 		return false;
 	}
 
-	WindowingService* windowing_service{ get_windowing_service() };
-
 	WindowFunctionCallbacks callbacks;
 	callbacks.passive_motion_func = passive_mouse_motion;
 	callbacks.motion_func = mouse_motion;
+	callbacks.mouse_func = mouse_click;
 	callbacks.reshape_func = reshape;
 	callbacks.keyboard_func = key_down;
 	callbacks.keyboard_up_func = key_up;
+	callbacks.mouse_func = mouse_click;
 
-	windowing_service->create(L"D3D test",
-	                          Vec2i{ 256, 256 },
+
+	WindowingService::create(L"D3D test",
+	                          Vec2i{ 1280, 800 },
 	                          Vec2i{ 250, 250 },
 	                          true,
 	                          false,
@@ -67,27 +75,37 @@ bool RtgApplication::initialize(int* argc, char* argv[])
 	                          4,
 	                          callbacks);
 
+	if (!ShaderProgramManager::create("color_pass_sdrprog", IL_POSITION | IL_NORMAL | IL_TANGENT | IL_TEXCOORD | IL_COLOR, L"color_pass.vs.hlsl", L"color_pass.ps.hlsl")) {
+		return false;
+	}
+
+	if (!ShaderProgramManager::create("render_texture_sdrprog", IL_POSITION | IL_TEXCOORD, L"render_texture.vs.hlsl", L"render_texture.ps.hlsl")) {
+		return false;
+	}
+
+	scene = new MainScene;
+	SceneManager::push_scene(scene);
+
 	return true;
 }
 
 void RtgApplication::update() noexcept
 {
-	//TODO: The scene manager will call update here.
+	SceneManager::update(m_timer.get_delta(), m_timer.get_msec());
 }
 
 void RtgApplication::draw() const noexcept
 {
-	//TODO: The scene manager will call draw here.
+	SceneManager::draw();
 
-	WindowingService* windowing_service{ get_windowing_service() };
-	windowing_service->swap_buffers();
+	WindowingService::swap_buffers();
 }
 
 int RtgApplication::run() noexcept
 {
 	MSG msg;
 
-	while (!_terminate) {
+	while (!m_terminate) {
 
 		if (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE)) {
 			TranslateMessage(&msg);

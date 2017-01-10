@@ -72,6 +72,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug - Direct X|Win32'">
     <LinkIncremental>true</LinkIncremental>
     <IncludePath>$(SolutionDir)deps\include;$(SolutionDir)GlacierEngine\include;$(SolutionDir)GlacierEngine\rendering\include;$(SolutionDir)GlacierEngine\rendering\include\d3d;$(SolutionDir)GlacierEngine\windowing\include;$(SolutionDir)GlacierEngine\windowing\include\d3d;$(SolutionDir)GlacierEngine\windowing\include\win32;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)deps\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug - Direct X|x64'">
     <LinkIncremental>true</LinkIncremental>
@@ -88,14 +89,14 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;GLACIERENGINE_BUILD_D3D;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;GLACIERENGINE_BUILD_D3D;GLM_FORCE_SWIZZLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <Lib>
-      <AdditionalDependencies>d3d11.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>d3d11.lib;d3dx11.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug - Direct X|x64'">
@@ -146,37 +147,58 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="rendering\src\d3d\D3D11_blend_state.cpp" />
     <ClCompile Include="rendering\src\d3d\D3D11_context.cpp" />
     <ClCompile Include="rendering\src\d3d\D3D11_IBO.cpp" />
     <ClCompile Include="rendering\src\d3d\D3D11_renderer.cpp" />
     <ClCompile Include="rendering\src\d3d\D3D11_render_target.cpp" />
+    <ClCompile Include="rendering\src\d3d\D3D11_shader.cpp" />
     <ClCompile Include="rendering\src\d3d\D3D11_shader_program.cpp" />
     <ClCompile Include="rendering\src\d3d\D3D11_texture.cpp" />
     <ClCompile Include="rendering\src\d3d\D3D11_VBO.cpp" />
-    <ClCompile Include="rendering\src\GAPI_context_locator.cpp" />
     <ClCompile Include="rendering\src\mesh.cpp" />
+    <ClCompile Include="rendering\src\render_state_manager.cpp" />
+    <ClCompile Include="rendering\src\render_system.cpp" />
     <ClCompile Include="src\application.cpp" />
+    <ClCompile Include="src\camera_component.cpp" />
+    <ClCompile Include="src\camera_system.cpp" />
+    <ClCompile Include="src\component.cpp" />
     <ClCompile Include="src\engine_context.cpp" />
+    <ClCompile Include="src\light_component.cpp" />
+    <ClCompile Include="src\light_system.cpp" />
+    <ClCompile Include="src\mesh_utils.cpp" />
     <ClCompile Include="src\rendering_component.cpp" />
     <ClCompile Include="src\resource_manager.cpp" />
+    <ClCompile Include="src\scene.cpp" />
+    <ClCompile Include="src\scene_manager.cpp" />
+    <ClCompile Include="src\shader_program_manager.cpp" />
     <ClCompile Include="windowing\src\d3d\D3D11_window.cpp" />
     <ClCompile Include="windowing\src\win32\win32_window.cpp" />
     <ClCompile Include="windowing\src\windowing_service.cpp" />
-    <ClCompile Include="windowing\src\windowing_service_locator.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\application.h" />
+    <ClInclude Include="include\camera_component.h" />
+    <ClInclude Include="include\camera_system.h" />
     <ClInclude Include="include\component.h" />
     <ClInclude Include="include\glacier_engine.h" />
     <ClInclude Include="include\internal\engine_context.h" />
     <ClInclude Include="include\internal\math_utils.h" />
-    <ClInclude Include="include\internal\service.h" />
     <ClInclude Include="include\internal\types.h" />
+    <ClInclude Include="include\light_component.h" />
+    <ClInclude Include="include\light_system.h" />
+    <ClInclude Include="include\mesh_utils.h" />
     <ClInclude Include="include\object.h" />
     <ClInclude Include="include\rendering_component.h" />
     <ClInclude Include="include\resource.h" />
     <ClInclude Include="include\resource_manager.h" />
+    <ClInclude Include="include\scene.h" />
+    <ClInclude Include="include\scene_manager.h" />
+    <ClInclude Include="include\shader_program_manager.h" />
+    <ClInclude Include="include\system.h" />
     <ClInclude Include="include\texture.h" />
+    <ClInclude Include="include\timer.h" />
+    <ClInclude Include="rendering\include\d3d\D3D11_blend_state.h" />
     <ClInclude Include="rendering\include\d3d\D3D11_context.h" />
     <ClInclude Include="rendering\include\d3d\D3D11_IBO.h" />
     <ClInclude Include="rendering\include\d3d\D3D11_renderer.h" />
@@ -186,10 +208,13 @@
     <ClInclude Include="rendering\include\d3d\D3D11_texture.h" />
     <ClInclude Include="rendering\include\d3d\D3D11_VBO.h" />
     <ClInclude Include="rendering\include\GAPI_context.h" />
-    <ClInclude Include="rendering\include\GAPI_context_locator.h" />
     <ClInclude Include="rendering\include\IBO.h" />
+    <ClInclude Include="rendering\include\material.h" />
     <ClInclude Include="rendering\include\mesh.h" />
     <ClInclude Include="rendering\include\renderer.h" />
+    <ClInclude Include="rendering\include\render_state.h" />
+    <ClInclude Include="rendering\include\render_state_manager.h" />
+    <ClInclude Include="rendering\include\render_system.h" />
     <ClInclude Include="rendering\include\render_target.h" />
     <ClInclude Include="rendering\include\shader.h" />
     <ClInclude Include="rendering\include\shader_program.h" />
@@ -200,7 +225,6 @@
     <ClInclude Include="windowing\include\win32\win32_window.h" />
     <ClInclude Include="windowing\include\window.h" />
     <ClInclude Include="windowing\include\windowing_service.h" />
-    <ClInclude Include="windowing\include\windowing_service_locator.h" />
     <ClInclude Include="windowing\include\windowing_types.h" />
   </ItemGroup>
   <ItemGroup>

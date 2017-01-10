@@ -89,7 +89,7 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;GLACIERENGINE_BUILD_D3D;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
     </ClCompile>
     <Link>
@@ -149,11 +149,29 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\color_pass.cpp" />
     <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\main_scene.cpp" />
     <ClCompile Include="src\rtg_application.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\color_pass.h" />
+    <ClInclude Include="include\main_scene.h" />
     <ClInclude Include="include\rtg_application.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="sdr\color_pass.ps.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug - Direct X|Win32'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="sdr\color_pass.vs.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug - Direct X|Win32'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="sdr\render_texture.ps.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug - Direct X|Win32'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="sdr\render_texture.vs.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug - Direct X|Win32'">true</ExcludedFromBuild>
+    </FxCompile>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

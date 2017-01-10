@@ -160,16 +160,34 @@ namespace Glacier
 			}
 			break;
 		case WM_LBUTTONDOWN:
+			if (m_callbacks.mouse_func) {
+				m_callbacks.mouse_func(0, true, LOWORD(lparam), HIWORD(lparam));
+			}
 			break;
 		case WM_RBUTTONDOWN:
+			if (m_callbacks.mouse_func) {
+				m_callbacks.mouse_func(2, true, LOWORD(lparam), HIWORD(lparam));
+			}
 			break;
 		case WM_MBUTTONDOWN:
+			if (m_callbacks.mouse_func) {
+				m_callbacks.mouse_func(1, true, LOWORD(lparam), HIWORD(lparam));
+			}
 			break;
 		case WM_LBUTTONUP:
+			if (m_callbacks.mouse_func) {
+				m_callbacks.mouse_func(0, false, LOWORD(lparam), HIWORD(lparam));
+			}
 			break;
 		case WM_RBUTTONUP:
+			if (m_callbacks.mouse_func) {
+				m_callbacks.mouse_func(2, false, LOWORD(lparam), HIWORD(lparam));
+			}
 			break;
 		case WM_MBUTTONUP:
+			if (m_callbacks.mouse_func) {
+				m_callbacks.mouse_func(1, false, LOWORD(lparam), HIWORD(lparam));
+			}
 			break;
 		case WM_MOUSEWHEEL:
 			//int delta = GET_WHEEL_DELTA_WPARAM(wparam);

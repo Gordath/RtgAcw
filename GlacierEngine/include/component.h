@@ -7,17 +7,20 @@ namespace Glacier
 	class Object;
 
 	class Component {
-	private:
+	protected:
 		const std::string m_type;
 
 		Object* m_parent{ nullptr };
 
 	public:
-		Component(const std::string& type, Object* parent) : m_type{ type }, m_parent{ parent }
-		{
-		}
+		Component(const std::string& type, Object* parent);
 
 		virtual ~Component() = default;
+
+		const std::string& get_type() const noexcept
+		{
+			return m_type;
+		}
 
 		virtual void setup() noexcept = 0;
 

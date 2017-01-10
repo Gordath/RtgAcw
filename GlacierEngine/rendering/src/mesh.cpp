@@ -14,53 +14,82 @@ namespace Glacier
 #endif
 	}
 
-	void Mesh::initiaze_buffer_objects() const
+	void Mesh::initiaze_buffer_objects(PrimitiveTopology primitive_topology) const noexcept
 	{
-		if (!m_vbo) {
-			m_vbo->create(m_vertices);
+		if (m_vertices.size()) {
+			m_vbo->create(m_vertices, primitive_topology);
+		}
+
+		if (m_indices.size()) {
 			m_ibo->create(m_indices);
 		}
 	}
 
-	void Mesh::set_vertex_data(const Vertex* vertices, int vertex_count)
+	void Mesh::set_vertex_data(const Vertex* vertices, int vertex_count) noexcept
 	{
 		m_vertices.resize(vertex_count);
 		memcpy(m_vertices.data(), vertices, sizeof(Vertex) * vertex_count);
 	}
 
-	Vertex* Mesh::get_vertex_data() const
+	Vertex* Mesh::get_vertex_data() const noexcept
 	{
 		return const_cast<Vertex*>(m_vertices.data());
 	}
 
-	void Mesh::add_vertex(const Vertex& vertex)
+	void Mesh::add_vertex(const Vertex& vertex) noexcept
 	{
 		m_vertices.push_back(vertex);
 	}
 
-	void Mesh::set_index_data(const unsigned int* indices, int index_count)
+	void Mesh::set_index_data(const unsigned int* indices, int index_count) noexcept
 	{
 		m_indices.resize(index_count);
 		memcpy(m_indices.data(), indices, sizeof(unsigned int) * index_count);
 	}
 
-	unsigned int* Mesh::get_index_data() const
+	unsigned int* Mesh::get_index_data() const noexcept
 	{
 		return const_cast<unsigned int*>(m_indices.data());
 	}
 
-	void Mesh::add_index(unsigned int index)
+	void Mesh::add_index(unsigned int index) noexcept
 	{
 		m_indices.push_back(index);
 	}
 
-	void Mesh::draw() const
+	bool Mesh::load(const std::wstring& file_name) noexcept
 	{
-		m_vbo->draw();
+		//TODO: implement loading.
+		return true;
 	}
 
-	void Mesh::draw_indexed() const
+	void Mesh::generate_indices(VertexWinding winding) noexcept
 	{
-		m_ibo->draw();
+		if (m_indices.size()) {
+			return;
+		}
+
+		int quad_count = m_vertices.size() / 4;
+		int triangle_count = quad_count * 2;
+
+		m_indices.resize(triangle_count * 3);
+
+		for (int i = 0, j = 0; i < m_indices.size(); i += 6 , j += 4) {
+			m_indices[i] = j;
+			switch (winding) {
+			case VertexWinding::CLOCKWISE:
+				m_indices[i + 1] = m_indices[i + 4] = j + 1;
+				m_indices[i + 2] = m_indices[i + 3] = j + 2;
+				break;
+			case VertexWinding::ANTICLOCKWISE:
+				m_indices[i + 1] = m_indices[i + 4] = j + 2;
+				m_indices[i + 2] = m_indices[i + 3] = j + 1;
+				break;
+			default:
+				break;
+			}
+
+			m_indices[i + 5] = j + 3;
+		}
 	}
 }

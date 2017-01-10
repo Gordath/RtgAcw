@@ -1,0 +1,44 @@
+#ifndef MAIN_SCENE_H_
+#define MAIN_SCENE_H_
+#include "scene.h"
+#include "../GlacierEngine/rendering/include/d3d/D3D11_render_target.h"
+#include "../GlacierEngine/rendering/include/mesh.h"
+
+class MainScene : public Glacier::Scene {
+private:
+	Glacier::D3D11RenderTarget m_color_pass_rt;
+	Glacier::ComPtr<ID3D11Buffer> m_color_pass_uniform_buffer;
+
+	Glacier::D3D11RenderTarget m_shadow_pass_rt;
+
+	Glacier::ComPtr<ID3D11Buffer> m_light_structured_buffer;
+	Glacier::ComPtr<ID3D11ShaderResourceView> m_light_srv;
+
+	Glacier::ComPtr<ID3D11SamplerState> m_sampler_linear;
+
+	Glacier::Mesh* m_fullscreen_quad{ nullptr };
+
+	void depth_pass() noexcept;
+	void color_pass() const noexcept;
+	void display_to_screen() const noexcept;
+
+	void initialize_fullscreen_quad() noexcept;
+
+public:
+
+	void initialize() override;
+
+	void on_key_down(unsigned char key, int x, int y) noexcept override;
+
+	void on_key_up(unsigned char key, int x, int y) noexcept override;
+
+	void on_mouse_motion(int x, int y) noexcept override;
+
+	void on_mouse_click(int button, bool state, int x, int y) override;
+
+	void update(float delta_time, long time) noexcept override;
+
+	void draw() const noexcept override;
+};
+
+#endif //MAIN_SCENE_H_

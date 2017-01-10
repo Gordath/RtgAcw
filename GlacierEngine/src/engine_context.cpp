@@ -1,14 +1,14 @@
 #include "internal/engine_context.h"
 #include "D3D11_context.h"
 #include <iostream>
-#include "GAPI_context_locator.h"
-#include "windowing_service_locator.h"
+#include "render_state_manager.h"
 
 namespace Glacier
 {
 	GAPIContext* EngineContext::m_GAPI_context{ nullptr };
-
-	WindowingService* EngineContext::m_windowing_service{ nullptr };
+	std::unique_ptr<RenderSystem> EngineContext::m_render_system{ std::make_unique<RenderSystem>() };
+	std::unique_ptr<CameraSystem> EngineContext::m_camera_system{ std::make_unique<CameraSystem>() };
+	std::unique_ptr<LightSystem> EngineContext::m_light_system{ std::make_unique<LightSystem>() };
 
 	bool EngineContext::initialize()
 	{
@@ -21,11 +21,22 @@ namespace Glacier
 			std::cerr << "Failed to initialize the engine's Graphics Context!" << std::endl;
 			return false;
 		}
-		GAPIContextLocator::provide(m_GAPI_context);
 
-		m_windowing_service = new WindowingService;
-		WindowingServiceLocator::provide(m_windowing_service);
+		if (!m_render_system->initialize()) {
+			return false;
+		}
+
+		if (!m_camera_system->initialize()) {
+			return false;
+		}
+
+		if (!m_light_system->initialize()) {
+			return false;
+		}
+
+		RenderStateManager::initialize();
 
 		return true;
 	}
+
 }

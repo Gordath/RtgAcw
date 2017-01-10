@@ -8,7 +8,9 @@ namespace Glacier
 		TEX_DIFFUSE,
 		TEX_SPECULAR,
 		TEX_NORMAL,
-		TEX_AMBIENT_OCCLUSION
+		TEX_EMISSION,
+		TEX_AMBIENT_OCCLUSION,
+		SUPPORTED_TEX_COUNT
 	};
 
 	class Texture : public Resource {

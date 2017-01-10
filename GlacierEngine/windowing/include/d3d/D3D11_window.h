@@ -1,7 +1,6 @@
 #ifndef GLACIER_ENGINE_D3D11WINDOW_H_
 #define GLACIER_ENGINE_D3D11WINDOW_H_
 #include <D3D/d3d11.h>
-#include "GAPI_context_locator.h"
 #include "D3D11_render_target.h"
 #include "win32_window.h"
 
@@ -9,21 +8,19 @@ namespace Glacier
 {
 	class D3D11Context;
 
-	class D3D11Window : public Win32Window, protected GAPIContextLocator {
+	class D3D11Window : public Win32Window {
 	private:
-		ComPtr<ID3D11RenderTargetView> m_render_target;
-		ComPtr<ID3D11DepthStencilView> m_depth_stencil;
 		ComPtr<IDXGISwapChain> m_swap_chain;
 
 		bool m_enable_MSAA{ false };
 		int m_sample_count{ 4 };
 		unsigned int m_MSAA_quality;
 
-		bool create_swap_chain(const D3D11Context* ctx);
+		bool create_swap_chain(D3D11Context* ctx);
 
-		bool create_render_target_view(const D3D11Context* ctx) noexcept;
+		bool create_render_target_view(D3D11Context* ctx) const noexcept;
 
-		bool create_depth_stencil_view(const D3D11Context* ctx) noexcept;
+		bool create_depth_stencil_view(D3D11Context* ctx) const noexcept;
 
 		bool initialize();
 
@@ -75,7 +72,7 @@ namespace Glacier
 
 		void swap_buffers() const noexcept override
 		{
-			m_swap_chain->Present(1, 0);
+			m_swap_chain->Present(0, 0);
 		}
 	};
 }

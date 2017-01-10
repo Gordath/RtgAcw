@@ -71,12 +71,6 @@
     <ClCompile Include="windowing\src\windowing_service.cpp">
       <Filter>Windowing\Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="windowing\src\windowing_service_locator.cpp">
-      <Filter>Windowing\Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="rendering\src\GAPI_context_locator.cpp">
-      <Filter>Rendering\Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="rendering\src\mesh.cpp">
       <Filter>Rendering\Source Files</Filter>
     </ClCompile>
@@ -107,6 +101,45 @@
     <ClCompile Include="src\resource_manager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="rendering\src\d3d\D3D11_shader.cpp">
+      <Filter>Rendering\Source Files\d3d</Filter>
+    </ClCompile>
+    <ClCompile Include="src\shader_program_manager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="rendering\src\render_system.cpp">
+      <Filter>Rendering\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\scene.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\component.cpp">
+      <Filter>Source Files\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="src\mesh_utils.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\camera_component.cpp">
+      <Filter>Source Files\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="src\camera_system.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\scene_manager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\light_component.cpp">
+      <Filter>Source Files\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="src\light_system.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="rendering\src\d3d\D3D11_blend_state.cpp">
+      <Filter>Rendering\Source Files\d3d</Filter>
+    </ClCompile>
+    <ClCompile Include="rendering\src\render_state_manager.cpp">
+      <Filter>Rendering\Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\application.h">
@@ -118,9 +151,6 @@
     <ClInclude Include="include\internal\engine_context.h">
       <Filter>Header Files\Internal</Filter>
     </ClInclude>
-    <ClInclude Include="include\internal\service.h">
-      <Filter>Header Files\Internal</Filter>
-    </ClInclude>
     <ClInclude Include="include\internal\types.h">
       <Filter>Header Files\Internal</Filter>
     </ClInclude>
@@ -128,9 +158,6 @@
       <Filter>Windowing\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="windowing\include\windowing_service.h">
-      <Filter>Windowing\Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="windowing\include\windowing_service_locator.h">
       <Filter>Windowing\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="windowing\include\windowing_types.h">
@@ -164,9 +191,6 @@
       <Filter>Rendering\Header Files\d3d</Filter>
     </ClInclude>
     <ClInclude Include="rendering\include\GAPI_context.h">
-      <Filter>Rendering\Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="rendering\include\GAPI_context_locator.h">
       <Filter>Rendering\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="rendering\include\IBO.h">
@@ -219,6 +243,51 @@
     </ClInclude>
     <ClInclude Include="rendering\include\d3d\D3D11_shader_program.h">
       <Filter>Rendering\Header Files\d3d</Filter>
+    </ClInclude>
+    <ClInclude Include="include\shader_program_manager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="rendering\include\render_system.h">
+      <Filter>Rendering\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\scene.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\system.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\timer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\mesh_utils.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\camera_component.h">
+      <Filter>Header Files\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="include\camera_system.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\scene_manager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\light_component.h">
+      <Filter>Header Files\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="include\light_system.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="rendering\include\material.h">
+      <Filter>Rendering\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="rendering\include\render_state.h">
+      <Filter>Rendering\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="rendering\include\d3d\D3D11_blend_state.h">
+      <Filter>Rendering\Header Files\d3d</Filter>
+    </ClInclude>
+    <ClInclude Include="rendering\include\render_state_manager.h">
+      <Filter>Rendering\Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

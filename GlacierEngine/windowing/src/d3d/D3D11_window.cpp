@@ -1,13 +1,15 @@
+
 #include "D3D11_window.h"
 #include <assert.h>
 #include "D3D11_context.h"
 #include <iostream>
+#include "internal/engine_context.h"
 
 
 namespace Glacier
 {
 	// Private Methods -----------------------------------------------------------------------------------------------------------------------------
-	bool D3D11Window::create_swap_chain(const D3D11Context* ctx)
+	bool D3D11Window::create_swap_chain(D3D11Context* ctx)
 	{
 		//Describe the swapchain
 		DXGI_SWAP_CHAIN_DESC swap_chain_desc;
@@ -60,13 +62,11 @@ namespace Glacier
 		return true;
 	}
 
-	bool D3D11Window::create_render_target_view(const D3D11Context* ctx) noexcept
+	bool D3D11Window::create_render_target_view(D3D11Context* ctx) const noexcept
 	{
-		HRESULT res{ 0 };
-
 		// get the address of the back buffer
 		ComPtr<ID3D11Texture2D> backbuffer;
-		res = m_swap_chain->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<void**>(backbuffer.GetAddressOf()));
+		HRESULT res = m_swap_chain->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<void**>(backbuffer.GetAddressOf()));
 
 		if (FAILED(res)) {
 			std::cerr << "Failed to get the adress of the back buffer." << std::endl;
@@ -75,7 +75,7 @@ namespace Glacier
 		
 		// use the back buffer address to create the render target
 		ComPtr<ID3D11Device> device{ ctx->get_device() };
-		res = device->CreateRenderTargetView(backbuffer.Get(), nullptr, m_render_target.ReleaseAndGetAddressOf());
+		res = device->CreateRenderTargetView(backbuffer.Get(), nullptr, ctx->get_address_of_render_target_view());
 
 		if (FAILED(res)) {
 			std::cerr << "Window render target view creation failed." << std::endl;
@@ -85,7 +85,7 @@ namespace Glacier
 		return true;
 	}
 
-	bool D3D11Window::create_depth_stencil_view(const D3D11Context* ctx) noexcept
+	bool D3D11Window::create_depth_stencil_view(D3D11Context* ctx) const noexcept
 	{
 		D3D11_TEXTURE2D_DESC depth_attachment_desc;
 		ZeroMemory(&depth_attachment_desc, sizeof(depth_attachment_desc));
@@ -97,10 +97,9 @@ namespace Glacier
 		depth_attachment_desc.SampleDesc.Count = m_sample_count;
 		depth_attachment_desc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
 
-		HRESULT res{ 0 };
 		ComPtr<ID3D11Texture2D> depth;
 		ComPtr<ID3D11Device> device{ ctx->get_device() };
-		res = device->CreateTexture2D(&depth_attachment_desc, nullptr, depth.GetAddressOf());
+		HRESULT res = device->CreateTexture2D(&depth_attachment_desc, nullptr, depth.GetAddressOf());
 
 		if (FAILED(res)) {
 			std::cerr << "Failed to create the depth stencil view texture." << std::endl;
@@ -112,7 +111,7 @@ namespace Glacier
 		dsvd.Format = DXGI_FORMAT_D32_FLOAT;
 		dsvd.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2DMS;
 
-		res = device->CreateDepthStencilView(depth.Get(), &dsvd, m_depth_stencil.ReleaseAndGetAddressOf());
+		res = device->CreateDepthStencilView(depth.Get(), &dsvd, ctx->get_address_of_depth_stencil_view());
 
 		if (FAILED(res)) {
 			std::cerr << "Window depth stencil view creation failed." << std::endl;
@@ -124,11 +123,7 @@ namespace Glacier
 
 	bool D3D11Window::initialize()
 	{
-		D3D11Context* ctx = dynamic_cast<D3D11Context*>(get_GAPI_context());
-		if (!ctx) {
-			std::cerr << "Cannot create D3D11RenderTargetView: Graphics API context is not of type -> D3D11Context!" << std::endl;
-			return false;
-		}
+		D3D11Context* ctx{ EngineContext::get_GAPI_context() };
 
 		if (!create_swap_chain(ctx)) {
 			return false;

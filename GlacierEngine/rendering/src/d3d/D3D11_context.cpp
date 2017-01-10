@@ -21,7 +21,7 @@ namespace Glacier
 
 		D3D_FEATURE_LEVEL feature_level;
 
-		if (!_device) {
+		if (!m_device) {
 			HRESULT h_result{ 0 };
 			h_result = D3D11CreateDevice(nullptr,
 			                             D3D_DRIVER_TYPE_HARDWARE,
@@ -30,9 +30,9 @@ namespace Glacier
 			                             &feature_levels[0],
 			                             feature_levels.size(),
 			                             D3D11_SDK_VERSION,
-			                             _device.ReleaseAndGetAddressOf(),
+			                             m_device.ReleaseAndGetAddressOf(),
 			                             &feature_level,
-			                             _device_context.ReleaseAndGetAddressOf());
+			                             m_device_context.ReleaseAndGetAddressOf());
 
 			if (FAILED(h_result)) {
 				std::cerr << "D3D11CreateDevice Failed." << std::endl;
@@ -45,7 +45,7 @@ namespace Glacier
 			}
 
 #if defined(DEBUG) || defined(_DEBUG)
-			h_result = _device.As(&_debug_interface);
+			h_result = m_device.As(&m_debug_interface);
 			if (FAILED(h_result)) {
 				std::cerr << "Failed to acquire ID3D11Debug interface!" << std::endl;
 				return false;
@@ -65,18 +65,18 @@ namespace Glacier
 
 	ID3D11Device* D3D11Context::get_device() const
 	{
-		return _device.Get();
+		return m_device.Get();
 	}
 
 	ID3D11DeviceContext* D3D11Context::get_device_context() const
 	{
-		return _device_context.Get();
+		return m_device_context.Get();
 	}
 
 	unsigned int D3D11Context::get_MSAA_quality(int sample_count) const
 	{
 		unsigned int quality;
-		_device->CheckMultisampleQualityLevels(DXGI_FORMAT_R8G8B8A8_UNORM,
+		m_device->CheckMultisampleQualityLevels(DXGI_FORMAT_R8G8B8A8_UNORM,
 		                                       sample_count,
 		                                       &quality);
 		assert(quality > 0);

@@ -1,46 +1,56 @@
 #include "D3D11_IBO.h"
 #include "D3D11_context.h"
 #include <iostream>
+#include "internal/engine_context.h"
+#include <minwinbase.h>
 
 namespace Glacier
 {
-	bool D3D11IBO::create(const std::vector<unsigned int>& indices)
+	bool D3D11IBO::create(const std::vector<unsigned int>& indices) noexcept
 	{
 		D3D11_BUFFER_DESC buffer_desc;
-		buffer_desc.Usage = D3D11_USAGE_DEFAULT;
+		ZeroMemory(&buffer_desc, sizeof(buffer_desc));
+		buffer_desc.Usage = D3D11_USAGE_DYNAMIC;
 		buffer_desc.ByteWidth = sizeof(unsigned int) * indices.size();
 		buffer_desc.BindFlags = D3D11_BIND_INDEX_BUFFER;
-		buffer_desc.CPUAccessFlags = 0;
-		buffer_desc.MiscFlags = 0;
-		buffer_desc.StructureByteStride = 0;
+		buffer_desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 
-		D3D11_SUBRESOURCE_DATA index_data;
-		index_data.pSysMem = indices.data();
-		index_data.SysMemPitch = 0;
-		index_data.SysMemSlicePitch = 0;
-
-		D3D11Context* ctx{ dynamic_cast<D3D11Context*>(get_GAPI_context()) };
-		if (!ctx) {
-			std::cerr << "Failed to create the D3D11IBO: Graphics API context is not of type -> D3D11Context!" << std::endl;
-			return false;
-		}
+		D3D11Context* ctx{ EngineContext::get_GAPI_context() };
 
 		ComPtr<ID3D11Device> device{ ctx->get_device() };
 
-		HRESULT res = device->CreateBuffer(&buffer_desc, &index_data, m_index_buffer.ReleaseAndGetAddressOf());
+		HRESULT res = device->CreateBuffer(&buffer_desc, nullptr, m_index_buffer.ReleaseAndGetAddressOf());
 		if (FAILED(res)) {
 			std::cerr << "Failed to create the D3D11IBO." << std::endl;
 			return false;
 		}
+
+		D3D11_MAPPED_SUBRESOURCE index_data;
+		ZeroMemory(&index_data, sizeof(index_data));
+
+		ComPtr<ID3D11DeviceContext> device_context{ ctx->get_device_context() };
+		
+		device_context->Map(m_index_buffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &index_data);
+		memcpy(index_data.pData, indices.data(), sizeof(unsigned int) * indices.size());
+		device_context->Unmap(m_index_buffer.Get(), 0);
 
 		m_index_count = indices.size();
 
 		return true;
 	}
 
-	void D3D11IBO::draw() const
+	void D3D11IBO::bind() const noexcept
 	{
-		D3D11Context* ctx{ static_cast<D3D11Context*>(get_GAPI_context()) };
+		D3D11Context* GAPI_context{ EngineContext::get_GAPI_context() };
+
+		ComPtr<ID3D11DeviceContext> device_context{ GAPI_context->get_device_context() };
+
+		device_context->IASetIndexBuffer(m_index_buffer.Get(), DXGI_FORMAT_R32_UINT, 0);
+	}
+
+	void D3D11IBO::draw() const noexcept
+	{
+		D3D11Context* ctx{ EngineContext::get_GAPI_context() };
 
 		ComPtr<ID3D11DeviceContext> device_context{ ctx->get_device_context() };
 
