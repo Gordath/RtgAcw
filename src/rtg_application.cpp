@@ -64,7 +64,7 @@ bool RtgApplication::initialize(int* argc, char* argv[])
 	callbacks.mouse_func = mouse_click;
 
 
-	WindowingService::create(L"D3D test",
+	WindowingService::create(L"RtgAcw",
 	                          Vec2i{ 1280, 800 },
 	                          Vec2i{ 250, 250 },
 	                          true,

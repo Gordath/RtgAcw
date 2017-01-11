@@ -10,5 +10,5 @@ struct VOut {
 float4 main(VOut input) : SV_TARGET
 {
 	float4 color = color_tex.Sample(texture_sampler, input.texcoord);
-	return float4(color.r, color.r, color.r, 1.0);
+	return color;
 }

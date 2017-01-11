@@ -15,6 +15,8 @@ static Object* sub1_oar_root{ nullptr };
 
 static float cam_theta, cam_phi, cam_dist = 16;
 
+static bool wireframe{ false };
+
 struct ColorPassUniformBuffer {
 	Mat4f MVP;
 	Mat4f MV;
@@ -47,6 +49,8 @@ void MainScene::depth_pass() const noexcept
 	auto lights{ EngineContext::get_light_system()->get_active_light_descriptions() };
 
 	float clear_color[4]{ 0.0f, 0.0f, 0.0f, 1.0f };
+
+	RenderStateManager::set(RenderStateType::RS_CULL_FRONT);
 
 	for (int i = 0; i < lights.size() ; ++i) {
 		m_depth_pass_rts[i].bind(RenderTargetBindType::DEPTH);
@@ -102,6 +106,8 @@ void MainScene::depth_pass() const noexcept
 		
 		m_depth_pass_rts[i].unbind();
 	}
+
+	RenderStateManager::set(RenderStateType::RS_CULL_BACK);
 	
 }
 
@@ -119,6 +125,13 @@ void MainScene::color_pass() const noexcept
 
 	device_context->PSSetShaderResources(0, 1, m_light_srv.GetAddressOf());
 
+	std::vector<ID3D11ShaderResourceView*> depth_textures;
+	for (int i = 0; i < 4; ++i) {
+		depth_textures.push_back(m_depth_pass_rts[i].get_depth_attachment());
+	}
+
+	device_context->PSSetShaderResources(4, 4, depth_textures.data());
+
 	std::vector<RenderingComponent*> rendering_components;
 	for (auto object : m_objects) {
 		RenderingComponent* rc{ static_cast<RenderingComponent*>(object->get_component("co_rendering")) };
@@ -135,7 +148,11 @@ void MainScene::color_pass() const noexcept
 	          }
 	);
 
-	RenderStateManager::set(RenderStateType::BLEND_ALPHA);
+	RenderStateManager::set(RenderStateType::BS_BLEND_ALPHA);
+
+	if (wireframe) {
+		RenderStateManager::set(RenderStateType::RS_DRAW_WIRE);
+	}
 
 	Mat4f cam_matrix = Mat4f(1.0);
 	cam_matrix = MathUtils::rotate(cam_matrix, MathUtils::to_radians(cam_theta), Vec3f(0, 1, 0));
@@ -179,6 +196,16 @@ void MainScene::color_pass() const noexcept
 			device_context->VSSetConstantBuffers(0, 1, m_color_pass_uniform_buffer.GetAddressOf());
 			device_context->PSSetConstantBuffers(0, 1, m_color_pass_uniform_buffer.GetAddressOf());
 
+			D3D11_VIEWPORT viewport;
+			viewport.TopLeftX = 0.0f;
+			viewport.TopLeftY = 0.0f;
+			viewport.Width = static_cast<float>(WindowingService::get_window(0)->get_size().x);
+			viewport.Height = static_cast<float>(WindowingService::get_window(0)->get_size().y);
+			viewport.MinDepth = 0.0f;
+			viewport.MaxDepth = 1.0f;
+
+			device_context->RSSetViewports(1, &viewport);
+
 			Mesh* mesh{ rendering_component->get_mesh() };
 
 			mesh->get_vbo()->bind();
@@ -193,7 +220,7 @@ void MainScene::color_pass() const noexcept
 		}
 	}
 
-	RenderStateManager::set(RenderStateType::BLEND_DISSABLED);
+	RenderStateManager::set(RenderStateType::BS_BLEND_DISSABLED);
 
 	m_color_pass_rt.unbind();
 }
@@ -212,10 +239,11 @@ void MainScene::display_to_screen() const noexcept
 
 	ShaderProgramManager::get("render_texture_sdrprog")->bind();
 
-	ComPtr<ID3D11ShaderResourceView> srv{ m_depth_pass_rts[2].get_depth_attachment() };
+	ComPtr<ID3D11ShaderResourceView> srv{ m_color_pass_rt.get_color_attachment() };
 	dev_con->PSSetShaderResources(0, 1, srv.GetAddressOf());
 	dev_con->PSSetSamplers(0, 1, m_sampler_linear.GetAddressOf());
-
+	
+	RenderStateManager::set(RenderStateType::RS_DRAW_SOLID);
 	dev_con->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
 
 	dev_con->Draw(4, 0);
@@ -460,11 +488,11 @@ void MainScene::initialize()
 	light_desc.specular_intensity = Vec4f{ 1.0f, 1.0f, 1.0f, 1.0f };
 	light_desc.flags = Vec4ui{ 1, 1, 0, 0 };
 	light_desc.attenuation = Vec3f{ 1.0f, 0.0f, 0.0f };
-	light_desc.light_projection_matrix = MathUtils::perspective_lh(light_desc.light_projection_matrix, MathUtils::to_radians(60.0), win_x, win_y, 5.0, 50.0f);
+	light_desc.light_projection_matrix = MathUtils::perspective_lh(light_desc.light_projection_matrix, MathUtils::to_radians(60.0), 2048, 2048, 5.0f, 50.0f);
 
 	lc1->set_light_description(light_desc);
 
-	light1->set_position(Vec3f{ -10.0f, 1.0, -10.0f });
+	light1->set_position(Vec3f{ -10.0f, 10.0, -10.0f });
 
 	m_objects.push_back(light1);
 
@@ -481,7 +509,7 @@ void MainScene::initialize()
 	light_desc2.spot_cutoff = 30.0f;
 	light_desc2.spot_exponent = 50.0f;
 	light_desc2.spot_direction = Vec3f{ 1.0f, 0.0f, 1.0f };
-	light_desc2.light_projection_matrix = MathUtils::perspective_lh(light_desc2.light_projection_matrix, MathUtils::to_radians(60.0), win_x, win_y, 5.0, 50.0f);
+	light_desc2.light_projection_matrix = MathUtils::perspective_lh(light_desc2.light_projection_matrix, MathUtils::to_radians(60.0), 2048, 2048, 5.0f, 50.0f);
 
 	lc2->set_light_description(light_desc2);
 
@@ -499,22 +527,43 @@ void MainScene::initialize()
 	light_desc3.specular_intensity = Vec4f{ 1.0f, 1.0f, 1.0f, 1.0f };
 	light_desc3.flags = Vec4ui{ 0, 1, 0, 0 };
 	light_desc3.attenuation = Vec3f{ 1.0f, 0.0f, 0.0f };
-	light_desc3.spot_cutoff = 20.0f;
+	light_desc3.spot_cutoff = 30.0f;
 	light_desc3.spot_exponent = 50.0f;
-	light_desc3.spot_direction = Vec3f{ 0.0f, -1.0f, 0.0f };
-	light_desc3.light_projection_matrix = MathUtils::perspective_lh(light_desc3.light_projection_matrix, MathUtils::to_radians(60.0), win_x, win_y, 2.0, 50.0f);
+	light_desc3.spot_direction = Vec3f{ -1.0f, 0.0f, 1.0f };
+	light_desc3.light_projection_matrix = MathUtils::perspective_lh(light_desc3.light_projection_matrix, MathUtils::to_radians(60.0), 2048, 2048, 5.0f, 50.0f);
 
 	lc3->set_light_description(light_desc3);
 
-	light3->set_position(Vec3f{ 0.0f, 10.0, 0.0f });
+	light3->set_position(Vec3f{ 10.0f, 0.0, -10.0f });
 
 	m_objects.push_back(light3);
+
+	Object* light4{ new Object{ "light4" } };
+
+	LightComponent* lc4{ new LightComponent{ light4 } };
+
+	LightDesc light_desc4;
+	light_desc4.ambient_intensity = Vec4f{ 0.0f, 0.0f, 0.0f, 0.0f };
+	light_desc4.diffuse_intensity = Vec4f{ 1.0f, 1.0f, 1.0f, 1.0f };
+	light_desc4.specular_intensity = Vec4f{ 1.0f, 1.0f, 1.0f, 1.0f };
+	light_desc4.flags = Vec4ui{ 0, 1, 0, 0 };
+	light_desc4.attenuation = Vec3f{ 1.0f, 0.0f, 0.0f };
+	light_desc4.spot_cutoff = 30.0f;
+	light_desc4.spot_exponent = 50.0f;
+	light_desc4.spot_direction = Vec3f{ 0.0f, 0.0f, -1.0f };
+	light_desc4.light_projection_matrix = MathUtils::perspective_lh(light_desc3.light_projection_matrix, MathUtils::to_radians(60.0), 2048, 2048, 2.0f, 50.0f);
+
+	lc4->set_light_description(light_desc4);
+
+	light4->set_position(Vec3f{ 0.0f, 0.0, 10.0f });
+
+	m_objects.push_back(light4);
 
 	Window* win{ WindowingService::get_window(0) };
 	m_color_pass_rt.create(win->get_size());
 	
 	for(int i = 0; i < 4; ++i) {
-		m_depth_pass_rts[i].create(Vec2f{ 1280, 800 });
+		m_depth_pass_rts[i].create(Vec2f{ 2048, 2048 });
 	}
 }
 
@@ -525,10 +574,10 @@ void MainScene::on_key_down(unsigned char key, int x, int y) noexcept
 void MainScene::on_key_up(unsigned char key, int x, int y) noexcept
 {
 	switch (key) {
-	case 'A':
+	case '1':
 		EngineContext::get_camera_system()->set_active_camera("camera1");
 		break;
-	case 'S':
+	case '2':
 		EngineContext::get_camera_system()->set_active_camera("camera2");
 		break;
 	case 'Z':
@@ -539,6 +588,12 @@ void MainScene::on_key_up(unsigned char key, int x, int y) noexcept
 		break;
 	case 'C':
 		EngineContext::get_light_system()->toggle_light("light3");
+		break;
+	case 'V':
+		EngineContext::get_light_system()->toggle_light("light4");
+		break;
+	case 'W':
+		wireframe = !wireframe;
 		break;
 	default:
 		break;
@@ -602,9 +657,7 @@ void MainScene::update(float delta_time, long time) noexcept
 
 void MainScene::draw() const noexcept
 {
-	RenderSystem* render_system{ EngineContext::get_render_system() };
-
 	depth_pass();
-	//color_pass();
+	color_pass();
 	display_to_screen();
 }

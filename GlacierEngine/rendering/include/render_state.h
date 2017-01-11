@@ -4,9 +4,13 @@
 namespace Glacier
 {
 	enum class RenderStateType {
-		BLEND_DISSABLED,
-		BLEND_ADDITIVE,
-		BLEND_ALPHA
+		BS_BLEND_DISSABLED,
+		BS_BLEND_ADDITIVE,
+		BS_BLEND_ALPHA,
+		RS_CULL_FRONT,
+		RS_CULL_BACK,
+		RS_DRAW_WIRE,
+		RS_DRAW_SOLID
 	};
 
 	class RenderState {
