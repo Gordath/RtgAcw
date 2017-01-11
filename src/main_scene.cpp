@@ -124,6 +124,8 @@ void MainScene::color_pass() const noexcept
 	ComPtr<ID3D11DeviceContext> device_context{ GAPI_context->get_device_context() };
 
 	device_context->PSSetShaderResources(0, 1, m_light_srv.GetAddressOf());
+	device_context->PSSetSamplers(0, 1, m_sampler_linear_wrap.GetAddressOf());
+	device_context->PSSetSamplers(1, 1, m_sampler_linear_clamp.GetAddressOf());
 
 	std::vector<ID3D11ShaderResourceView*> depth_textures;
 	for (int i = 0; i < 4; ++i) {
@@ -241,7 +243,7 @@ void MainScene::display_to_screen() const noexcept
 
 	ComPtr<ID3D11ShaderResourceView> srv{ m_color_pass_rt.get_color_attachment() };
 	dev_con->PSSetShaderResources(0, 1, srv.GetAddressOf());
-	dev_con->PSSetSamplers(0, 1, m_sampler_linear.GetAddressOf());
+	dev_con->PSSetSamplers(0, 1, m_sampler_linear_wrap.GetAddressOf());
 	
 	RenderStateManager::set(RenderStateType::RS_DRAW_SOLID);
 	dev_con->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
@@ -331,10 +333,20 @@ void MainScene::initialize()
 	samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
 
 	// Create the texture sampler state.
-	res = device->CreateSamplerState(&samplerDesc, m_sampler_linear.ReleaseAndGetAddressOf());
+	res = device->CreateSamplerState(&samplerDesc, m_sampler_linear_wrap.ReleaseAndGetAddressOf());
 
 	if (FAILED(res)) {
-		std::cerr << "Linear Texture sampler creation failed!" << std::endl;
+		std::cerr << "Linear Texture Wrap sampler creation failed!" << std::endl;
+	}
+
+	samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
+	samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
+	samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
+	
+	res = device->CreateSamplerState(&samplerDesc, m_sampler_linear_clamp.ReleaseAndGetAddressOf());
+
+	if (FAILED(res)) {
+		std::cerr << "Linear Texture Wrap sampler creation failed!" << std::endl;
 	}
 
 	Object* obj{ new Object{ "globe" } };
@@ -355,7 +367,7 @@ void MainScene::initialize()
 	obj->set_position(Vec3f{ 0.0f, 0.0, 0.0f });
 	obj->set_scale(Vec3f{ 5.0f, 5.0f, 5.0f });
 
-	m_objects.push_back(obj);
+	//m_objects.push_back(obj);
 
 	obj = new Object{ "ground" };
 	rc = new RenderingComponent{ obj };

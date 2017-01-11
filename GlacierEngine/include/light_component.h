@@ -13,10 +13,11 @@ namespace Glacier
 		Vec3f spot_direction{ 0.0f, 0.0f, 1.0f };
 		float spot_exponent{ 0.0f }; //[0, 128]
 		Vec3f attenuation{ 1.0f, 0.0f, 0.0f };
-		Vec3f position;
 		Vec4ui flags; //directional, enabled, 0, 0
 		Mat4f light_view_matrix;
 		Mat4f light_projection_matrix;
+		Vec3f position;
+		float pad;
 	};
 
 	class LightComponent : public Component {

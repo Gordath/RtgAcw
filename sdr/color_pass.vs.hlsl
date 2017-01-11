@@ -2,7 +2,7 @@ struct VIn {
 	float4 position : POSITION;
 	float4 normal : NORMAL;
 	float4 tagent : TANGENT;
-	float4 texcoord : TEXCOORD;
+	float4 texcoord : TEXCOORD0;
 	float4 color : COLOR;
 };
 
@@ -19,6 +19,7 @@ cbuffer uniforms {
 
 struct VOut {
 	float4 position : SV_POSITION;
+	float4 vertexWorld : TEXCOORD1;
 	float3 normal : NORMAL;
 	float3 view_direction : VIEW_DIRECTION;
 	float3 view_space_pos : VIEW_SPACE_POS;
@@ -29,6 +30,7 @@ VOut main(VIn input)
 	VOut output;
 
 	output.position = mul(input.position, MVP);
+	output.vertexWorld = input.position;
 	output.normal = mul(input.normal.xyz, (float3x3)ITMV);
 
 	float3 vpos = mul(input.position, MV).xyz;

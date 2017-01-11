@@ -15,7 +15,8 @@ private:
 	Glacier::ComPtr<ID3D11Buffer> m_light_structured_buffer;
 	Glacier::ComPtr<ID3D11ShaderResourceView> m_light_srv;
 
-	Glacier::ComPtr<ID3D11SamplerState> m_sampler_linear;
+	Glacier::ComPtr<ID3D11SamplerState> m_sampler_linear_wrap;
+	Glacier::ComPtr<ID3D11SamplerState> m_sampler_linear_clamp;
 
 	void depth_pass() const noexcept;
 	void color_pass() const noexcept;
