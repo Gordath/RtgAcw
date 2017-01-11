@@ -26,6 +26,8 @@ struct Light {
 	float3 attenuation;
 	float3 position;
 	uint4 flags;
+	float4x4 light_view_matrix;
+	float4x4 light_projection_matrix;
 };
 
 StructuredBuffer<Light> lights : register(t0);
@@ -33,6 +35,8 @@ StructuredBuffer<Light> lights : register(t0);
 Texture2D diffuse_tex : register(t1);
 Texture2D specular_tex : register(t2);
 Texture2D normal_tex : register(t3);
+
+Texture2D shadow_maps[4] : register(t4);
 
 float3 get_light_vector(Light light, float3 pos)
 {

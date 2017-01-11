@@ -93,6 +93,11 @@ namespace Glacier
 			return Vec3f{ radius * sin(theta) * sin(phi), radius * cos(phi), radius * cos(theta) * sin(phi) };
 		}
 
+		inline const Mat4f& lookat_lh(const Vec3f& position, const Vec3f& target, const Vec3f& up)
+		{
+			return glm::lookAtLH(position, target, up);
+		}
+
 		template<typename T>
 		T to_radians(T degrees)
 		{

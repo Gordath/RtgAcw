@@ -54,14 +54,14 @@ namespace Glacier
 			return false;
 		}
 
-		D3D11_SHADER_RESOURCE_VIEW_DESC srv_desc;
-		srv_desc.Format = color_attachment_desc.Format;
-		srv_desc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
-		srv_desc.Texture2D.MostDetailedMip = 0;
-		srv_desc.Texture2D.MipLevels = 1;
+		D3D11_SHADER_RESOURCE_VIEW_DESC color_srv_desc;
+		color_srv_desc.Format = color_attachment_desc.Format;
+		color_srv_desc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+		color_srv_desc.Texture2D.MostDetailedMip = 0;
+		color_srv_desc.Texture2D.MipLevels = 1;
 
 		// Create the shader resource view.
-		res = device->CreateShaderResourceView(m_color_attachment.Get(), &srv_desc, m_color_attachment_srv.ReleaseAndGetAddressOf());
+		res = device->CreateShaderResourceView(m_color_attachment.Get(), &color_srv_desc, m_color_attachment_srv.ReleaseAndGetAddressOf());
 		if (FAILED(res)) {
 			std::cerr << "Failed to create the color attachment shader resource view!" << std::endl;
 			return false;
@@ -72,7 +72,7 @@ namespace Glacier
 		depth_attachment_desc.Height = m_size.y;
 		depth_attachment_desc.MipLevels = 1;
 		depth_attachment_desc.ArraySize = 1;
-		depth_attachment_desc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+		depth_attachment_desc.Format = DXGI_FORMAT_R24G8_TYPELESS;
 
 		if (m_MSAA) {
 			depth_attachment_desc.SampleDesc.Count = m_sample_count;
@@ -84,7 +84,7 @@ namespace Glacier
 		}
 
 		depth_attachment_desc.Usage = D3D11_USAGE_DEFAULT;
-		depth_attachment_desc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+		depth_attachment_desc.BindFlags = D3D11_BIND_DEPTH_STENCIL | D3D11_BIND_SHADER_RESOURCE;
 		depth_attachment_desc.CPUAccessFlags = 0;
 		depth_attachment_desc.MiscFlags = 0;
 
@@ -95,22 +95,52 @@ namespace Glacier
 			return false;
 		}
 
-		res = device->CreateDepthStencilView(m_depth_attachment.Get(), nullptr, m_depth_buffer_view.ReleaseAndGetAddressOf());
+		D3D11_DEPTH_STENCIL_VIEW_DESC desc_dsv;
+		desc_dsv.Flags = 0;
+		desc_dsv.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+		desc_dsv.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+		desc_dsv.Texture2D.MipSlice = 0;
+
+		res = device->CreateDepthStencilView(m_depth_attachment.Get(), &desc_dsv, m_depth_buffer_view.ReleaseAndGetAddressOf());
 
 		if (FAILED(res)) {
 			std::cerr << "Failed to create D3D11RenderTarget depth stencil view!" << std::endl;
 			return false;
 		}
 
+		D3D11_SHADER_RESOURCE_VIEW_DESC depth_srv_desc;
+		depth_srv_desc.Format = DXGI_FORMAT_R24_UNORM_X8_TYPELESS;
+		depth_srv_desc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+		depth_srv_desc.Texture2D.MipLevels = depth_attachment_desc.MipLevels;
+		depth_srv_desc.Texture2D.MostDetailedMip = 0;
+
+		res = device->CreateShaderResourceView(m_depth_attachment.Get(), &depth_srv_desc, m_depth_attachment_srv.ReleaseAndGetAddressOf());
+
+		if (FAILED(res)) {
+			std::cerr << "Failed to create the depth attachment shader resource view!" << std::endl;
+			return false;
+		}
+
 		return true;
 	}
 
-	bool D3D11RenderTarget::bind() const
+	bool D3D11RenderTarget::bind(RenderTargetBindType bind_type) const
 	{
 		D3D11Context* ctx{ EngineContext::get_GAPI_context() };
 
 		ComPtr<ID3D11DeviceContext> context{ ctx->get_device_context() };
-		context->OMSetRenderTargets(1, m_render_target_view.GetAddressOf(), m_depth_buffer_view.Get());
+
+		switch (bind_type) {
+		case RenderTargetBindType::COLOR_AND_DEPTH:
+			context->OMSetRenderTargets(1, m_render_target_view.GetAddressOf(), m_depth_buffer_view.Get());
+			break;
+		case RenderTargetBindType::DEPTH:
+			context->OMSetRenderTargets(0, nullptr, m_depth_buffer_view.Get());
+			break;
+		default:
+			break;
+		}
+		
 
 		return true;
 	}

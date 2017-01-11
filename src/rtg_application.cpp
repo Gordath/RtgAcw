@@ -83,6 +83,10 @@ bool RtgApplication::initialize(int* argc, char* argv[])
 		return false;
 	}
 
+	if (!ShaderProgramManager::create("depth_pass_sdrprog", IL_POSITION, L"depth_pass.vs.hlsl", L"depth_pass.ps.hlsl")) {
+		return false;
+	}
+
 	scene = new MainScene;
 	SceneManager::push_scene(scene);
 

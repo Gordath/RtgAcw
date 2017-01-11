@@ -137,3 +137,4 @@ Contact GitHub API Training Shop Blog About
 *.idb
 *.cd
 sdr/*.compilation_errors.txt
+*.enc

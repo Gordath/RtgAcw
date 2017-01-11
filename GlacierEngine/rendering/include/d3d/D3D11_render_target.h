@@ -15,6 +15,7 @@ namespace Glacier
 		ComPtr<ID3D11Texture2D> m_depth_attachment;
 
 		ComPtr<ID3D11ShaderResourceView> m_color_attachment_srv;
+		ComPtr<ID3D11ShaderResourceView> m_depth_attachment_srv;
 
 		bool m_MSAA = false;
 		int m_sample_count = 1;
@@ -32,7 +33,7 @@ namespace Glacier
 
 		bool create(const Vec2i& size) override;
 
-		bool bind() const override;
+		bool bind(RenderTargetBindType bind_type) const override;
 
 		bool unbind() const override;
 
@@ -41,6 +42,11 @@ namespace Glacier
 		ID3D11ShaderResourceView* get_color_attachment() const noexcept
 		{
 			return m_color_attachment_srv.Get();
+		}
+
+		ID3D11ShaderResourceView* get_depth_attachment() const noexcept
+		{
+			return m_depth_attachment_srv.Get();
 		}
 	};
 }

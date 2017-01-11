@@ -29,15 +29,15 @@ namespace Glacier
 
 				if (!light) {
 					m_lights[object->get_name()] = object;
-					m_active_light_descriptions.push_back(light_component->get_light_description());
-					lights_added = true;
+//					m_active_light_descriptions.push_back(light_component->get_light_description());
+//					lights_added = true;
 				}
 			}
 		}
 
 		if (lights_added) {
-			update_active_light_descriptions();
-			lights_added = false;
+//			update_active_light_descriptions();
+//			lights_added = false;
 		}
 	}
 }
