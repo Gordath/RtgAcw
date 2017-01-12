@@ -48,7 +48,7 @@ void MainScene::depth_pass() const noexcept
 
 	auto lights{ EngineContext::get_light_system()->get_active_light_descriptions() };
 
-	float clear_color[4]{ 0.0f, 0.0f, 0.0f, 1.0f };
+	float clear_color[4]{ 1.0f, 1.0f, 1.0f, 1.0f };
 
 	RenderStateManager::set(RenderStateType::RS_CULL_FRONT);
 
@@ -113,7 +113,7 @@ void MainScene::depth_pass() const noexcept
 
 void MainScene::color_pass() const noexcept
 {
-	float clear_color[4]{ 0.0f, 0.0f, 0.0f, 1.0f };
+	float clear_color[4]{ 0.075f, 0.075f, 0.075f, 1.0f };
 
 	m_color_pass_rt.bind(RenderTargetBindType::COLOR_AND_DEPTH);
 	m_color_pass_rt.clear(clear_color);
@@ -339,6 +339,7 @@ void MainScene::initialize()
 		std::cerr << "Linear Texture Wrap sampler creation failed!" << std::endl;
 	}
 
+	samplerDesc.Filter = D3D11_FILTER_MIN_MAG_LINEAR_MIP_POINT;
 	samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
 	samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
 	samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
@@ -504,7 +505,7 @@ void MainScene::initialize()
 
 	lc1->set_light_description(light_desc);
 
-	light1->set_position(Vec3f{ -10.0f, 10.0, -10.0f });
+	light1->set_position(Vec3f{ 0.0f, 10.0, 0.0f });
 
 	m_objects.push_back(light1);
 

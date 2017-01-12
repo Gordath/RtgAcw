@@ -49,7 +49,7 @@ float3 get_light_vector(Light light, float3 pos)
 		return mul(float4(light.position.xyz, 1.0), V).xyz - pos;
 	}
 	
-	return light.position;
+	return mul(light.position, (float3x3)V);
 }
 
 void calculate_lighting(StructuredBuffer<Light> lights,
@@ -90,30 +90,27 @@ void calculate_lighting(StructuredBuffer<Light> lights,
 
 			//SHADOWING ATTEMPT!!!!
 			float4x4 offset_mat = float4x4(0.5, 0.0, 0.0, 0.0,
-										   0.0, 0.5, 0.0, 0.0,
-										   0.0, 0.0, 0.5, 0.0,
-										   0.5, 0.5, 0.5, 1.0);
+										   0.0, -0.5, 0.0, 0.0,
+										   0.0, 0.0, 1.0, 0.0,
+										   0.5, 0.5, 0.0, 1.0);
 
 			float4 shadow_coords = mul(vertexWorld, M);
 			shadow_coords = mul(shadow_coords, transpose(lights[0].light_view_matrix));
 			shadow_coords = mul(shadow_coords, transpose(lights[0].light_projection_matrix));
+			shadow_coords /= shadow_coords.w;
 			shadow_coords = mul(shadow_coords, offset_mat);
 
-			float2 bias = float2(1.0 / 2048.0, 1.0 / 2048.0);
-			//float3 shad_tex_coord = shadow_coords.xyz / shadow_coords.w;
-			//float3 p0 = shad_tex_coord - float3(0.5 * bias.x, 0.5 * bias.y, 0.0);
-			float2 projected_tex_coord = float2(
-				shadow_coords.x / shadow_coords.w / 2.0 + 0.5,
-				-shadow_coords.y / shadow_coords.w / 2.0 + 0.5);
+			float depth_value = depth_maps[0].Sample(texture_sampler_linear_clamp, shadow_coords.xy).r;
 
-			float depth_value = depth_maps[0].Sample(texture_sampler_linear_clamp, projected_tex_coord).r;
+			if (shadow_coords.x < 0.0 || shadow_coords.x >= 1.0 || shadow_coords.y < 0.00 || shadow_coords.y >= 1.0) {
+				depth_value = 100000000.0;
+			}
 
-			float light_depth_value = shadow_coords.z / shadow_coords.w;
-			light_depth_value = light_depth_value - bias.x;
+			float light_depth_value = shadow_coords.z;
+			light_depth_value = light_depth_value;
 
 			float shadow = 1.0;
 
-			[flatten]
 			if (light_depth_value > depth_value) {
 				shadow = 0.0;
 			}
