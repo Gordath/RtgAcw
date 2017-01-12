@@ -378,7 +378,7 @@ void MainScene::initialize()
 	obj = new Object{ "ground" };
 	rc = new RenderingComponent{ obj };
 	rc->set_mesh(ResourceManager::get<Mesh>(L"cube"));
-	mat.diffuse = Vec4f{ 0.0470588235294118f, 0.3019607843137255f, 0.4117647058823529f, 1.0f };
+	mat.diffuse = Vec4f{ 0.9568627450980392f, 0.8627450980392157f, 0.7098039215686275f, 1.0f };
 	mat.specular = Vec4f{ 0.0f };
 	rc->set_material(mat);
 	rc->set_casts_shadows(false);
@@ -503,7 +503,7 @@ void MainScene::initialize()
 
 	LightDesc light_desc;
 	light_desc.ambient_intensity = Vec4f{ 0.0f, 0.0f, 0.0f, 0.0f };
-	light_desc.diffuse_intensity = Vec4f{ 0.5f, 0.5f, 1.0f, 1.0f };
+	light_desc.diffuse_intensity = Vec4f{ 0.3f, 0.3f, 0.3f, 1.0f };
 	light_desc.specular_intensity = Vec4f{ 1.0f, 1.0f, 1.0f, 1.0f };
 	light_desc.flags = Vec4ui{ 1, 1, 0, 0 };
 	light_desc.attenuation = Vec3f{ 1.0f, 0.0f, 0.0f };
@@ -526,8 +526,8 @@ void MainScene::initialize()
 	light_desc2.flags = Vec4ui{ 0, 1, 0, 0 };
 	light_desc2.attenuation = Vec3f{ 1.0f, 0.0f, 0.0f };
 	light_desc2.spot_cutoff = 20.0f;
-	light_desc2.spot_exponent = 50.0f;
-	light_desc2.spot_direction = Vec3f{ 0.1f, -0.1f, 0.1f };
+	light_desc2.spot_exponent = 90.0f;
+	light_desc2.spot_direction = Vec3f{ 0.09f, -0.1f, 0.09f };
 	light_desc2.light_projection_matrix = MathUtils::perspective_lh(light_desc2.light_projection_matrix, MathUtils::to_radians(60.0), 2048, 2048, 5.0f, 50.0f);
 
 	lc2->set_light_description(light_desc2);
@@ -547,8 +547,8 @@ void MainScene::initialize()
 	light_desc3.flags = Vec4ui{ 0, 1, 0, 0 };
 	light_desc3.attenuation = Vec3f{ 1.0f, 0.0f, 0.0f };
 	light_desc3.spot_cutoff = 20.0f;
-	light_desc3.spot_exponent = 50.0f;
-	light_desc3.spot_direction = Vec3f{ -0.1f, -0.1f, 0.1f };
+	light_desc3.spot_exponent = 90.0f;
+	light_desc3.spot_direction = Vec3f{ -0.09f, -0.1f, 0.09f };
 	light_desc3.light_projection_matrix = MathUtils::perspective_lh(light_desc3.light_projection_matrix, MathUtils::to_radians(60.0), 2048, 2048, 5.0f, 50.0f);
 
 	lc3->set_light_description(light_desc3);
@@ -567,8 +567,8 @@ void MainScene::initialize()
 	light_desc4.specular_intensity = Vec4f{ 1.0f, 1.0f, 1.0f, 1.0f };
 	light_desc4.flags = Vec4ui{ 0, 1, 0, 0 };
 	light_desc4.attenuation = Vec3f{ 1.0f, 0.0f, 0.0f };
-	light_desc4.spot_cutoff = 30.0f;
-	light_desc4.spot_exponent = 50.0f;
+	light_desc4.spot_cutoff = 20.0f;
+	light_desc4.spot_exponent = 90.0f;
 	light_desc4.spot_direction = Vec3f{ 0.0f, -0.1f, -0.1f };
 	light_desc4.light_projection_matrix = MathUtils::perspective_lh(light_desc3.light_projection_matrix, MathUtils::to_radians(60.0), 2048, 2048, 2.0f, 50.0f);
 
