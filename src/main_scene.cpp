@@ -61,7 +61,7 @@ void MainScene::depth_pass() const noexcept
 
 			for (auto rendering_component : rendering_components) {
 
-				if (rendering_component->get_mesh() && rendering_component->should_draw()) {
+				if (rendering_component->get_mesh() && rendering_component->should_draw() && rendering_component->casts_shadows()) {
 
 					Mat4f model{ rendering_component->get_xform() };
 					Mat4f light_view{ lights[i].light_view_matrix };
@@ -224,6 +224,10 @@ void MainScene::color_pass() const noexcept
 
 	RenderStateManager::set(RenderStateType::BS_BLEND_DISSABLED);
 
+	std::vector<ID3D11ShaderResourceView*> null_srvs{ nullptr, nullptr, nullptr, nullptr };
+
+	device_context->PSSetShaderResources(4, 4, null_srvs.data());
+
 	m_color_pass_rt.unbind();
 }
 
@@ -365,19 +369,21 @@ void MainScene::initialize()
 	RenderingComponent* rc{ new RenderingComponent{ obj } };
 	rc->set_mesh(ResourceManager::get<Mesh>(L"sphere"));
 	rc->set_material(mat);
+	rc->set_casts_shadows(false);
 	obj->set_position(Vec3f{ 0.0f, 0.0, 0.0f });
 	obj->set_scale(Vec3f{ 5.0f, 5.0f, 5.0f });
 
-	//m_objects.push_back(obj);
+	m_objects.push_back(obj);
 
 	obj = new Object{ "ground" };
 	rc = new RenderingComponent{ obj };
 	rc->set_mesh(ResourceManager::get<Mesh>(L"cube"));
-	mat.diffuse = Vec4f{ 1.00f, 1.00f, 1.00f, 1.0f };
+	mat.diffuse = Vec4f{ 0.0470588235294118f, 0.3019607843137255f, 0.4117647058823529f, 1.0f };
 	mat.specular = Vec4f{ 0.0f };
 	rc->set_material(mat);
+	rc->set_casts_shadows(false);
 	obj->set_position(Vec3f{ 0.0f, -5.0, 0.0f });
-	obj->set_scale(Vec3f{ 500.0f, 0.1f, 500.0f });
+	obj->set_scale(Vec3f{ 50.0f, 0.1f, 50.0f });
 
 	m_objects.push_back(obj);
 
@@ -497,11 +503,11 @@ void MainScene::initialize()
 
 	LightDesc light_desc;
 	light_desc.ambient_intensity = Vec4f{ 0.0f, 0.0f, 0.0f, 0.0f };
-	light_desc.diffuse_intensity = Vec4f{ 1.0f, 1.0f, 1.0f, 1.0f };
+	light_desc.diffuse_intensity = Vec4f{ 0.5f, 0.5f, 1.0f, 1.0f };
 	light_desc.specular_intensity = Vec4f{ 1.0f, 1.0f, 1.0f, 1.0f };
 	light_desc.flags = Vec4ui{ 1, 1, 0, 0 };
 	light_desc.attenuation = Vec3f{ 1.0f, 0.0f, 0.0f };
-	light_desc.light_projection_matrix = MathUtils::perspective_lh(light_desc.light_projection_matrix, MathUtils::to_radians(60.0), 2048, 2048, 5.0f, 50.0f);
+	light_desc.light_projection_matrix = MathUtils::perspective_lh(light_desc.light_projection_matrix, MathUtils::to_radians(60.0), 2048, 2048, 5.0f, 26.0f);
 
 	lc1->set_light_description(light_desc);
 
@@ -515,18 +521,18 @@ void MainScene::initialize()
 
 	LightDesc light_desc2;
 	light_desc2.ambient_intensity = Vec4f{ 0.0f, 0.0f, 0.0f, 0.0f };
-	light_desc2.diffuse_intensity = Vec4f{ 1.0f, 1.0f, 0.0f, 1.0f };
+	light_desc2.diffuse_intensity = Vec4f{ 1.0f, 1.0f, 1.0f, 1.0f };
 	light_desc2.specular_intensity = Vec4f{ 1.0f, 1.0f, 1.0f, 1.0f };
 	light_desc2.flags = Vec4ui{ 0, 1, 0, 0 };
 	light_desc2.attenuation = Vec3f{ 1.0f, 0.0f, 0.0f };
-	light_desc2.spot_cutoff = 30.0f;
+	light_desc2.spot_cutoff = 20.0f;
 	light_desc2.spot_exponent = 50.0f;
-	light_desc2.spot_direction = Vec3f{ 1.0f, 0.0f, 1.0f };
+	light_desc2.spot_direction = Vec3f{ 0.1f, -0.1f, 0.1f };
 	light_desc2.light_projection_matrix = MathUtils::perspective_lh(light_desc2.light_projection_matrix, MathUtils::to_radians(60.0), 2048, 2048, 5.0f, 50.0f);
 
 	lc2->set_light_description(light_desc2);
 
-	light2->set_position(Vec3f{ -10.0f, 0.0, -10.0f});
+	light2->set_position(Vec3f{ -10.0f, 10.0, -10.0f});
 
 	m_objects.push_back(light2);
 
@@ -540,14 +546,14 @@ void MainScene::initialize()
 	light_desc3.specular_intensity = Vec4f{ 1.0f, 1.0f, 1.0f, 1.0f };
 	light_desc3.flags = Vec4ui{ 0, 1, 0, 0 };
 	light_desc3.attenuation = Vec3f{ 1.0f, 0.0f, 0.0f };
-	light_desc3.spot_cutoff = 30.0f;
+	light_desc3.spot_cutoff = 20.0f;
 	light_desc3.spot_exponent = 50.0f;
-	light_desc3.spot_direction = Vec3f{ -1.0f, 0.0f, 1.0f };
+	light_desc3.spot_direction = Vec3f{ -0.1f, -0.1f, 0.1f };
 	light_desc3.light_projection_matrix = MathUtils::perspective_lh(light_desc3.light_projection_matrix, MathUtils::to_radians(60.0), 2048, 2048, 5.0f, 50.0f);
 
 	lc3->set_light_description(light_desc3);
 
-	light3->set_position(Vec3f{ 10.0f, 0.0, -10.0f });
+	light3->set_position(Vec3f{ 10.0f, 10.0, -10.0f });
 
 	m_objects.push_back(light3);
 
@@ -563,12 +569,12 @@ void MainScene::initialize()
 	light_desc4.attenuation = Vec3f{ 1.0f, 0.0f, 0.0f };
 	light_desc4.spot_cutoff = 30.0f;
 	light_desc4.spot_exponent = 50.0f;
-	light_desc4.spot_direction = Vec3f{ 0.0f, 0.0f, -1.0f };
+	light_desc4.spot_direction = Vec3f{ 0.0f, -0.1f, -0.1f };
 	light_desc4.light_projection_matrix = MathUtils::perspective_lh(light_desc3.light_projection_matrix, MathUtils::to_radians(60.0), 2048, 2048, 2.0f, 50.0f);
 
 	lc4->set_light_description(light_desc4);
 
-	light4->set_position(Vec3f{ 0.0f, 0.0, 10.0f });
+	light4->set_position(Vec3f{ 0.0f, 10.0, 10.0f });
 
 	m_objects.push_back(light4);
 

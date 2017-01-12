@@ -67,22 +67,21 @@ void calculate_lighting(StructuredBuffer<Light> lights,
 
 	lights.GetDimensions(buffer_size, dummy);
 
-	//[unroll]
-	//for (uint i = 0; i < 1; i++) {
-		if (lights[0].flags.y == 1) { //is enabled
-			float3 light_vector = normalize(get_light_vector(lights[0], view_position));
+	for (uint i = 0; i < buffer_size; i++) {
+		if (lights[i].flags.y == 1) { //is enabled
+			float3 light_vector = normalize(get_light_vector(lights[i], view_position));
 			
 			float attenuation = 1.0;
 
 			float n_dot_l = max(dot(normal.xyz, light_vector), 0.0);
 
-			if (lights[0].flags.x == 0) { //not directional
+			if (lights[i].flags.x == 0) { //not directional
 				
-				float3 spot_dir = normalize(mul(lights[0].spot_direction, (float3x3)V));
+				float3 spot_dir = normalize(mul(lights[i].spot_direction, (float3x3)V));
 
 				float cos_cur_angle = dot(-light_vector, spot_dir);
-				float cos_outer_angle = saturate(cos(radians(lights[0].spot_cutoff)));
-				float cos_inner_angle = saturate(cos(radians((1.0 - (lights[0].spot_exponent / 128.0)) * lights[0].spot_cutoff)));
+				float cos_outer_angle = saturate(cos(radians(lights[i].spot_cutoff)));
+				float cos_inner_angle = saturate(cos(radians((1.0 - (lights[i].spot_exponent / 128.0)) * lights[i].spot_cutoff)));
 				attenuation *= saturate((cos_cur_angle - cos_outer_angle) /
 					(cos_inner_angle - cos_outer_angle));
 
@@ -95,12 +94,28 @@ void calculate_lighting(StructuredBuffer<Light> lights,
 										   0.5, 0.5, 0.0, 1.0);
 
 			float4 shadow_coords = mul(vertexWorld, M);
-			shadow_coords = mul(shadow_coords, transpose(lights[0].light_view_matrix));
-			shadow_coords = mul(shadow_coords, transpose(lights[0].light_projection_matrix));
+			shadow_coords = mul(shadow_coords, transpose(lights[i].light_view_matrix));
+			shadow_coords = mul(shadow_coords, transpose(lights[i].light_projection_matrix));
 			shadow_coords /= shadow_coords.w;
 			shadow_coords = mul(shadow_coords, offset_mat);
 
-			float depth_value = depth_maps[0].Sample(texture_sampler_linear_clamp, shadow_coords.xy).r;
+			float shadow = 1.0;
+			float depth_value = 1.0;
+			if (i == 0) {
+				depth_value = depth_maps[0].Sample(texture_sampler_linear_clamp, shadow_coords.xy).r;
+			}
+
+			if (i == 1) {
+				depth_value = depth_maps[1].Sample(texture_sampler_linear_clamp, shadow_coords.xy).r;
+			}
+
+			if (i == 2) {
+				depth_value = depth_maps[2].Sample(texture_sampler_linear_clamp, shadow_coords.xy).r;
+			}
+
+			if (i == 3) {
+				depth_value = depth_maps[3].Sample(texture_sampler_linear_clamp, shadow_coords.xy).r;
+			}
 
 			if (shadow_coords.x < 0.0 || shadow_coords.x >= 1.0 || shadow_coords.y < 0.00 || shadow_coords.y >= 1.0) {
 				depth_value = 100000000.0;
@@ -109,7 +124,7 @@ void calculate_lighting(StructuredBuffer<Light> lights,
 			float light_depth_value = shadow_coords.z;
 			light_depth_value = light_depth_value;
 
-			float shadow = 1.0;
+			
 
 			if (light_depth_value > depth_value) {
 				shadow = 0.0;
@@ -121,11 +136,11 @@ void calculate_lighting(StructuredBuffer<Light> lights,
 
 			float4 lit_result = lit(n_dot_l, n_dot_h, exponent);
 
-			ambient_light += attenuation * lights[0].ambient_intensity * lit_result.x * shadow;
-			diffuse_light += attenuation * lights[0].diffuse_intensity * lit_result.y * shadow;
-			specular_light += attenuation * lights[0].specular_intensity * lit_result.z * shadow;
+			ambient_light += attenuation * lights[i].ambient_intensity * lit_result.x * shadow;
+			diffuse_light += attenuation * lights[i].diffuse_intensity * lit_result.y * shadow;
+			specular_light += attenuation * lights[i].specular_intensity * lit_result.z * shadow;
 		}
-	//}
+	}
 
 }
 

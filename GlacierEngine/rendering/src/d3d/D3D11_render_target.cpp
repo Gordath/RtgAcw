@@ -150,7 +150,9 @@ namespace Glacier
 		D3D11Context* ctx{ EngineContext::get_GAPI_context() };
 
 		ComPtr<ID3D11DeviceContext> context{ ctx->get_device_context() };
-		context->OMSetRenderTargets(0, nullptr, nullptr);
+		ID3D11DepthStencilView* null_dsv{ nullptr };
+		ID3D11RenderTargetView* null_rtvs[1]{ nullptr };
+		context->OMSetRenderTargets(1, null_rtvs, null_dsv);
 
 		return true;
 	}
