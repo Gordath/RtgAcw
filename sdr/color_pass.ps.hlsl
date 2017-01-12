@@ -4,6 +4,8 @@ struct VOut {
 	float3 normal : NORMAL;
 	float3 view_direction : VIEW_DIRECTION;
 	float3 view_space_pos : VIEW_SPACE_POS;
+	float fog_factor : TEXCOORD2;
+	float fresnel_term : TEXCOORD3;
 };
 
 cbuffer uniforms {
@@ -168,7 +170,8 @@ float4 main(VOut input) : SV_TARGET
 	float4 spec_color = specular * spec_light;
 
 	float4 final_color = diff_color + spec_color + amb_light;
-	final_color.a = diffuse.a;
+	final_color = lerp(float4(0.0470588235294118f, 0.3019607843137255f, 0.4117647058823529f, 1.0), final_color, input.fog_factor);
+	final_color.a = diffuse.a * input.fresnel_term;
 
 	return final_color;
 }

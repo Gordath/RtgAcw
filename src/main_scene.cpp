@@ -113,7 +113,7 @@ void MainScene::depth_pass() const noexcept
 
 void MainScene::color_pass() const noexcept
 {
-	float clear_color[4]{ 0.075f, 0.075f, 0.075f, 1.0f };
+	float clear_color[4]{ 0.0470588235294118f, 0.3019607843137255f, 0.4117647058823529f, 1.0f };
 
 	m_color_pass_rt.bind(RenderTargetBindType::COLOR_AND_DEPTH);
 	m_color_pass_rt.clear(clear_color);
@@ -343,7 +343,7 @@ void MainScene::initialize()
 		std::cerr << "Linear Texture Wrap sampler creation failed!" << std::endl;
 	}
 
-	samplerDesc.Filter = D3D11_FILTER_MIN_MAG_LINEAR_MIP_POINT;
+	samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
 	samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
 	samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
 	samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
@@ -383,7 +383,7 @@ void MainScene::initialize()
 	rc->set_material(mat);
 	rc->set_casts_shadows(false);
 	obj->set_position(Vec3f{ 0.0f, -5.0, 0.0f });
-	obj->set_scale(Vec3f{ 50.0f, 0.1f, 50.0f });
+	obj->set_scale(Vec3f{ 1000.0f, 0.1f, 1000.0f });
 
 	m_objects.push_back(obj);
 
