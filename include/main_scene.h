@@ -8,21 +8,19 @@ class MainScene : public Glacier::Scene {
 private:
 	Glacier::D3D11RenderTarget m_color_pass_rt;
 	Glacier::ComPtr<ID3D11Buffer> m_color_pass_uniform_buffer;
+	Glacier::ComPtr<ID3D11Buffer> m_depth_pass_uniform_buffer;
 
-	Glacier::D3D11RenderTarget m_shadow_pass_rt;
+	Glacier::D3D11RenderTarget m_depth_pass_rts[4];
 
 	Glacier::ComPtr<ID3D11Buffer> m_light_structured_buffer;
 	Glacier::ComPtr<ID3D11ShaderResourceView> m_light_srv;
 
-	Glacier::ComPtr<ID3D11SamplerState> m_sampler_linear;
+	Glacier::ComPtr<ID3D11SamplerState> m_sampler_linear_wrap;
+	Glacier::ComPtr<ID3D11SamplerState> m_sampler_linear_clamp;
 
-	Glacier::Mesh* m_fullscreen_quad{ nullptr };
-
-	void depth_pass() noexcept;
+	void depth_pass() const noexcept;
 	void color_pass() const noexcept;
 	void display_to_screen() const noexcept;
-
-	void initialize_fullscreen_quad() noexcept;
 
 public:
 

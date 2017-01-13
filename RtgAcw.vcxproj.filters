@@ -55,5 +55,11 @@
     <FxCompile Include="sdr\render_texture.ps.hlsl">
       <Filter>sdr</Filter>
     </FxCompile>
+    <FxCompile Include="sdr\depth_pass.vs.hlsl">
+      <Filter>sdr</Filter>
+    </FxCompile>
+    <FxCompile Include="sdr\depth_pass.ps.hlsl">
+      <Filter>sdr</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>

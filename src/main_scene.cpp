@@ -15,6 +15,8 @@ static Object* sub1_oar_root{ nullptr };
 
 static float cam_theta, cam_phi, cam_dist = 16;
 
+static bool wireframe{ false };
+
 struct ColorPassUniformBuffer {
 	Mat4f MVP;
 	Mat4f MV;
@@ -26,15 +28,94 @@ struct ColorPassUniformBuffer {
 	Vec4f specular;
 };
 
-void MainScene::depth_pass() noexcept
+struct DepthPassUniformBuffer {
+	Mat4f MVP;
+};
+
+void MainScene::depth_pass() const noexcept
 {
+	D3D11Context* GAPI_context{ EngineContext::get_GAPI_context() };
+	ComPtr<ID3D11DeviceContext> device_context{ GAPI_context->get_device_context() };
+
+	std::vector<RenderingComponent*> rendering_components;
+	for (auto object : m_objects) {
+		RenderingComponent* rc{ static_cast<RenderingComponent*>(object->get_component("co_rendering")) };
+
+		if (rc) {
+			rendering_components.push_back(rc);
+		}
+	}
+
+	auto lights{ EngineContext::get_light_system()->get_active_light_descriptions() };
+
+	float clear_color[4]{ 1.0f, 1.0f, 1.0f, 1.0f };
+
+	RenderStateManager::set(RenderStateType::RS_CULL_FRONT);
+
+	for (int i = 0; i < lights.size() ; ++i) {
+		m_depth_pass_rts[i].bind(RenderTargetBindType::DEPTH);
+		m_depth_pass_rts[i].clear(clear_color);
+
+		if (lights[i].flags.y == true) {
+			ShaderProgramManager::get("depth_pass_sdrprog")->bind();
+
+			for (auto rendering_component : rendering_components) {
+
+				if (rendering_component->get_mesh() && rendering_component->should_draw() && rendering_component->casts_shadows()) {
+
+					Mat4f model{ rendering_component->get_xform() };
+					Mat4f light_view{ lights[i].light_view_matrix };
+					Mat4f light_projection{ lights[i].light_projection_matrix };
+
+					Mat4f MVP{ light_projection * light_view * model };
+
+					DepthPassUniformBuffer uniforms;
+					uniforms.MVP = MathUtils::transpose(MVP);
+
+					D3D11_MAPPED_SUBRESOURCE ms;
+					device_context->Map(m_depth_pass_uniform_buffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &ms);
+					memcpy(ms.pData, &uniforms, sizeof(DepthPassUniformBuffer));
+					device_context->Unmap(m_depth_pass_uniform_buffer.Get(), 0);
+
+					device_context->VSSetConstantBuffers(0, 1, m_depth_pass_uniform_buffer.GetAddressOf());
+
+					D3D11_VIEWPORT viewport;
+					viewport.TopLeftX = 0.0f;
+					viewport.TopLeftY = 0.0f;
+					viewport.Width = static_cast<float>(m_depth_pass_rts->get_size().x);
+					viewport.Height = static_cast<float>(m_depth_pass_rts->get_size().y);
+					viewport.MinDepth = 0.0f;
+					viewport.MaxDepth = 1.0f;
+
+					device_context->RSSetViewports(1, &viewport);
+
+					Mesh* mesh{ rendering_component->get_mesh() };
+
+					mesh->get_vbo()->bind();
+
+					if (mesh->get_index_count()) {
+						mesh->get_ibo()->bind();
+						mesh->get_ibo()->draw();
+					}
+					else {
+						mesh->get_vbo()->draw();
+					}
+				}
+			}
+		}
+		
+		m_depth_pass_rts[i].unbind();
+	}
+
+	RenderStateManager::set(RenderStateType::RS_CULL_BACK);
+	
 }
 
 void MainScene::color_pass() const noexcept
 {
-	float clear_color[4]{ 0.0f, 0.0f, 0.0f, 1.0f };
+	float clear_color[4]{ 0.0470588235294118f, 0.3019607843137255f, 0.4117647058823529f, 1.0f };
 
-	m_color_pass_rt.bind();
+	m_color_pass_rt.bind(RenderTargetBindType::COLOR_AND_DEPTH);
 	m_color_pass_rt.clear(clear_color);
 
 	ShaderProgramManager::get("color_pass_sdrprog")->bind();
@@ -43,6 +124,15 @@ void MainScene::color_pass() const noexcept
 	ComPtr<ID3D11DeviceContext> device_context{ GAPI_context->get_device_context() };
 
 	device_context->PSSetShaderResources(0, 1, m_light_srv.GetAddressOf());
+	device_context->PSSetSamplers(0, 1, m_sampler_linear_wrap.GetAddressOf());
+	device_context->PSSetSamplers(1, 1, m_sampler_linear_clamp.GetAddressOf());
+
+	std::vector<ID3D11ShaderResourceView*> depth_textures;
+	for (int i = 0; i < 4; ++i) {
+		depth_textures.push_back(m_depth_pass_rts[i].get_depth_attachment());
+	}
+
+	device_context->PSSetShaderResources(4, 4, depth_textures.data());
 
 	std::vector<RenderingComponent*> rendering_components;
 	for (auto object : m_objects) {
@@ -60,7 +150,11 @@ void MainScene::color_pass() const noexcept
 	          }
 	);
 
-	RenderStateManager::set(RenderStateType::BLEND_ALPHA);
+	RenderStateManager::set(RenderStateType::BS_BLEND_ALPHA);
+
+	if (wireframe) {
+		RenderStateManager::set(RenderStateType::RS_DRAW_WIRE);
+	}
 
 	Mat4f cam_matrix = Mat4f(1.0);
 	cam_matrix = MathUtils::rotate(cam_matrix, MathUtils::to_radians(cam_theta), Vec3f(0, 1, 0));
@@ -104,6 +198,16 @@ void MainScene::color_pass() const noexcept
 			device_context->VSSetConstantBuffers(0, 1, m_color_pass_uniform_buffer.GetAddressOf());
 			device_context->PSSetConstantBuffers(0, 1, m_color_pass_uniform_buffer.GetAddressOf());
 
+			D3D11_VIEWPORT viewport;
+			viewport.TopLeftX = 0.0f;
+			viewport.TopLeftY = 0.0f;
+			viewport.Width = static_cast<float>(WindowingService::get_window(0)->get_size().x);
+			viewport.Height = static_cast<float>(WindowingService::get_window(0)->get_size().y);
+			viewport.MinDepth = 0.0f;
+			viewport.MaxDepth = 1.0f;
+
+			device_context->RSSetViewports(1, &viewport);
+
 			Mesh* mesh{ rendering_component->get_mesh() };
 
 			mesh->get_vbo()->bind();
@@ -118,7 +222,11 @@ void MainScene::color_pass() const noexcept
 		}
 	}
 
-	RenderStateManager::set(RenderStateType::BLEND_DISSABLED);
+	RenderStateManager::set(RenderStateType::BS_BLEND_DISSABLED);
+
+	std::vector<ID3D11ShaderResourceView*> null_srvs{ nullptr, nullptr, nullptr, nullptr };
+
+	device_context->PSSetShaderResources(4, 4, null_srvs.data());
 
 	m_color_pass_rt.unbind();
 }
@@ -139,8 +247,9 @@ void MainScene::display_to_screen() const noexcept
 
 	ComPtr<ID3D11ShaderResourceView> srv{ m_color_pass_rt.get_color_attachment() };
 	dev_con->PSSetShaderResources(0, 1, srv.GetAddressOf());
-	dev_con->PSSetSamplers(0, 1, m_sampler_linear.GetAddressOf());
-
+	dev_con->PSSetSamplers(0, 1, m_sampler_linear_wrap.GetAddressOf());
+	
+	RenderStateManager::set(RenderStateType::RS_DRAW_SOLID);
 	dev_con->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
 
 	dev_con->Draw(4, 0);
@@ -152,11 +261,11 @@ void MainScene::display_to_screen() const noexcept
 
 void MainScene::initialize()
 {
-	ColorPassUniformBuffer uniforms;
+	ColorPassUniformBuffer cp_uniforms;
 
 	D3D11_BUFFER_DESC cb_desc;
 	ZeroMemory(&cb_desc, sizeof(cb_desc));
-	cb_desc.ByteWidth = sizeof(uniforms);
+	cb_desc.ByteWidth = sizeof(cp_uniforms);
 	cb_desc.Usage = D3D11_USAGE_DYNAMIC;
 	cb_desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 	cb_desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
@@ -168,6 +277,21 @@ void MainScene::initialize()
 	ComPtr<ID3D11Device> device{ GAPI_context->get_device() };
 
 	HRESULT res{ device->CreateBuffer(&cb_desc, nullptr, m_color_pass_uniform_buffer.ReleaseAndGetAddressOf()) };
+
+	if (FAILED(res)) {
+		std::cerr << "Renderer initialization failed: Uniform buffer creation failed." << std::endl;
+	}
+
+	DepthPassUniformBuffer dp_uniforms;
+	ZeroMemory(&cb_desc, sizeof(cb_desc));
+	cb_desc.ByteWidth = sizeof(dp_uniforms);
+	cb_desc.Usage = D3D11_USAGE_DYNAMIC;
+	cb_desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	cb_desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	cb_desc.MiscFlags = 0;
+	cb_desc.StructureByteStride = 0;
+
+	res = device->CreateBuffer(&cb_desc, nullptr, m_depth_pass_uniform_buffer.ReleaseAndGetAddressOf());
 
 	if (FAILED(res)) {
 		std::cerr << "Renderer initialization failed: Uniform buffer creation failed." << std::endl;
@@ -213,10 +337,26 @@ void MainScene::initialize()
 	samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
 
 	// Create the texture sampler state.
-	res = device->CreateSamplerState(&samplerDesc, m_sampler_linear.ReleaseAndGetAddressOf());
+	res = device->CreateSamplerState(&samplerDesc, m_sampler_linear_wrap.ReleaseAndGetAddressOf());
 
 	if (FAILED(res)) {
-		std::cerr << "Linear Texture sampler creation failed!" << std::endl;
+		std::cerr << "Linear Texture Wrap sampler creation failed!" << std::endl;
+	}
+
+	samplerDesc.Filter = D3D11_FILTER_COMPARISON_MIN_MAG_LINEAR_MIP_POINT;
+	samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_BORDER;
+	samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_BORDER;
+	samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_BORDER;
+	samplerDesc.BorderColor[0] = 1;
+	samplerDesc.BorderColor[1] = 1;
+	samplerDesc.BorderColor[2] = 1;
+	samplerDesc.BorderColor[3] = 1;
+	samplerDesc.ComparisonFunc = D3D11_COMPARISON_LESS_EQUAL;
+	
+	res = device->CreateSamplerState(&samplerDesc, m_sampler_linear_clamp.ReleaseAndGetAddressOf());
+
+	if (FAILED(res)) {
+		std::cerr << "Linear Texture Wrap sampler creation failed!" << std::endl;
 	}
 
 	Object* obj{ new Object{ "globe" } };
@@ -234,6 +374,7 @@ void MainScene::initialize()
 	RenderingComponent* rc{ new RenderingComponent{ obj } };
 	rc->set_mesh(ResourceManager::get<Mesh>(L"sphere"));
 	rc->set_material(mat);
+	rc->set_casts_shadows(false);
 	obj->set_position(Vec3f{ 0.0f, 0.0, 0.0f });
 	obj->set_scale(Vec3f{ 5.0f, 5.0f, 5.0f });
 
@@ -242,11 +383,12 @@ void MainScene::initialize()
 	obj = new Object{ "ground" };
 	rc = new RenderingComponent{ obj };
 	rc->set_mesh(ResourceManager::get<Mesh>(L"cube"));
-	mat.diffuse = Vec4f{ 1.00f, 1.00f, 1.00f, 1.0f };
+	mat.diffuse = Vec4f{ 0.9568627450980392f, 0.8627450980392157f, 0.7098039215686275f, 1.0f };
 	mat.specular = Vec4f{ 0.0f };
 	rc->set_material(mat);
+	rc->set_casts_shadows(false);
 	obj->set_position(Vec3f{ 0.0f, -5.0, 0.0f });
-	obj->set_scale(Vec3f{ 500.0f, 0.1f, 500.0f });
+	obj->set_scale(Vec3f{ 1000.0f, 0.1f, 1000.0f });
 
 	m_objects.push_back(obj);
 
@@ -366,14 +508,15 @@ void MainScene::initialize()
 
 	LightDesc light_desc;
 	light_desc.ambient_intensity = Vec4f{ 0.0f, 0.0f, 0.0f, 0.0f };
-	light_desc.diffuse_intensity = Vec4f{ 1.0f, 1.0f, 1.0f, 1.0f };
+	light_desc.diffuse_intensity = Vec4f{ 0.3f, 0.3f, 0.3f, 1.0f };
 	light_desc.specular_intensity = Vec4f{ 1.0f, 1.0f, 1.0f, 1.0f };
 	light_desc.flags = Vec4ui{ 1, 1, 0, 0 };
 	light_desc.attenuation = Vec3f{ 1.0f, 0.0f, 0.0f };
+	light_desc.light_projection_matrix = MathUtils::perspective_lh(light_desc.light_projection_matrix, MathUtils::to_radians(60.0), 2048, 2048, 5.0f, 26.0f);
 
 	lc1->set_light_description(light_desc);
 
-	light1->set_position(Vec3f{ 1.0f, 1.0, -1.0f });
+	light1->set_position(Vec3f{ 0.0f, 10.0, 0.0f });
 
 	m_objects.push_back(light1);
 
@@ -383,17 +526,18 @@ void MainScene::initialize()
 
 	LightDesc light_desc2;
 	light_desc2.ambient_intensity = Vec4f{ 0.0f, 0.0f, 0.0f, 0.0f };
-	light_desc2.diffuse_intensity = Vec4f{ 1.0f, 1.0f, 0.0f, 1.0f };
+	light_desc2.diffuse_intensity = Vec4f{ 1.0f, 1.0f, 1.0f, 1.0f };
 	light_desc2.specular_intensity = Vec4f{ 1.0f, 1.0f, 1.0f, 1.0f };
 	light_desc2.flags = Vec4ui{ 0, 1, 0, 0 };
 	light_desc2.attenuation = Vec3f{ 1.0f, 0.0f, 0.0f };
-	light_desc2.spot_cutoff = 30.0f;
-	light_desc2.spot_exponent = 50.0f;
-	light_desc2.spot_direction = Vec3f{ 1.0f, 0.0f, 1.0f };
+	light_desc2.spot_cutoff = 20.0f;
+	light_desc2.spot_exponent = 90.0f;
+	light_desc2.spot_direction = Vec3f{ 0.09f, -0.1f, 0.09f };
+	light_desc2.light_projection_matrix = MathUtils::perspective_lh(light_desc2.light_projection_matrix, MathUtils::to_radians(60.0), 2048, 2048, 5.0f, 50.0f);
 
 	lc2->set_light_description(light_desc2);
 
-	light2->set_position(Vec3f{ -10.0f, 0.0, -10.0f});
+	light2->set_position(Vec3f{ -10.0f, 10.0, -10.0f});
 
 	m_objects.push_back(light2);
 
@@ -408,18 +552,43 @@ void MainScene::initialize()
 	light_desc3.flags = Vec4ui{ 0, 1, 0, 0 };
 	light_desc3.attenuation = Vec3f{ 1.0f, 0.0f, 0.0f };
 	light_desc3.spot_cutoff = 20.0f;
-	light_desc3.spot_exponent = 50.0f;
-	light_desc3.spot_direction = Vec3f{ 0.0f, -1.0f, 0.0f };
+	light_desc3.spot_exponent = 90.0f;
+	light_desc3.spot_direction = Vec3f{ -0.09f, -0.1f, 0.09f };
+	light_desc3.light_projection_matrix = MathUtils::perspective_lh(light_desc3.light_projection_matrix, MathUtils::to_radians(60.0), 2048, 2048, 5.0f, 50.0f);
 
 	lc3->set_light_description(light_desc3);
 
-	light3->set_position(Vec3f{ 0.0f, 10.0, 0.0f });
+	light3->set_position(Vec3f{ 10.0f, 10.0, -10.0f });
 
 	m_objects.push_back(light3);
 
+	Object* light4{ new Object{ "light4" } };
+
+	LightComponent* lc4{ new LightComponent{ light4 } };
+
+	LightDesc light_desc4;
+	light_desc4.ambient_intensity = Vec4f{ 0.0f, 0.0f, 0.0f, 0.0f };
+	light_desc4.diffuse_intensity = Vec4f{ 1.0f, 1.0f, 1.0f, 1.0f };
+	light_desc4.specular_intensity = Vec4f{ 1.0f, 1.0f, 1.0f, 1.0f };
+	light_desc4.flags = Vec4ui{ 0, 1, 0, 0 };
+	light_desc4.attenuation = Vec3f{ 1.0f, 0.0f, 0.0f };
+	light_desc4.spot_cutoff = 20.0f;
+	light_desc4.spot_exponent = 90.0f;
+	light_desc4.spot_direction = Vec3f{ 0.0f, -0.1f, -0.1f };
+	light_desc4.light_projection_matrix = MathUtils::perspective_lh(light_desc3.light_projection_matrix, MathUtils::to_radians(60.0), 2048, 2048, 2.0f, 50.0f);
+
+	lc4->set_light_description(light_desc4);
+
+	light4->set_position(Vec3f{ 0.0f, 10.0, 10.0f });
+
+	m_objects.push_back(light4);
+
 	Window* win{ WindowingService::get_window(0) };
 	m_color_pass_rt.create(win->get_size());
-	m_shadow_pass_rt.create(win->get_size());
+	
+	for(int i = 0; i < 4; ++i) {
+		m_depth_pass_rts[i].create(Vec2f{ 2048, 2048 });
+	}
 }
 
 void MainScene::on_key_down(unsigned char key, int x, int y) noexcept
@@ -429,11 +598,26 @@ void MainScene::on_key_down(unsigned char key, int x, int y) noexcept
 void MainScene::on_key_up(unsigned char key, int x, int y) noexcept
 {
 	switch (key) {
-	case 'A':
+	case '1':
 		EngineContext::get_camera_system()->set_active_camera("camera1");
 		break;
-	case 'S':
+	case '2':
 		EngineContext::get_camera_system()->set_active_camera("camera2");
+		break;
+	case 'Z':
+		EngineContext::get_light_system()->toggle_light("light1");
+		break;
+	case 'X':
+		EngineContext::get_light_system()->toggle_light("light2");
+		break;
+	case 'C':
+		EngineContext::get_light_system()->toggle_light("light3");
+		break;
+	case 'V':
+		EngineContext::get_light_system()->toggle_light("light4");
+		break;
+	case 'W':
+		wireframe = !wireframe;
 		break;
 	default:
 		break;
@@ -487,7 +671,7 @@ void MainScene::update(float delta_time, long time) noexcept
 	D3D11Context* GAPI_context{ EngineContext::get_GAPI_context() };
 	ComPtr<ID3D11DeviceContext> device_context{ GAPI_context->get_device_context() };
 
-	auto lights{ light_system->get_active_light_descriptions() };
+	std::vector<LightDesc> lights{ light_system->get_active_light_descriptions() };
 
 	D3D11_MAPPED_SUBRESOURCE lms;
 	device_context->Map(m_light_structured_buffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &lms);
@@ -497,8 +681,7 @@ void MainScene::update(float delta_time, long time) noexcept
 
 void MainScene::draw() const noexcept
 {
-	RenderSystem* render_system{ EngineContext::get_render_system() };
-
+	depth_pass();
 	color_pass();
 	display_to_screen();
 }

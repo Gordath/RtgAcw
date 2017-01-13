@@ -13,8 +13,11 @@ namespace Glacier
 		Vec3f spot_direction{ 0.0f, 0.0f, 1.0f };
 		float spot_exponent{ 0.0f }; //[0, 128]
 		Vec3f attenuation{ 1.0f, 0.0f, 0.0f };
-		Vec3f position;
 		Vec4ui flags; //directional, enabled, 0, 0
+		Mat4f light_view_matrix;
+		Mat4f light_projection_matrix;
+		Vec3f position;
+		float pad;
 	};
 
 	class LightComponent : public Component {
@@ -105,6 +108,31 @@ namespace Glacier
 		float get_spot_exponent() const noexcept
 		{
 			return m_light_desc.spot_exponent;
+		}
+
+		void set_flags(const Vec4ui& flags) noexcept
+		{
+			m_light_desc.flags = flags;
+		}
+
+		void set_active(bool active) noexcept
+		{
+			m_light_desc.flags.y = active;
+		}
+
+		bool is_active() const noexcept
+		{
+			return m_light_desc.flags.y;
+		}
+
+		const Mat4f& get_light_view_matrix() const noexcept
+		{
+			return m_light_desc.light_view_matrix;
+		}
+
+		const Mat4f& get_light_projection_matrix() const noexcept
+		{
+			return m_light_desc.light_projection_matrix;
 		}
 	};
 }

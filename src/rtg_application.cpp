@@ -64,7 +64,7 @@ bool RtgApplication::initialize(int* argc, char* argv[])
 	callbacks.mouse_func = mouse_click;
 
 
-	WindowingService::create(L"D3D test",
+	WindowingService::create(L"RtgAcw",
 	                          Vec2i{ 1280, 800 },
 	                          Vec2i{ 250, 250 },
 	                          true,
@@ -80,6 +80,10 @@ bool RtgApplication::initialize(int* argc, char* argv[])
 	}
 
 	if (!ShaderProgramManager::create("render_texture_sdrprog", IL_POSITION | IL_TEXCOORD, L"render_texture.vs.hlsl", L"render_texture.ps.hlsl")) {
+		return false;
+	}
+
+	if (!ShaderProgramManager::create("depth_pass_sdrprog", IL_POSITION, L"depth_pass.vs.hlsl", L"depth_pass.ps.hlsl")) {
 		return false;
 	}
 

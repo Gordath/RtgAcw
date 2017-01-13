@@ -1,5 +1,6 @@
 #include "render_state_manager.h"
 #include "D3D11_blend_state.h"
+#include "D3D11_rasterizer_state.h"
 
 namespace Glacier
 {
@@ -18,9 +19,13 @@ namespace Glacier
 	void RenderStateManager::initialize() noexcept
 	{
 #if defined(GLACIERENGINE_BUILD_D3D)
-		m_render_states[RenderStateType::BLEND_DISSABLED] = new D3D11BlendState(RenderStateType::BLEND_DISSABLED);
-		m_render_states[RenderStateType::BLEND_ADDITIVE] = new D3D11BlendState(RenderStateType::BLEND_ADDITIVE);
-		m_render_states[RenderStateType::BLEND_ALPHA] = new D3D11BlendState(RenderStateType::BLEND_ALPHA);
+		m_render_states[RenderStateType::BS_BLEND_DISSABLED] = new D3D11BlendState(RenderStateType::BS_BLEND_DISSABLED);
+		m_render_states[RenderStateType::BS_BLEND_ADDITIVE] = new D3D11BlendState(RenderStateType::BS_BLEND_ADDITIVE);
+		m_render_states[RenderStateType::BS_BLEND_ALPHA] = new D3D11BlendState(RenderStateType::BS_BLEND_ALPHA);
+		m_render_states[RenderStateType::RS_CULL_FRONT] = new D3D11RasterizerState(RenderStateType::RS_CULL_FRONT);
+		m_render_states[RenderStateType::RS_CULL_BACK] = new D3D11RasterizerState(RenderStateType::RS_CULL_BACK);
+		m_render_states[RenderStateType::RS_DRAW_SOLID] = new D3D11RasterizerState(RenderStateType::RS_DRAW_SOLID);
+		m_render_states[RenderStateType::RS_DRAW_WIRE] = new D3D11RasterizerState(RenderStateType::RS_DRAW_WIRE);
 #else
 #endif
 	}

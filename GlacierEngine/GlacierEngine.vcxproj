@@ -150,6 +150,7 @@
     <ClCompile Include="rendering\src\d3d\D3D11_blend_state.cpp" />
     <ClCompile Include="rendering\src\d3d\D3D11_context.cpp" />
     <ClCompile Include="rendering\src\d3d\D3D11_IBO.cpp" />
+    <ClCompile Include="rendering\src\d3d\D3D11_rasterizer_state.cpp" />
     <ClCompile Include="rendering\src\d3d\D3D11_renderer.cpp" />
     <ClCompile Include="rendering\src\d3d\D3D11_render_target.cpp" />
     <ClCompile Include="rendering\src\d3d\D3D11_shader.cpp" />
@@ -201,6 +202,7 @@
     <ClInclude Include="rendering\include\d3d\D3D11_blend_state.h" />
     <ClInclude Include="rendering\include\d3d\D3D11_context.h" />
     <ClInclude Include="rendering\include\d3d\D3D11_IBO.h" />
+    <ClInclude Include="rendering\include\d3d\D3D11_rasterizer_state.h" />
     <ClInclude Include="rendering\include\d3d\D3D11_renderer.h" />
     <ClInclude Include="rendering\include\d3d\D3D11_render_target.h" />
     <ClInclude Include="rendering\include\d3d\D3D11_shader.h" />

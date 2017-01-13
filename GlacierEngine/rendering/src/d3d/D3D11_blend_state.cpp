@@ -7,7 +7,7 @@ namespace Glacier
 	D3D11BlendState::D3D11BlendState(RenderStateType render_state_type)
 	{
 		switch (render_state_type) {
-		case RenderStateType::BLEND_DISSABLED: {
+		case RenderStateType::BS_BLEND_DISSABLED: {
 			D3D11_BLEND_DESC blend_desc;
 			ZeroMemory(&blend_desc, sizeof(D3D11_BLEND_DESC));
 			blend_desc.RenderTarget[0].BlendEnable = false;
@@ -20,11 +20,26 @@ namespace Glacier
 			HRESULT res = device->CreateBlendState(&blend_desc, m_blend_state.ReleaseAndGetAddressOf());
 		}
 			break;
-		case RenderStateType::BLEND_ADDITIVE: {
-			
+		case RenderStateType::BS_BLEND_ADDITIVE: {
+			D3D11_BLEND_DESC blend_desc;
+			ZeroMemory(&blend_desc, sizeof(D3D11_BLEND_DESC));
+			blend_desc.RenderTarget[0].BlendEnable = true;
+			blend_desc.RenderTarget[0].SrcBlend = D3D11_BLEND_ONE;
+			blend_desc.RenderTarget[0].DestBlend = D3D11_BLEND_ONE;
+			blend_desc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+			blend_desc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
+			blend_desc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
+			blend_desc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+			blend_desc.RenderTarget[0].RenderTargetWriteMask = 0x0f;
+
+			D3D11Context* GAPI_context{ EngineContext::get_GAPI_context() };
+
+			ComPtr<ID3D11Device> device{ GAPI_context->get_device() };
+
+			HRESULT res = device->CreateBlendState(&blend_desc, m_blend_state.ReleaseAndGetAddressOf());
 		}
 			break;
-		case RenderStateType::BLEND_ALPHA: {
+		case RenderStateType::BS_BLEND_ALPHA: {
 			D3D11_BLEND_DESC blend_desc;
 			ZeroMemory(&blend_desc, sizeof(D3D11_BLEND_DESC));
 			blend_desc.RenderTarget[0].BlendEnable = true;

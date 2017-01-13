@@ -15,6 +15,8 @@ namespace Glacier
 
 		bool m_should_draw{ true };
 
+		bool m_casts_shadows{ true };
+
 	public:
 		RenderingComponent(Object* parent) : Component{ "co_rendering", parent }
 		{	
@@ -69,6 +71,16 @@ namespace Glacier
 		const Mat4f& get_xform() const noexcept
 		{
 			return m_parent->get_xform();
+		}
+
+		void set_casts_shadows(bool state) noexcept
+		{
+			m_casts_shadows = state;
+		}
+
+		bool casts_shadows() const noexcept
+		{
+			return m_casts_shadows;
 		}
 	};
 }
