@@ -143,6 +143,9 @@
     <ClCompile Include="rendering\src\d3d\D3D11_rasterizer_state.cpp">
       <Filter>Rendering\Source Files\d3d</Filter>
     </ClCompile>
+    <ClCompile Include="src\emitter_component.cpp">
+      <Filter>Source Files\Components</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\application.h">
@@ -294,6 +297,9 @@
     </ClInclude>
     <ClInclude Include="rendering\include\d3d\D3D11_rasterizer_state.h">
       <Filter>Rendering\Header Files\d3d</Filter>
+    </ClInclude>
+    <ClInclude Include="include\emitter_conponent.h">
+      <Filter>Header Files\Components</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
