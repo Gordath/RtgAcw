@@ -343,10 +343,15 @@ void MainScene::initialize()
 		std::cerr << "Linear Texture Wrap sampler creation failed!" << std::endl;
 	}
 
-	samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
-	samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
-	samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
-	samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
+	samplerDesc.Filter = D3D11_FILTER_COMPARISON_MIN_MAG_LINEAR_MIP_POINT;
+	samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_BORDER;
+	samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_BORDER;
+	samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_BORDER;
+	samplerDesc.BorderColor[0] = 1;
+	samplerDesc.BorderColor[1] = 1;
+	samplerDesc.BorderColor[2] = 1;
+	samplerDesc.BorderColor[3] = 1;
+	samplerDesc.ComparisonFunc = D3D11_COMPARISON_LESS_EQUAL;
 	
 	res = device->CreateSamplerState(&samplerDesc, m_sampler_linear_clamp.ReleaseAndGetAddressOf());
 

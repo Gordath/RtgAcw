@@ -17,7 +17,6 @@ private:
 
 	Glacier::ComPtr<ID3D11SamplerState> m_sampler_linear_wrap;
 	Glacier::ComPtr<ID3D11SamplerState> m_sampler_linear_clamp;
-	//Glacier::ComPtr<>
 
 	void depth_pass() const noexcept;
 	void color_pass() const noexcept;

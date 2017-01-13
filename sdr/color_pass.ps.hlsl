@@ -43,7 +43,7 @@ Texture2D normal_tex : register(t3);
 Texture2D depth_maps[4] : register(t4);
 
 SamplerState texture_sampler_linear_wrap : register(s0);
-SamplerState texture_sampler_linear_clamp : register(s1);
+SamplerComparisonState depth_comparison_sampler : register(s1);
 
 float3 get_light_vector(Light light, float3 pos)
 {
@@ -101,35 +101,42 @@ void calculate_lighting(StructuredBuffer<Light> lights,
 			shadow_coords /= shadow_coords.w;
 			shadow_coords = mul(shadow_coords, offset_mat);
 
-			float shadow = 1.0;
-			float depth_value = 1.0;
+			float shadow = 0.0;
+
+			float pixel_size = 1.0 / 2048.0;
+
+			const float2 offsets[9] = {
+				float2(-pixel_size, -pixel_size), float2(0.0, -pixel_size), float2(pixel_size, -pixel_size),
+				float2(-pixel_size, 0.0), float2(0.0, 0.0), float2(pixel_size, 0.0),
+				float2(-pixel_size, +pixel_size), float2(0.0, +pixel_size), float2(pixel_size, +pixel_size)
+			};
+
 			if (i == 0) {
-				depth_value = depth_maps[0].Sample(texture_sampler_linear_clamp, shadow_coords.xy).r;
+				[unroll]
+				for (int i = 0; i < 9; ++i) {
+					shadow += depth_maps[0].SampleCmpLevelZero(depth_comparison_sampler, shadow_coords.xy + offsets[i], shadow_coords.z).r;
+				}
 			}
 
 			if (i == 1) {
-				depth_value = depth_maps[1].Sample(texture_sampler_linear_clamp, shadow_coords.xy).r;
+				[unroll]
+				for (int i = 0; i < 9; ++i) {
+					shadow += depth_maps[1].SampleCmpLevelZero(depth_comparison_sampler, shadow_coords.xy + offsets[i], shadow_coords.z).r;
+				}
 			}
 
 			if (i == 2) {
-				depth_value = depth_maps[2].Sample(texture_sampler_linear_clamp, shadow_coords.xy).r;
+				[unroll]
+				for (int i = 0; i < 9; ++i) {
+					shadow += depth_maps[2].SampleCmpLevelZero(depth_comparison_sampler, shadow_coords.xy + offsets[i], shadow_coords.z).r;
+				}
 			}
 
 			if (i == 3) {
-				depth_value = depth_maps[3].Sample(texture_sampler_linear_clamp, shadow_coords.xy).r;
-			}
-
-			if (shadow_coords.x < 0.0 || shadow_coords.x >= 1.0 || shadow_coords.y < 0.00 || shadow_coords.y >= 1.0) {
-				depth_value = 100000000.0;
-			}
-
-			float light_depth_value = shadow_coords.z;
-			light_depth_value = light_depth_value;
-
-			
-
-			if (light_depth_value > depth_value) {
-				shadow = 0.0;
+				[unroll]
+				for (int i = 0; i < 9; ++i) {
+					shadow += depth_maps[3].SampleCmpLevelZero(depth_comparison_sampler, shadow_coords.xy + offsets[i], shadow_coords.z).r;
+				}
 			}
 
 			float3 h = normalize(view_direction + light_vector);
@@ -137,6 +144,8 @@ void calculate_lighting(StructuredBuffer<Light> lights,
 			float exponent = 60.0;
 
 			float4 lit_result = lit(n_dot_l, n_dot_h, exponent);
+
+			shadow /= 9.0;
 
 			ambient_light += attenuation * lights[i].ambient_intensity * lit_result.x * shadow;
 			diffuse_light += attenuation * lights[i].diffuse_intensity * lit_result.y * shadow;
@@ -170,7 +179,7 @@ float4 main(VOut input) : SV_TARGET
 	float4 spec_color = specular * spec_light;
 
 	float4 final_color = diff_color + spec_color + amb_light;
-	//final_color = lerp(float4(0.0470588235294118f, 0.3019607843137255f, 0.4117647058823529f, 1.0), final_color, input.fog_factor);
+	final_color = lerp(float4(0.0470588235294118f, 0.3019607843137255f, 0.4117647058823529f, 1.0), final_color, input.fog_factor);
 	
 	if (diffuse.a < 1.0) {
 		final_color.a = diffuse.a * input.fresnel_term;
