@@ -25,6 +25,7 @@ struct VOut {
 	float3 view_space_pos : VIEW_SPACE_POS;
 	float fog_factor : TEXCOORD2;
 	float fresnel_term : TEXCOORD3;
+	float4 texcoord : TEXCOORD0;
 };
 
 VOut main(VIn input)
@@ -34,6 +35,7 @@ VOut main(VIn input)
 	output.position = mul(input.position, MVP);
 	output.vertexWorld = input.position;
 	output.normal = mul(input.normal.xyz, (float3x3)ITMV);
+	output.texcoord = input.texcoord;
 
 	float4 vpos = mul(input.position, MV);
 	output.view_space_pos = vpos.xyz;
@@ -43,7 +45,7 @@ VOut main(VIn input)
 	float fog_end = 50.0;
 
 	float vdist = length(output.view_space_pos);
-	float fog_density = 0.001;
+	float fog_density = 0.0006;
 	float exp = (vdist * fog_density) ;
 	output.fog_factor = 1.0 / pow(2.71828, exp);
 

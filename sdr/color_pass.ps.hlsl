@@ -6,6 +6,7 @@ struct VOut {
 	float3 view_space_pos : VIEW_SPACE_POS;
 	float fog_factor : TEXCOORD2;
 	float fresnel_term : TEXCOORD3;
+	float4 texcoord : TEXCOORD0;
 };
 
 cbuffer uniforms {

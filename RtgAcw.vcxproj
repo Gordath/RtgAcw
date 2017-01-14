@@ -172,6 +172,12 @@
     <FxCompile Include="sdr\depth_pass.vs.hlsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug - Direct X|Win32'">true</ExcludedFromBuild>
     </FxCompile>
+    <FxCompile Include="sdr\particles.ps.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug - Direct X|Win32'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="sdr\particles.vs.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug - Direct X|Win32'">true</ExcludedFromBuild>
+    </FxCompile>
     <FxCompile Include="sdr\render_texture.ps.hlsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug - Direct X|Win32'">true</ExcludedFromBuild>
     </FxCompile>

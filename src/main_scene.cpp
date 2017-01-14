@@ -6,6 +6,7 @@
 #include "../GlacierEngine/rendering/include/render_state_manager.h"
 #include "../GlacierEngine/windowing/include/windowing_service.h"
 #include "shader_program_manager.h"
+#include "emitter_conponent.h"
 
 using namespace Glacier;
 
@@ -38,6 +39,7 @@ void MainScene::depth_pass() const noexcept
 	ComPtr<ID3D11DeviceContext> device_context{ GAPI_context->get_device_context() };
 
 	std::vector<RenderingComponent*> rendering_components;
+
 	for (auto object : m_objects) {
 		RenderingComponent* rc{ static_cast<RenderingComponent*>(object->get_component("co_rendering")) };
 
@@ -118,10 +120,109 @@ void MainScene::color_pass() const noexcept
 	m_color_pass_rt.bind(RenderTargetBindType::COLOR_AND_DEPTH);
 	m_color_pass_rt.clear(clear_color);
 
-	ShaderProgramManager::get("color_pass_sdrprog")->bind();
+	if (wireframe) {
+		RenderStateManager::set(RenderStateType::RS_DRAW_WIRE);
+	}
 
 	D3D11Context* GAPI_context{ EngineContext::get_GAPI_context() };
 	ComPtr<ID3D11DeviceContext> device_context{ GAPI_context->get_device_context() };
+
+	D3D11_VIEWPORT viewport;
+	viewport.TopLeftX = 0.0f;
+	viewport.TopLeftY = 0.0f;
+	viewport.Width = static_cast<float>(WindowingService::get_window(0)->get_size().x);
+	viewport.Height = static_cast<float>(WindowingService::get_window(0)->get_size().y);
+	viewport.MinDepth = 0.0f;
+	viewport.MaxDepth = 1.0f;
+
+	device_context->RSSetViewports(1, &viewport);
+
+	std::vector<RenderingComponent*> rendering_components;
+	std::vector<EmitterComponent*> emitter_components;
+
+	for (auto object : m_objects) {
+		RenderingComponent* rc{ static_cast<RenderingComponent*>(object->get_component("co_rendering")) };
+		EmitterComponent* ec{ static_cast<EmitterComponent*>(object->get_component("co_emitter")) };
+
+		if (rc) {
+			rendering_components.push_back(rc);
+		}
+
+		if (ec) {
+			emitter_components.push_back(ec);
+		}
+	}
+
+	std::sort(rendering_components.begin(),
+		rendering_components.end(),
+		[](auto a, auto b) {
+		return a->get_material().diffuse.w > b->get_material().diffuse.w;
+	}
+	);
+
+	Mat4f cam_matrix = Mat4f(1.0);
+	cam_matrix = MathUtils::rotate(cam_matrix, MathUtils::to_radians(cam_theta), Vec3f(0, 1, 0));
+	cam_matrix = MathUtils::rotate(cam_matrix, MathUtils::to_radians(cam_phi), Vec3f(1, 0, 0));
+	cam_matrix = MathUtils::translate(cam_matrix, Vec3f(0, 0, -cam_dist));
+
+	//Draw particles. -----------------------------------------------------------------------------------------------
+	RenderStateManager::set(RenderStateType::BS_BLEND_ADDITIVE);
+	ShaderProgramManager::get("particles_sdrprog")->bind();
+	for (auto emitter : emitter_components) {
+		auto particles = emitter->get_particles();
+
+		for (auto particle : particles) {
+			Mat4f model;
+			model = MathUtils::translate(model, particle.position);
+			model = MathUtils::scale(model, Vec3f{ particle.size });
+
+			CameraSystem* camera_system{ EngineContext::get_camera_system() };
+			Mat4f view = MathUtils::inverse(cam_matrix);
+			view[0][0] = 1.0f;
+			view[0][1] = 0.0f;
+			view[0][2] = 0.0f;
+
+			view[1][0] = 0.0f;
+			view[1][1] = 1.0f;
+			view[1][2] = 0.0f;
+
+			view[2][0] = 0.0f;
+			view[2][1] = 0.0f;
+			view[2][2] = 1.0f;
+
+			Mat4f projection = camera_system->get_active_camera_projection_matrix();
+
+			Mat4f MVP = projection * view * model;
+
+			DepthPassUniformBuffer uniforms;
+			uniforms.MVP = MathUtils::transpose(MVP);
+
+			D3D11_MAPPED_SUBRESOURCE ms;
+
+			device_context->Map(m_depth_pass_uniform_buffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &ms);
+			memcpy(ms.pData, &uniforms, sizeof(DepthPassUniformBuffer));
+			device_context->Unmap(m_depth_pass_uniform_buffer.Get(), 0);
+
+			device_context->VSSetConstantBuffers(0, 1, m_depth_pass_uniform_buffer.GetAddressOf());
+
+			Mesh *mesh = emitter->get_mesh();
+
+			mesh->get_vbo()->bind();
+
+			if (mesh->get_index_count()) {
+				mesh->get_ibo()->bind();
+				mesh->get_ibo()->draw();
+			}
+			else {
+				mesh->get_vbo()->draw();
+			}
+		}
+
+	}
+	RenderStateManager::set(RenderStateType::BS_BLEND_DISSABLED);
+	//-------------------------------------------------------------------------------------------------------------
+
+	ShaderProgramManager::get("color_pass_sdrprog")->bind();
 
 	device_context->PSSetShaderResources(0, 1, m_light_srv.GetAddressOf());
 	device_context->PSSetSamplers(0, 1, m_sampler_linear_wrap.GetAddressOf());
@@ -134,32 +235,7 @@ void MainScene::color_pass() const noexcept
 
 	device_context->PSSetShaderResources(4, 4, depth_textures.data());
 
-	std::vector<RenderingComponent*> rendering_components;
-	for (auto object : m_objects) {
-		RenderingComponent* rc{ static_cast<RenderingComponent*>(object->get_component("co_rendering")) };
-
-		if (rc) {
-			rendering_components.push_back(rc);
-		}
-	}
-
-	std::sort(rendering_components.begin(),
-	          rendering_components.end(),
-	          [](auto a, auto b) {
-		          return a->get_material().diffuse.w > b->get_material().diffuse.w;
-	          }
-	);
-
 	RenderStateManager::set(RenderStateType::BS_BLEND_ALPHA);
-
-	if (wireframe) {
-		RenderStateManager::set(RenderStateType::RS_DRAW_WIRE);
-	}
-
-	Mat4f cam_matrix = Mat4f(1.0);
-	cam_matrix = MathUtils::rotate(cam_matrix, MathUtils::to_radians(cam_theta), Vec3f(0, 1, 0));
-	cam_matrix = MathUtils::rotate(cam_matrix, MathUtils::to_radians(cam_phi), Vec3f(1, 0, 0));
-	cam_matrix = MathUtils::translate(cam_matrix, Vec3f(0, 0, -cam_dist));
 
 	for (auto rendering_component : rendering_components) {
 
@@ -198,16 +274,6 @@ void MainScene::color_pass() const noexcept
 			device_context->VSSetConstantBuffers(0, 1, m_color_pass_uniform_buffer.GetAddressOf());
 			device_context->PSSetConstantBuffers(0, 1, m_color_pass_uniform_buffer.GetAddressOf());
 
-			D3D11_VIEWPORT viewport;
-			viewport.TopLeftX = 0.0f;
-			viewport.TopLeftY = 0.0f;
-			viewport.Width = static_cast<float>(WindowingService::get_window(0)->get_size().x);
-			viewport.Height = static_cast<float>(WindowingService::get_window(0)->get_size().y);
-			viewport.MinDepth = 0.0f;
-			viewport.MaxDepth = 1.0f;
-
-			device_context->RSSetViewports(1, &viewport);
-
 			Mesh* mesh{ rendering_component->get_mesh() };
 
 			mesh->get_vbo()->bind();
@@ -223,6 +289,8 @@ void MainScene::color_pass() const noexcept
 	}
 
 	RenderStateManager::set(RenderStateType::BS_BLEND_DISSABLED);
+
+	
 
 	std::vector<ID3D11ShaderResourceView*> null_srvs{ nullptr, nullptr, nullptr, nullptr };
 
@@ -366,6 +434,9 @@ void MainScene::initialize()
 
 	m = MeshUtils::generate_cube(1.0f);
 	ResourceManager::register_resource(m, L"cube");
+
+	m = MeshUtils::generate_plane_xy(1.0f);
+	ResourceManager::register_resource(m, L"plane");
 
 	Material mat;
 	mat.diffuse = Vec4f{ 0.0470588235294118f, 0.3019607843137255f, 0.4117647058823529f, 0.5f };
@@ -582,6 +653,24 @@ void MainScene::initialize()
 	light4->set_position(Vec3f{ 0.0f, 10.0, 10.0f });
 
 	m_objects.push_back(light4);
+
+
+	Object* emitter{ new Object{"emmiter1"} };
+	EmitterComponent* ec{ new EmitterComponent{emitter} };
+	ec->set_lifespan(6.0);
+	ec->set_max_particles(100);
+	ec->set_spawn_rate(2.0);
+	ec->set_active(true);
+	ec->set_particle_size(0.2f);
+	ec->set_spawn_radius(3.5f);
+	ec->set_velocity(Vec3f{ 0.0f, 0.0f, 0.0f });
+	ec->set_velocity_range(0.1f);
+	ec->set_external_force(Vec3f{ 0.0f, 0.0f, 0.0f });
+	ec->set_mesh(ResourceManager::get<Mesh>(L"plane"));
+
+	//TODO:set mesh and material
+
+	m_objects.push_back(emitter);
 
 	Window* win{ WindowingService::get_window(0) };
 	m_color_pass_rt.create(win->get_size());

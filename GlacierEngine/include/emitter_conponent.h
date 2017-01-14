@@ -3,6 +3,7 @@
 #include "component.h"
 #include "internal/types.h"
 #include <vector>
+#include "rendering_component.h"
 
 namespace Glacier
 {
@@ -27,6 +28,8 @@ namespace Glacier
 		int m_max_particles{ 1 };
 		float m_spawn_radius{ 0.0f };
 
+		float m_particle_size{ 1.0f };
+
 		Vec4f m_start_color;
 		Vec4f m_end_color;
 
@@ -34,11 +37,24 @@ namespace Glacier
 
 		bool m_active{ true };
 
+		//Physics
+		Vec3f m_velocity;
+		float m_velocity_range{ 0.0f };
+		Vec3f m_external_force;
+
+		//Drawing info
+		Mesh* m_mesh{ nullptr };
+		Material m_material;
+
 	public:
 		EmitterComponent(Object* parent) : Component{ "co_emitter", parent }
 		{
 		}
 
+		const std::vector<Particle>& get_particles() const noexcept
+		{
+			return m_particles;
+		}
 
 		float get_spawn_rate() const noexcept
 		{
@@ -70,7 +86,7 @@ namespace Glacier
 			m_max_particles = max_particles;
 		}
 
-		float get_spawn_radius1() const noexcept
+		float get_spawn_radius() const noexcept
 		{
 			return m_spawn_radius;
 		}
@@ -78,6 +94,16 @@ namespace Glacier
 		void set_spawn_radius(float spawn_radius) noexcept
 		{
 			m_spawn_radius = spawn_radius;
+		}
+
+		float get_particle_size() const noexcept
+		{
+			return m_particle_size;
+		}
+
+		void set_particle_size(float particle_size) noexcept
+		{
+			m_particle_size = particle_size;
 		}
 
 		const Vec4f& get_start_color() const noexcept
@@ -110,9 +136,60 @@ namespace Glacier
 			m_active = active;
 		}
 
+		const Vec3f& get_velocity() const noexcept
+		{
+			return m_velocity;
+		}
+
+		void set_velocity(const Vec3f& velocity) noexcept
+		{
+			m_velocity = velocity;
+		}
+
+		float get_velocity_range() const noexcept
+		{
+			return m_velocity_range;
+		}
+
+		void set_velocity_range(float velocity_range) noexcept
+		{
+			m_velocity_range = velocity_range;
+		}
+
+		const Vec3f& get_external_force() const noexcept
+		{
+			return m_external_force;
+		}
+
+		void set_external_force(const Vec3f& external_force) noexcept
+		{
+			m_external_force = external_force;
+		}
+
+		Mesh* get_mesh() const noexcept
+		{
+			return m_mesh;
+		}
+
+		void set_mesh(Mesh* mesh) noexcept
+		{
+			m_mesh = mesh;
+		}
+
+		const Material& get_material() const noexcept
+		{
+			return m_material;
+		}
+
+		void set_material(const Material& material) noexcept
+		{
+			m_material = material;
+		}
 
 		void setup() noexcept override;
+
 		void update(float dt, long time) noexcept override;
+
 		void teardown() noexcept override;
 	};
 }

@@ -61,5 +61,11 @@
     <FxCompile Include="sdr\depth_pass.ps.hlsl">
       <Filter>sdr</Filter>
     </FxCompile>
+    <FxCompile Include="sdr\particles.vs.hlsl">
+      <Filter>sdr</Filter>
+    </FxCompile>
+    <FxCompile Include="sdr\particles.ps.hlsl">
+      <Filter>sdr</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>
