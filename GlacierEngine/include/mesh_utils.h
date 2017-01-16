@@ -9,6 +9,8 @@ namespace Glacier
 		Mesh* generate_cube(float size, VertexWinding vertex_winding = VertexWinding::CLOCKWISE) noexcept;
 
 		Mesh* generate_uv_sphere(float radius, int slices, int stacks, float urange = 1.0f, float vrange = 1.0f) noexcept;
+
+		Mesh* generate_plane_xy(float size) noexcept;
 	}
 }
 

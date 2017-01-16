@@ -11,6 +11,8 @@ namespace Glacier
 		ComPtr<ID3D11ShaderResourceView> m_shader_resource_view;
 
 	public:
+		D3D11_texture() = default;
+
 		D3D11_texture(TextureType texture_type) : Texture{ texture_type }
 		{
 		}

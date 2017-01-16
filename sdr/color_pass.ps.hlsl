@@ -6,6 +6,9 @@ struct VOut {
 	float3 view_space_pos : VIEW_SPACE_POS;
 	float fog_factor : TEXCOORD2;
 	float fresnel_term : TEXCOORD3;
+	float4 texcoord : TEXCOORD0;
+	float3 tangent : TEXCOORD4;
+	float3 binormal : TEXCOORD5;
 };
 
 cbuffer uniforms {
@@ -15,6 +18,7 @@ cbuffer uniforms {
 	float4x4 V;
 	float4x4 P;
 	float4x4 ITMV;
+	float4x4 texture_matrix;
 	float4 diffuse;
 	float4 specular;
 };
@@ -34,13 +38,15 @@ struct Light {
 	float pad;
 };
 
-StructuredBuffer<Light> lights : register(t0);
 
-Texture2D diffuse_tex : register(t1);
-Texture2D specular_tex : register(t2);
-Texture2D normal_tex : register(t3);
 
-Texture2D depth_maps[4] : register(t4);
+Texture2D diffuse_tex : register(t0);
+Texture2D specular_tex : register(t1);
+Texture2D normal_tex : register(t2);
+
+StructuredBuffer<Light> lights : register(t4);
+
+Texture2D depth_maps[4] : register(t5);
 
 SamplerState texture_sampler_linear_wrap : register(s0);
 SamplerComparisonState depth_comparison_sampler : register(s1);
@@ -48,7 +54,7 @@ SamplerComparisonState depth_comparison_sampler : register(s1);
 float3 get_light_vector(Light light, float3 pos)
 {
 	if (light.flags.x == 0) { //not directional
-		return mul(float4(light.position.xyz, 1.0), V).xyz - pos;
+		return mul(float4(light.position, 1.0), V).xyz - pos;
 	}
 	
 	return mul(light.position, (float3x3)V);
@@ -60,6 +66,7 @@ void calculate_lighting(StructuredBuffer<Light> lights,
 						float3 view_direction,
 						float4 vertexWorld,
 						float shininess,
+						float3x3 TBN,
 						inout float4 ambient_light,
 						inout float4 diffuse_light,
 						inout float4 specular_light)
@@ -75,8 +82,6 @@ void calculate_lighting(StructuredBuffer<Light> lights,
 			
 			float attenuation = 1.0;
 
-			float n_dot_l = max(dot(normal.xyz, light_vector), 0.0);
-
 			if (lights[i].flags.x == 0) { //not directional
 				
 				float3 spot_dir = normalize(mul(lights[i].spot_direction, (float3x3)V));
@@ -89,7 +94,6 @@ void calculate_lighting(StructuredBuffer<Light> lights,
 
 			}
 
-			//SHADOWING ATTEMPT!!!!
 			float4x4 offset_mat = float4x4(0.5, 0.0, 0.0, 0.0,
 										   0.0, -0.5, 0.0, 0.0,
 										   0.0, 0.0, 1.0, 0.0,
@@ -139,6 +143,10 @@ void calculate_lighting(StructuredBuffer<Light> lights,
 				}
 			}
 
+			//Light in Tangent space here
+			light_vector = normalize(mul(light_vector, TBN));
+
+			float n_dot_l = max(dot(normal.xyz, light_vector), 0.0);
 			float3 h = normalize(view_direction + light_vector);
 			float n_dot_h = max(dot(normal, h), 0.0);
 			float exponent = 60.0;
@@ -157,9 +165,18 @@ void calculate_lighting(StructuredBuffer<Light> lights,
 
 float4 main(VOut input) : SV_TARGET
 {
-	float3 n = normalize(input.normal);
+	float3 normal = normalize(input.normal);
+	float3 tangent = normalize(input.tangent);
+	float3 binormal = normalize(input.binormal);
 
-	float3 vdir = normalize(input.view_direction);
+	float3x3 TBN = transpose(float3x3(tangent,
+							binormal,
+							normal));
+
+	float4 norm_texel = normal_tex.Sample(texture_sampler_linear_wrap, input.texcoord.xy);
+	float3 n = normalize(norm_texel.xyz * 2.0 - 1.0);
+
+	float3 vdir = normalize(mul(input.view_direction, TBN));
 
 	float4 amb_light = float4(0.0, 0.0, 0.0, 1.0);
 	float4 diff_light = float4(0.0, 0.0, 0.0, 1.0);
@@ -171,12 +188,16 @@ float4 main(VOut input) : SV_TARGET
 		vdir,
 		input.vertexWorld,
 		60.0,
+		TBN,
 		amb_light,
 		diff_light,
 		spec_light); 
 
-	float4 diff_color = diffuse * diff_light;
-	float4 spec_color = specular * spec_light;
+	float4 diff_texel = diffuse_tex.Sample(texture_sampler_linear_wrap, input.texcoord.xy);
+	float4 spec_texel = specular_tex.Sample(texture_sampler_linear_wrap, input.texcoord.xy);
+
+	float4 diff_color = diff_texel * diffuse * diff_light;
+	float4 spec_color = spec_texel * specular * spec_light;
 
 	float4 final_color = diff_color + spec_color + amb_light;
 	final_color = lerp(float4(0.0470588235294118f, 0.3019607843137255f, 0.4117647058823529f, 1.0), final_color, input.fog_factor);
@@ -184,8 +205,7 @@ float4 main(VOut input) : SV_TARGET
 	if (diffuse.a < 1.0) {
 		final_color.a = diffuse.a * input.fresnel_term;
 	}
-	else
-	{
+	else {
 		final_color.a = diffuse.a;
 	}
 

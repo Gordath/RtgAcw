@@ -18,11 +18,18 @@ namespace Glacier
 		TextureType m_texture_type;
 
 	public:
+		Texture() = default;
+
 		Texture(TextureType texture_type) : m_texture_type{ texture_type }
 		{
 		}
 
 		virtual void bind() const noexcept = 0;
+
+		void set_texture_type(TextureType texture_type) noexcept
+		{
+			m_texture_type = texture_type;
+		}
 	};
 }
 

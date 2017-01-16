@@ -149,6 +149,7 @@
   <ItemGroup>
     <ClCompile Include="rendering\src\d3d\D3D11_blend_state.cpp" />
     <ClCompile Include="rendering\src\d3d\D3D11_context.cpp" />
+    <ClCompile Include="rendering\src\d3d\D3D11_depth_stencil_state.cpp" />
     <ClCompile Include="rendering\src\d3d\D3D11_IBO.cpp" />
     <ClCompile Include="rendering\src\d3d\D3D11_rasterizer_state.cpp" />
     <ClCompile Include="rendering\src\d3d\D3D11_renderer.cpp" />
@@ -164,6 +165,7 @@
     <ClCompile Include="src\camera_component.cpp" />
     <ClCompile Include="src\camera_system.cpp" />
     <ClCompile Include="src\component.cpp" />
+    <ClCompile Include="src\emitter_component.cpp" />
     <ClCompile Include="src\engine_context.cpp" />
     <ClCompile Include="src\light_component.cpp" />
     <ClCompile Include="src\light_system.cpp" />
@@ -182,6 +184,7 @@
     <ClInclude Include="include\camera_component.h" />
     <ClInclude Include="include\camera_system.h" />
     <ClInclude Include="include\component.h" />
+    <ClInclude Include="include\emitter_conponent.h" />
     <ClInclude Include="include\glacier_engine.h" />
     <ClInclude Include="include\internal\engine_context.h" />
     <ClInclude Include="include\internal\math_utils.h" />
@@ -201,6 +204,7 @@
     <ClInclude Include="include\timer.h" />
     <ClInclude Include="rendering\include\d3d\D3D11_blend_state.h" />
     <ClInclude Include="rendering\include\d3d\D3D11_context.h" />
+    <ClInclude Include="rendering\include\d3d\D3D11_depth_stencil_state.h" />
     <ClInclude Include="rendering\include\d3d\D3D11_IBO.h" />
     <ClInclude Include="rendering\include\d3d\D3D11_rasterizer_state.h" />
     <ClInclude Include="rendering\include\d3d\D3D11_renderer.h" />

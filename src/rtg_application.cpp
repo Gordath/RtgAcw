@@ -87,6 +87,10 @@ bool RtgApplication::initialize(int* argc, char* argv[])
 		return false;
 	}
 
+	if (!ShaderProgramManager::create("particles_sdrprog", IL_POSITION | IL_TEXCOORD, L"particles.vs.hlsl", L"particles.ps.hlsl")) {
+		return false;
+	}
+
 	scene = new MainScene;
 	SceneManager::push_scene(scene);
 
