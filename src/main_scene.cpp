@@ -7,6 +7,7 @@
 #include "../GlacierEngine/windowing/include/windowing_service.h"
 #include "shader_program_manager.h"
 #include "emitter_conponent.h"
+#include "../GlacierEngine/rendering/include/d3d/D3D11_texture.h"
 
 using namespace Glacier;
 
@@ -25,12 +26,18 @@ struct ColorPassUniformBuffer {
 	Mat4f V;
 	Mat4f P;
 	Mat4f ITMV;
+	Mat4f texture_matrix;
 	Vec4f diffuse;
 	Vec4f specular;
 };
 
 struct DepthPassUniformBuffer {
 	Mat4f MVP;
+};
+
+struct ParticleUniformBuffer {
+	Mat4f MVP;
+	Vec4f diffuse;
 };
 
 void MainScene::depth_pass() const noexcept
@@ -54,7 +61,7 @@ void MainScene::depth_pass() const noexcept
 
 	RenderStateManager::set(RenderStateType::RS_CULL_FRONT);
 
-	for (int i = 0; i < lights.size() ; ++i) {
+	for (int i = 0; i < lights.size(); ++i) {
 		m_depth_pass_rts[i].bind(RenderTargetBindType::DEPTH);
 		m_depth_pass_rts[i].clear(clear_color);
 
@@ -105,17 +112,17 @@ void MainScene::depth_pass() const noexcept
 				}
 			}
 		}
-		
+
 		m_depth_pass_rts[i].unbind();
 	}
 
 	RenderStateManager::set(RenderStateType::RS_CULL_BACK);
-	
 }
 
 void MainScene::color_pass() const noexcept
 {
 	float clear_color[4]{ 0.0470588235294118f, 0.3019607843137255f, 0.4117647058823529f, 1.0f };
+	//float clear_color[4]{ 0.0f, 0.0f, 0.0f, 1.0f };
 
 	m_color_pass_rt.bind(RenderTargetBindType::COLOR_AND_DEPTH);
 	m_color_pass_rt.clear(clear_color);
@@ -154,88 +161,28 @@ void MainScene::color_pass() const noexcept
 	}
 
 	std::sort(rendering_components.begin(),
-		rendering_components.end(),
-		[](auto a, auto b) {
-		return a->get_material().diffuse.w > b->get_material().diffuse.w;
-	}
-	);
+	          rendering_components.end(),
+	          [](auto a, auto b) {
+		          return a->get_material().diffuse.w > b->get_material().diffuse.w;
+	          });
 
-	Mat4f cam_matrix = Mat4f(1.0);
+	Mat4f cam_matrix{ Mat4f(1.0) };
 	cam_matrix = MathUtils::rotate(cam_matrix, MathUtils::to_radians(cam_theta), Vec3f(0, 1, 0));
 	cam_matrix = MathUtils::rotate(cam_matrix, MathUtils::to_radians(cam_phi), Vec3f(1, 0, 0));
 	cam_matrix = MathUtils::translate(cam_matrix, Vec3f(0, 0, -cam_dist));
 
-	//Draw particles. -----------------------------------------------------------------------------------------------
-	RenderStateManager::set(RenderStateType::BS_BLEND_ADDITIVE);
-	ShaderProgramManager::get("particles_sdrprog")->bind();
-	for (auto emitter : emitter_components) {
-		auto particles = emitter->get_particles();
-
-		for (auto particle : particles) {
-			Mat4f model;
-			model = MathUtils::translate(model, particle.position);
-			model = MathUtils::scale(model, Vec3f{ particle.size });
-
-			CameraSystem* camera_system{ EngineContext::get_camera_system() };
-			Mat4f view = MathUtils::inverse(cam_matrix);
-			view[0][0] = 1.0f;
-			view[0][1] = 0.0f;
-			view[0][2] = 0.0f;
-
-			view[1][0] = 0.0f;
-			view[1][1] = 1.0f;
-			view[1][2] = 0.0f;
-
-			view[2][0] = 0.0f;
-			view[2][1] = 0.0f;
-			view[2][2] = 1.0f;
-
-			Mat4f projection = camera_system->get_active_camera_projection_matrix();
-
-			Mat4f MVP = projection * view * model;
-
-			DepthPassUniformBuffer uniforms;
-			uniforms.MVP = MathUtils::transpose(MVP);
-
-			D3D11_MAPPED_SUBRESOURCE ms;
-
-			device_context->Map(m_depth_pass_uniform_buffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &ms);
-			memcpy(ms.pData, &uniforms, sizeof(DepthPassUniformBuffer));
-			device_context->Unmap(m_depth_pass_uniform_buffer.Get(), 0);
-
-			device_context->VSSetConstantBuffers(0, 1, m_depth_pass_uniform_buffer.GetAddressOf());
-
-			Mesh *mesh = emitter->get_mesh();
-
-			mesh->get_vbo()->bind();
-
-			if (mesh->get_index_count()) {
-				mesh->get_ibo()->bind();
-				mesh->get_ibo()->draw();
-			}
-			else {
-				mesh->get_vbo()->draw();
-			}
-		}
-
-	}
-	RenderStateManager::set(RenderStateType::BS_BLEND_DISSABLED);
-	//-------------------------------------------------------------------------------------------------------------
-
 	ShaderProgramManager::get("color_pass_sdrprog")->bind();
 
-	device_context->PSSetShaderResources(0, 1, m_light_srv.GetAddressOf());
+	device_context->PSSetShaderResources(4, 1, m_light_srv.GetAddressOf());
 	device_context->PSSetSamplers(0, 1, m_sampler_linear_wrap.GetAddressOf());
-	device_context->PSSetSamplers(1, 1, m_sampler_linear_clamp.GetAddressOf());
+	device_context->PSSetSamplers(1, 1, m_sampler_shadow_comparison.GetAddressOf());
 
 	std::vector<ID3D11ShaderResourceView*> depth_textures;
 	for (int i = 0; i < 4; ++i) {
 		depth_textures.push_back(m_depth_pass_rts[i].get_depth_attachment());
 	}
 
-	device_context->PSSetShaderResources(4, 4, depth_textures.data());
-
-	RenderStateManager::set(RenderStateType::BS_BLEND_ALPHA);
+	device_context->PSSetShaderResources(5, 4, depth_textures.data());
 
 	for (auto rendering_component : rendering_components) {
 
@@ -262,8 +209,30 @@ void MainScene::color_pass() const noexcept
 			uniforms.V = MathUtils::transpose(view);
 			uniforms.P = MathUtils::transpose(projection);
 			uniforms.ITMV = MathUtils::transpose(ITMV);
+			uniforms.texture_matrix = MathUtils::transpose(material.texture_matrix);
 			uniforms.diffuse = material.diffuse;
 			uniforms.specular = material.specular;
+
+			if (material.textures[TEX_DIFFUSE]) {
+				material.textures[TEX_DIFFUSE]->bind();
+			}
+			else {
+				ResourceManager::get<D3D11_texture>(TEXTURE_PATH + L"dummyDiff.jpg")->bind();
+			}
+
+			if (material.textures[TEX_SPECULAR]) {
+				material.textures[TEX_SPECULAR]->bind();
+			}
+			else {
+				ResourceManager::get<D3D11_texture>(TEXTURE_PATH + L"dummySpec.jpg")->bind();
+			}
+
+			if (material.textures[TEX_NORMAL]) {
+				material.textures[TEX_NORMAL]->bind();
+			}
+			else {
+				ResourceManager::get<D3D11_texture>(TEXTURE_PATH + L"dummyNorm.png")->bind();
+			}
 
 			D3D11_MAPPED_SUBRESOURCE ms;
 
@@ -276,6 +245,73 @@ void MainScene::color_pass() const noexcept
 
 			Mesh* mesh{ rendering_component->get_mesh() };
 
+			RenderStateManager::set(material.blend_state);
+
+			mesh->get_vbo()->bind();
+
+			if (mesh->get_index_count()) {
+				mesh->get_ibo()->bind();
+				mesh->get_ibo()->draw();
+			}
+			else {
+				mesh->get_vbo()->draw();
+			}
+
+			RenderStateManager::set(RenderStateType::BS_BLEND_DISSABLED);
+		}
+	}
+
+
+	//Draw particles. -----------------------------------------------------------------------------------------------
+	RenderStateManager::set(RenderStateType::DSS_DEPTH_MASK_0);
+	ShaderProgramManager::get("particles_sdrprog")->bind();
+	for (auto emitter : emitter_components) {
+		Material mat{ emitter->get_material() };
+
+		mat.textures[TEX_DIFFUSE]->bind();
+		device_context->PSSetSamplers(0, 1, m_sampler_linear_wrap.GetAddressOf());
+
+		RenderStateManager::set(mat.blend_state);
+		auto particles = emitter->get_particles();
+
+		for (auto particle : particles) {
+			Mat4f model;
+			model = MathUtils::translate(model, particle.position);
+			model = MathUtils::scale(model, Vec3f{ particle.size });
+
+			CameraSystem* camera_system{ EngineContext::get_camera_system() };
+			Mat4f view = MathUtils::inverse(cam_matrix);
+			view[0][0] = 1.0f;
+			view[0][1] = 0.0f;
+			view[0][2] = 0.0f;
+
+			view[1][0] = 0.0f;
+			view[1][1] = 1.0f;
+			view[1][2] = 0.0f;
+
+			view[2][0] = 0.0f;
+			view[2][1] = 0.0f;
+			view[2][2] = 1.0f;
+
+			Mat4f projection = camera_system->get_active_camera_projection_matrix();
+
+			Mat4f MVP{ projection * view * model };
+
+			ParticleUniformBuffer uniforms;
+			uniforms.MVP = MathUtils::transpose(MVP);
+			uniforms.diffuse = particle.color;
+
+			D3D11_MAPPED_SUBRESOURCE ms;
+
+			device_context->Map(m_particle_uniform_buffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &ms);
+			memcpy(ms.pData, &uniforms, sizeof(ParticleUniformBuffer));
+			device_context->Unmap(m_particle_uniform_buffer.Get(), 0);
+
+			device_context->VSSetConstantBuffers(0, 1, m_particle_uniform_buffer.GetAddressOf());
+			device_context->PSSetConstantBuffers(0, 1, m_particle_uniform_buffer.GetAddressOf());
+
+			Mesh* mesh = emitter->get_mesh();
+
 			mesh->get_vbo()->bind();
 
 			if (mesh->get_index_count()) {
@@ -286,15 +322,18 @@ void MainScene::color_pass() const noexcept
 				mesh->get_vbo()->draw();
 			}
 		}
+
 	}
-
 	RenderStateManager::set(RenderStateType::BS_BLEND_DISSABLED);
+	RenderStateManager::set(RenderStateType::DSS_DEPTH_MASK_1);
+	//-------------------------------------------------------------------------------------------------------------
 
-	
+
+	render_globe(cam_matrix);
 
 	std::vector<ID3D11ShaderResourceView*> null_srvs{ nullptr, nullptr, nullptr, nullptr };
 
-	device_context->PSSetShaderResources(4, 4, null_srvs.data());
+	device_context->PSSetShaderResources(5, 4, null_srvs.data());
 
 	m_color_pass_rt.unbind();
 }
@@ -316,7 +355,7 @@ void MainScene::display_to_screen() const noexcept
 	ComPtr<ID3D11ShaderResourceView> srv{ m_color_pass_rt.get_color_attachment() };
 	dev_con->PSSetShaderResources(0, 1, srv.GetAddressOf());
 	dev_con->PSSetSamplers(0, 1, m_sampler_linear_wrap.GetAddressOf());
-	
+
 	RenderStateManager::set(RenderStateType::RS_DRAW_SOLID);
 	dev_con->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
 
@@ -324,6 +363,104 @@ void MainScene::display_to_screen() const noexcept
 
 	ID3D11ShaderResourceView* null_srv{ nullptr };
 	dev_con->PSSetShaderResources(0, 1, &null_srv);
+}
+
+void MainScene::render_globe(const Mat4f& cam_matrix) const noexcept
+{
+	RenderingComponent* rc{ static_cast<RenderingComponent*>(m_globe->get_component("co_rendering")) };
+
+	if (rc) {
+
+		ShaderProgramManager::get("color_pass_sdrprog")->bind();
+		D3D11Context* GAPI_context{ EngineContext::get_GAPI_context() };
+		ComPtr<ID3D11DeviceContext> device_context{ GAPI_context->get_device_context() };
+
+		device_context->PSSetShaderResources(4, 1, m_light_srv.GetAddressOf());
+		device_context->PSSetSamplers(0, 1, m_sampler_linear_wrap.GetAddressOf());
+		device_context->PSSetSamplers(1, 1, m_sampler_shadow_comparison.GetAddressOf());
+
+		std::vector<ID3D11ShaderResourceView*> depth_textures;
+		for (int i = 0; i < 4; ++i) {
+			depth_textures.push_back(m_depth_pass_rts[i].get_depth_attachment());
+		}
+
+		device_context->PSSetShaderResources(5, 4, depth_textures.data());
+
+		if (rc->get_mesh() && rc->should_draw()) {
+			CameraSystem* camera_system{ EngineContext::get_camera_system() };
+
+			//Mat4f view{ camera_system->get_active_camera_cam_matrix() };
+			Mat4f view = MathUtils::inverse(cam_matrix);
+
+			Mat4f projection{ camera_system->get_active_camera_projection_matrix() };
+
+			Mat4f model{ rc->get_xform() };
+
+			Mat4f MVP{ projection * view * model };
+			Mat4f MV{ view * model };
+			Mat4f ITMV{ MathUtils::transpose(MathUtils::inverse(MV)) };
+
+			Material material{ rc->get_material() };
+
+			ColorPassUniformBuffer uniforms;
+			uniforms.MVP = MathUtils::transpose(MVP);
+			uniforms.MV = MathUtils::transpose(MV);
+			uniforms.M = MathUtils::transpose(model);
+			uniforms.V = MathUtils::transpose(view);
+			uniforms.P = MathUtils::transpose(projection);
+			uniforms.ITMV = MathUtils::transpose(ITMV);
+			uniforms.diffuse = material.diffuse;
+			uniforms.specular = material.specular;
+
+			if (material.textures[TEX_DIFFUSE]) {
+				material.textures[TEX_DIFFUSE]->bind();
+			} else {
+				ResourceManager::get<D3D11_texture>(TEXTURE_PATH + L"dummyDiff.jpg")->bind();
+			}
+
+			if (material.textures[TEX_SPECULAR]) {
+				material.textures[TEX_SPECULAR]->bind();
+			} else {
+				ResourceManager::get<D3D11_texture>(TEXTURE_PATH + L"dummySpec.jpg")->bind();
+			}
+
+			if (material.textures[TEX_NORMAL]) {
+				material.textures[TEX_NORMAL]->bind();
+			} else {
+				ResourceManager::get<D3D11_texture>(TEXTURE_PATH + L"dummyNorm.png")->bind();
+			}
+
+			D3D11_MAPPED_SUBRESOURCE ms;
+
+			device_context->Map(m_color_pass_uniform_buffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &ms);
+			memcpy(ms.pData, &uniforms, sizeof(ColorPassUniformBuffer));
+			device_context->Unmap(m_color_pass_uniform_buffer.Get(), 0);
+
+			device_context->VSSetConstantBuffers(0, 1, m_color_pass_uniform_buffer.GetAddressOf());
+			device_context->PSSetConstantBuffers(0, 1, m_color_pass_uniform_buffer.GetAddressOf());
+
+			Mesh* mesh{ rc->get_mesh() };
+
+			RenderStateManager::set(material.blend_state);
+
+			mesh->get_vbo()->bind();
+
+			if (mesh->get_index_count()) {
+				mesh->get_ibo()->bind();
+				mesh->get_ibo()->draw();
+			}
+			else {
+				mesh->get_vbo()->draw();
+			}
+
+			RenderStateManager::set(RenderStateType::BS_BLEND_DISSABLED);
+		}
+	}
+}
+
+void MainScene::render_skybox() const noexcept
+{
+
 }
 
 
@@ -360,6 +497,21 @@ void MainScene::initialize()
 	cb_desc.StructureByteStride = 0;
 
 	res = device->CreateBuffer(&cb_desc, nullptr, m_depth_pass_uniform_buffer.ReleaseAndGetAddressOf());
+
+	if (FAILED(res)) {
+		std::cerr << "Renderer initialization failed: Uniform buffer creation failed." << std::endl;
+	}
+
+	ParticleUniformBuffer p_uniforms;
+	ZeroMemory(&cb_desc, sizeof(cb_desc));
+	cb_desc.ByteWidth = sizeof(p_uniforms);
+	cb_desc.Usage = D3D11_USAGE_DYNAMIC;
+	cb_desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	cb_desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	cb_desc.MiscFlags = 0;
+	cb_desc.StructureByteStride = 0;
+
+	res = device->CreateBuffer(&cb_desc, nullptr, m_particle_uniform_buffer.ReleaseAndGetAddressOf());
 
 	if (FAILED(res)) {
 		std::cerr << "Renderer initialization failed: Uniform buffer creation failed." << std::endl;
@@ -420,14 +572,13 @@ void MainScene::initialize()
 	samplerDesc.BorderColor[2] = 1;
 	samplerDesc.BorderColor[3] = 1;
 	samplerDesc.ComparisonFunc = D3D11_COMPARISON_LESS_EQUAL;
-	
-	res = device->CreateSamplerState(&samplerDesc, m_sampler_linear_clamp.ReleaseAndGetAddressOf());
+
+	res = device->CreateSamplerState(&samplerDesc, m_sampler_shadow_comparison.ReleaseAndGetAddressOf());
 
 	if (FAILED(res)) {
 		std::cerr << "Linear Texture Wrap sampler creation failed!" << std::endl;
 	}
 
-	Object* obj{ new Object{ "globe" } };
 
 	Mesh* m{ MeshUtils::generate_uv_sphere(1.0f, 60, 60) };
 	ResourceManager::register_resource(m, L"sphere");
@@ -438,27 +589,39 @@ void MainScene::initialize()
 	m = MeshUtils::generate_plane_xy(1.0f);
 	ResourceManager::register_resource(m, L"plane");
 
+	ResourceManager::get<D3D11_texture>(TEXTURE_PATH + L"dummyDiff.jpg")->set_texture_type(TEX_DIFFUSE);
+	ResourceManager::get<D3D11_texture>(TEXTURE_PATH + L"dummySpec.jpg")->set_texture_type(TEX_SPECULAR);
+	ResourceManager::get<D3D11_texture>(TEXTURE_PATH + L"dummyNorm.png")->set_texture_type(TEX_NORMAL);
+
 	Material mat;
 	mat.diffuse = Vec4f{ 0.0470588235294118f, 0.3019607843137255f, 0.4117647058823529f, 0.5f };
 	mat.specular = Vec4f{ 0.5f, 0.5f, 0.5f, 128.0f };
-
-	RenderingComponent* rc{ new RenderingComponent{ obj } };
+	mat.blend_state = RenderStateType::BS_BLEND_ALPHA;
+	
+	m_globe = new Object{ "globe" };
+	RenderingComponent* rc{ new RenderingComponent{ m_globe } };
 	rc->set_mesh(ResourceManager::get<Mesh>(L"sphere"));
 	rc->set_material(mat);
 	rc->set_casts_shadows(false);
-	obj->set_position(Vec3f{ 0.0f, 0.0, 0.0f });
-	obj->set_scale(Vec3f{ 5.0f, 5.0f, 5.0f });
+	m_globe->set_position(Vec3f{ 0.0f, 0.0, 0.0f });
+	m_globe->set_scale(Vec3f{ 7.0f, 7.0f, 7.0f });
+	m_globe->calculate_xform();
 
-	m_objects.push_back(obj);
-
-	obj = new Object{ "ground" };
+	Object* obj = new Object{ "ground" };
 	rc = new RenderingComponent{ obj };
 	rc->set_mesh(ResourceManager::get<Mesh>(L"cube"));
 	mat.diffuse = Vec4f{ 0.9568627450980392f, 0.8627450980392157f, 0.7098039215686275f, 1.0f };
 	mat.specular = Vec4f{ 0.0f };
+	mat.textures[TEX_DIFFUSE] = ResourceManager::get<D3D11_texture>(TEXTURE_PATH + L"seabed_diff.png");
+	mat.textures[TEX_SPECULAR] = ResourceManager::get<D3D11_texture>(TEXTURE_PATH + L"seabed_spec.png");
+	mat.textures[TEX_NORMAL] = ResourceManager::get<D3D11_texture>(TEXTURE_PATH + L"seabed_norm.png");
+	mat.textures[TEX_DIFFUSE]->set_texture_type(TEX_DIFFUSE);
+	mat.textures[TEX_SPECULAR]->set_texture_type(TEX_SPECULAR);
+	mat.textures[TEX_NORMAL]->set_texture_type(TEX_NORMAL);
+	mat.texture_matrix = MathUtils::scale(mat.texture_matrix, Vec3f{ 30.0f, 30.0f , 0.0f });
 	rc->set_material(mat);
 	rc->set_casts_shadows(false);
-	obj->set_position(Vec3f{ 0.0f, -5.0, 0.0f });
+	obj->set_position(Vec3f{ 0.0f, -3.0, 0.0f });
 	obj->set_scale(Vec3f{ 1000.0f, 0.1f, 1000.0f });
 
 	m_objects.push_back(obj);
@@ -562,7 +725,7 @@ void MainScene::initialize()
 	Object* cam{ new Object{ "camera1" } };
 	CameraComponent* cc{ new CameraComponent{ cam, MathUtils::to_radians(60.0f), win_x, win_y, 0.1f, 1000.0f } };
 
-	//cam->set_position(Vec3f(0.0f, 0.0f, -20.0f));
+	cam->set_position(Vec3f(0.0f, 0.0f, -20.0f));
 
 	m_objects.push_back(cam);
 
@@ -608,7 +771,7 @@ void MainScene::initialize()
 
 	lc2->set_light_description(light_desc2);
 
-	light2->set_position(Vec3f{ -10.0f, 10.0, -10.0f});
+	light2->set_position(Vec3f{ -10.0f, 10.0, -10.0f });
 
 	m_objects.push_back(light2);
 
@@ -655,27 +818,32 @@ void MainScene::initialize()
 	m_objects.push_back(light4);
 
 
-	Object* emitter{ new Object{"emmiter1"} };
-	EmitterComponent* ec{ new EmitterComponent{emitter} };
+	Object* emitter{ new Object{ "emmiter1" } };
+	EmitterComponent* ec{ new EmitterComponent{ emitter } };
 	ec->set_lifespan(6.0);
-	ec->set_max_particles(100);
-	ec->set_spawn_rate(2.0);
+	ec->set_max_particles(1000);
+	ec->set_spawn_rate(10.0);
 	ec->set_active(true);
 	ec->set_particle_size(0.2f);
-	ec->set_spawn_radius(3.5f);
+	ec->set_spawn_radius(4.0f);
 	ec->set_velocity(Vec3f{ 0.0f, 0.0f, 0.0f });
-	ec->set_velocity_range(0.1f);
+	ec->set_velocity_range(0.3f);
 	ec->set_external_force(Vec3f{ 0.0f, 0.0f, 0.0f });
 	ec->set_mesh(ResourceManager::get<Mesh>(L"plane"));
-
-	//TODO:set mesh and material
+	ec->set_start_color(Vec4f{ 1.0f, 1.0f, 1.0f, 0.0f });
+	ec->set_end_color(Vec4f{ 1.0f, 1.0f, 1.0f, 1.0f });
+	Material p_mat;
+	p_mat.blend_state = RenderStateType::BS_BLEND_ADDITIVE;
+	p_mat.textures[TEX_DIFFUSE] = ResourceManager::get<D3D11_texture>(TEXTURE_PATH + L"bubble10.png");
+	p_mat.textures[TEX_DIFFUSE]->set_texture_type(TEX_DIFFUSE);
+	ec->set_material(p_mat);
 
 	m_objects.push_back(emitter);
 
 	Window* win{ WindowingService::get_window(0) };
 	m_color_pass_rt.create(win->get_size());
-	
-	for(int i = 0; i < 4; ++i) {
+
+	for (int i = 0; i < 4; ++i) {
 		m_depth_pass_rts[i].create(Vec2f{ 2048, 2048 });
 	}
 }
@@ -723,15 +891,15 @@ void MainScene::on_mouse_motion(int x, int y) noexcept
 	prev_x = x;
 	prev_y = y;
 
-	if(!dx && !dy) return;
+	if (!dx && !dy) return;
 
-	if(bnstate[0]) {
+	if (bnstate[0]) {
 		EngineContext::get_camera_system()->get_active_camera()->set_euler_angles(Vec3f{ dy * 0.5, dx * 0.5, 0 });
 
 		cam_theta += dx * 0.5;
 		cam_phi += dy * 0.5;
-		if(cam_phi < -90) cam_phi = -90;
-		if(cam_phi > 90) cam_phi = 90;
+		if (cam_phi < -90) cam_phi = -90;
+		if (cam_phi > 90) cam_phi = 90;
 	}
 }
 

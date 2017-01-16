@@ -19,15 +19,14 @@ namespace Glacier
 
 		auto it{ m_particles.begin() };
 		while (it != m_particles.end()) {
-			Particle& p{ *it };
+			auto& p = *it;
 
 			if (!p.active) {
 				it = m_particles.erase(it);
 				continue;
 			}
 
-			double t{ tsec - p.spawn_time / p.life };
-
+			double t{ (tsec - p.spawn_time) / m_lifespan };
 
 			float min_x = std::min(m_start_color.x, m_end_color.x);
 			float max_x = std::max(m_start_color.x, m_end_color.x);
@@ -47,6 +46,11 @@ namespace Glacier
 			col.y = m_start_color.y + (m_end_color.y - m_start_color.y) * t;
 			col.z = m_start_color.z + (m_end_color.z - m_start_color.z) * t;
 			col.w = m_start_color.w + (m_end_color.w - m_start_color.w) * t;
+
+			col.x = std::max(min_x, std::min(col.x, max_x));
+			col.y = std::max(min_y, std::min(col.y, max_y));
+			col.z = std::max(min_z, std::min(col.z, max_z));
+			col.w = std::max(min_w, std::min(col.w, max_w));
 
 			p.color = col;
 
@@ -94,8 +98,6 @@ namespace Glacier
 				++i;
 			}
 		}
-
-		std::cout << m_particles.size() << std::endl;
 	}
 	
 	void EmitterComponent::teardown() noexcept

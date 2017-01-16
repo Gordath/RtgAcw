@@ -17,7 +17,7 @@ namespace Glacier
 					Vec4f{ -half_size, -half_size, -half_size, 1.0f },
 					Vec4f{0.0f, 0.0f, -1.0f, 0.0f},
 					Vec4f{},
-					Vec4f{},
+					Vec4f{0.0f, 1.0f, 0.0f, 1.0f},
 					Vec4f{ 1.0f, 0.0f, 0.0f, 1.0f }
 			});
 
@@ -26,7 +26,7 @@ namespace Glacier
 					Vec4f{ -half_size, half_size, -half_size, 1.0f },
 					Vec4f{ 0.0f, 0.0f, -1.0f, 0.0f },
 					Vec4f{},
-					Vec4f{},
+					Vec4f{0.0f, 0.0f, 0.0f, 1.0f},
 					Vec4f{ 1.0f, 0.0f, 0.0f, 1.0f }
 			});
 
@@ -35,7 +35,7 @@ namespace Glacier
 					Vec4f{ half_size, -half_size, -half_size, 1.0f },
 					Vec4f{ 0.0f, 0.0f, -1.0f, 0.0f },
 					Vec4f{},
-					Vec4f{},
+					Vec4f{1.0f, 1.0f, 0.0f, 1.0f},
 					Vec4f{ 1.0f, 0.0f, 0.0f, 1.0f }
 			});
 
@@ -44,7 +44,7 @@ namespace Glacier
 					Vec4f{ half_size, half_size, -half_size, 1.0f },
 					Vec4f{ 0.0f, 0.0f, -1.0f, 0.0f },
 					Vec4f{},
-					Vec4f{},
+					Vec4f{1.0f, 0.0f, 0.0f, 1.0f},
 					Vec4f{ 1.0f, 0.0f, 0.0f, 1.0f }
 			});
 
@@ -161,8 +161,8 @@ namespace Glacier
 				Vertex{
 					Vec4f{ -half_size, half_size, -half_size, 1.0f },
 					Vec4f{ 0.0f, 1.0f, 0.0f, 0.0f },
-					Vec4f{},
-					Vec4f{},
+					Vec4f{1.0f, 0.0f, 0.0f, 1.0f},
+					Vec4f{0.0f, 1.0f, 0.0f, 1.0f},
 					Vec4f{ 1.0f, 0.0f, 0.0f, 1.0f }
 			});
 
@@ -170,8 +170,8 @@ namespace Glacier
 				Vertex{
 					Vec4f{ -half_size, half_size, half_size, 1.0f },
 					Vec4f{ 0.0f, 1.0f, 0.0f, 0.0f },
-					Vec4f{},
-					Vec4f{},
+					Vec4f{1.0f, 0.0f, 0.0f, 1.0f},
+					Vec4f{0.0f, 0.0f, 0.0f, 1.0f},
 					Vec4f{ 1.0f, 0.0f, 0.0f, 1.0f }
 			});
 
@@ -179,8 +179,8 @@ namespace Glacier
 				Vertex{
 					Vec4f{ half_size, half_size, -half_size, 1.0f },
 					Vec4f{ 0.0f, 1.0f, 0.0f, 0.0f },
-					Vec4f{},
-					Vec4f{},
+					Vec4f{ 1.0f, 0.0f, 0.0f, 1.0f },
+					Vec4f{1.0f, 1.0f, 0.0f, 1.0f},
 					Vec4f{ 1.0f, 0.0f, 0.0f, 1.0f }
 			});
 
@@ -188,8 +188,8 @@ namespace Glacier
 				Vertex{
 					Vec4f{ half_size, half_size, half_size, 1.0f },
 					Vec4f{ 0.0f, 1.0f, 0.0f, 0.0f },
-					Vec4f{},
-					Vec4f{},
+					Vec4f{1.0f, 0.0f, 0.0f, 1.0f},
+					Vec4f{1.0f, 0.0f, 0.0f, 1.0f},
 					Vec4f{ 1.0f, 0.0f, 0.0f, 1.0f }
 			});
 
@@ -318,7 +318,7 @@ namespace Glacier
 				Vec4f{ -half_size, -half_size, 0.0f, 1.0f },
 				Vec4f{ 0.0f, 0.0f, -1.0f, 0.0f },
 				Vec4f{},
-				Vec4f{0.0f, 1.0f, 0.0f, 0.0f},
+				Vec4f{0.0f, 1.0f, 0.0f, 1.0f},
 				Vec4f{ 1.0f, 0.0f, 0.0f, 1.0f }
 			});
 
@@ -327,7 +327,7 @@ namespace Glacier
 				Vec4f{ -half_size, half_size, 0.0f, 1.0f },
 				Vec4f{ 0.0f, 0.0f, -1.0f, 0.0f },
 				Vec4f{},
-				Vec4f{ 0.0f, 0.0f, 0.0f, 0.0f},
+				Vec4f{ 0.0f, 0.0f, 0.0f, 1.0f},
 				Vec4f{ 1.0f, 0.0f, 0.0f, 1.0f }
 			});
 
@@ -336,7 +336,7 @@ namespace Glacier
 				Vec4f{ half_size, -half_size, 0.0f, 1.0f },
 				Vec4f{ 0.0f, 0.0f, -1.0f, 0.0f },
 				Vec4f{},
-				Vec4f{1.0f, 1.0f, 0.0f, 0.0f},
+				Vec4f{1.0f, 1.0f, 0.0f, 1.0f},
 				Vec4f{ 1.0f, 0.0f, 0.0f, 1.0f }
 			});
 
@@ -345,7 +345,7 @@ namespace Glacier
 				Vec4f{ half_size, half_size, 0.0f, 1.0f },
 				Vec4f{ 0.0f, 0.0f, -1.0f, 0.0f },
 				Vec4f{},
-				Vec4f{1.0f, 0.0f, 0.0f, 0.0f},
+				Vec4f{1.0f, 0.0f, 0.0f, 1.0f},
 				Vec4f{ 1.0f, 0.0f, 0.0f, 1.0f }
 			});
 

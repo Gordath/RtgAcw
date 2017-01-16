@@ -9,6 +9,7 @@ private:
 	Glacier::D3D11RenderTarget m_color_pass_rt;
 	Glacier::ComPtr<ID3D11Buffer> m_color_pass_uniform_buffer;
 	Glacier::ComPtr<ID3D11Buffer> m_depth_pass_uniform_buffer;
+	Glacier::ComPtr<ID3D11Buffer> m_particle_uniform_buffer;
 
 	Glacier::D3D11RenderTarget m_depth_pass_rts[4];
 
@@ -16,11 +17,17 @@ private:
 	Glacier::ComPtr<ID3D11ShaderResourceView> m_light_srv;
 
 	Glacier::ComPtr<ID3D11SamplerState> m_sampler_linear_wrap;
-	Glacier::ComPtr<ID3D11SamplerState> m_sampler_linear_clamp;
+	Glacier::ComPtr<ID3D11SamplerState> m_sampler_shadow_comparison;
+
+	Glacier::Object* m_skybox{ nullptr };
+	Glacier::Object* m_globe{ nullptr };
 
 	void depth_pass() const noexcept;
 	void color_pass() const noexcept;
 	void display_to_screen() const noexcept;
+
+	void render_globe(const Glacier::Mat4f& cam_matrix) const noexcept;
+	void render_skybox() const noexcept;
 
 public:
 

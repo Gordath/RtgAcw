@@ -11,6 +11,7 @@ struct VOut {
 
 cbuffer uniforms {
 	float4x4 MVP;
+	float4 diffuse;
 };
 
 VOut main(VIn input)
