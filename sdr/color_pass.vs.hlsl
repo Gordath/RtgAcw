@@ -50,7 +50,7 @@ VOut main(VIn input)
 	float fog_end = 50.0;
 
 	float vdist = length(output.view_space_pos);
-	float fog_density = 0.0015;
+	float fog_density = 0.0010;
 	float exp = (vdist * fog_density) * (vdist * fog_density);
 	output.fog_factor = 1.0 / pow(2.71828, exp);
 
