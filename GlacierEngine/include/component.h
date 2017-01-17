@@ -1,12 +1,13 @@
 #ifndef GLACIER_COMPONENT_H_
 #define GLACIER_COMPONENT_H_
 #include <string>
+#include "observer.h"
 
 namespace Glacier
 {
 	class Object;
 
-	class Component {
+	class Component : public Observer {
 	protected:
 		const std::string m_type;
 
@@ -27,6 +28,8 @@ namespace Glacier
 		virtual void update(float dt, long time = 0) noexcept = 0;
 
 		virtual void teardown() noexcept = 0;
+
+		void on_message(MessageContainer msg) override;
 	};
 }
 

@@ -26,7 +26,7 @@ private:
 	void color_pass() const noexcept;
 	void display_to_screen() const noexcept;
 
-	void render_globe(const Glacier::Mat4f& cam_matrix) const noexcept;
+	void render_globe() const noexcept;
 	void render_skybox() const noexcept;
 
 public:

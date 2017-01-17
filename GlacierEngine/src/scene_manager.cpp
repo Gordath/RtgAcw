@@ -54,6 +54,13 @@ namespace Glacier
 		}
 	}
 
+	void SceneManager::on_message(MessageContainer msg) noexcept
+	{
+		if (m_scenes.back()) {
+			m_scenes.back()->on_message(msg);
+		}
+	}
+
 	void SceneManager::update(float delta_time, long time) noexcept
 	{
 		if (m_scenes.back()) {

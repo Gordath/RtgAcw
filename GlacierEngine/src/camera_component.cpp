@@ -22,6 +22,6 @@ namespace Glacier
 
 	Mat4f CameraComponent::get_projection_matrix() const noexcept
 	{		
-		return MathUtils::perspective_lh(Mat4f{}, m_fov, m_width, m_height, m_near_plane, m_far_plane);
+		return MathUtils::perspective_lh(m_fov, m_width, m_height, m_near_plane, m_far_plane);
 	}
 }

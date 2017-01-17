@@ -4,6 +4,8 @@
 #include "GLM/glm.hpp"
 #include "GLM/gtc/constants.inl"
 #include "wrl.h"
+#include "message.h"
+#include <iostream>
 
 namespace Glacier
 {
@@ -33,6 +35,84 @@ namespace Glacier
 
 	template<typename T>
 	using ComPtr = Microsoft::WRL::ComPtr<T>;
+
+	template<typename T>
+	class RefCountedContainer {
+	private:
+		T* m_data{ nullptr };
+		int m_reference_count{ 0 };
+
+	public:
+		RefCountedContainer(T* item)
+		{
+			m_data = item;
+			add_reference();
+		}
+
+		~RefCountedContainer()
+		{
+			subtract_reference();
+
+			if (!m_reference_count) {
+				delete m_data;
+				std::cout << "Item deleted" << std::endl;
+			}
+		}
+
+
+		RefCountedContainer(const RefCountedContainer& other)
+			: m_data(other.m_data),
+			  m_reference_count(other.m_reference_count)
+		{
+			add_reference();
+		}
+
+		RefCountedContainer(RefCountedContainer&& other) noexcept = delete;
+
+		RefCountedContainer& operator=(const RefCountedContainer& other)
+		{
+			if (this == &other) {
+				return *this;
+			}
+
+			subtract_reference();
+
+			if (!m_reference_count) {
+				delete m_data;
+			}
+
+			m_data = other.m_data;
+			m_reference_count = other.m_reference_count;
+
+			add_reference();
+
+			return *this;
+		}
+
+		RefCountedContainer& operator=(RefCountedContainer&& other) noexcept = delete;
+
+		void add_reference() noexcept
+		{
+			++m_reference_count;
+		}
+
+		void subtract_reference() noexcept
+		{
+			--m_reference_count;
+		}
+
+		int get_reference_count() const noexcept
+		{
+			return m_reference_count;
+		}
+
+		T* get() const noexcept
+		{
+			return m_data;
+		}
+	};
+
+	using MessageContainer = RefCountedContainer<Message>;
 }
 
 

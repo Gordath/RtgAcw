@@ -4,10 +4,11 @@
 #include "component.h"
 #include "internal/types.h"
 #include "internal/math_utils.h"
+#include "observer_subject.h"
 
 namespace Glacier
 {
-	class Object {
+	class Object : public ObserverSubject {
 	private:
 		std::vector<Component*> m_components;
 
@@ -125,6 +126,20 @@ namespace Glacier
 
 			for (auto component : m_components) {
 				component->update(dt, time);
+			}
+		}
+
+		void setup() noexcept
+		{
+			for (auto component : m_components) {
+				component->setup();
+			}
+		}
+
+		void teardown() noexcept
+		{
+			for (auto component : m_components) {
+				component->teardown();
 			}
 		}
 	};

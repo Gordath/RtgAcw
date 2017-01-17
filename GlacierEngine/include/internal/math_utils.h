@@ -68,22 +68,22 @@ namespace Glacier
 			return glm::inverse(mat);
 		}
 
-		inline const Mat4f& translate(const Mat4f& matrix, const Vec3f& vector)
+		inline Mat4f translate(const Mat4f& matrix, const Vec3f& vector)
 		{
 			return glm::translate(matrix, vector);
 		}
 
-		inline const Mat4f& rotate(const Mat4f& matrix, float angle, const Vec3f& axis)
+		inline Mat4f rotate(const Mat4f& matrix, float angle, const Vec3f& axis)
 		{
 			return glm::rotate(matrix, angle, axis);
 		}
 
-		inline const Mat4f& scale(const Mat4f& matrix, const Vec3f& scale)
+		inline Mat4f scale(const Mat4f& matrix, const Vec3f& scale)
 		{
 			return glm::scale(matrix, scale);
 		}
 
-		inline const Mat4f& perspective_lh(const Mat4f& matrix, float fov, float width, float height, float near_plane, float far_plane)
+		inline Mat4f perspective_lh(float fov, float width, float height, float near_plane, float far_plane)
 		{
 			return glm::perspectiveFovLH(fov, width, height, near_plane, far_plane);
 		}
@@ -93,7 +93,7 @@ namespace Glacier
 			return Vec3f{ radius * sin(theta) * sin(phi), radius * cos(phi), radius * cos(theta) * sin(phi) };
 		}
 
-		inline const Mat4f& lookat_lh(const Vec3f& position, const Vec3f& target, const Vec3f& up)
+		inline Mat4f lookat_lh(const Vec3f& position, const Vec3f& target, const Vec3f& up)
 		{
 			return glm::lookAtLH(position, target, up);
 		}
