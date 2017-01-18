@@ -9,7 +9,7 @@ void CameraKeyboardInputComponent::update(float dt, long time) noexcept
 {
 	Vec3f angles{ m_parent->get_euler_angles() };
 	Vec3f pos{ m_parent->get_position() };
-	std::cout << angles.y << std::endl;
+
 	float distance{ m_movement_speed * dt };
 	float rot = m_rotation_speed * dt;
 	float dx = sinf(MathUtils::to_radians(-angles.y)) * distance;
@@ -65,7 +65,7 @@ void CameraKeyboardInputComponent::update(float dt, long time) noexcept
 	}
 
 	if (pos.y > 10.0f) {
-		pos.y = 50.0f;
+		pos.y = 10.0f;
 	}
 
 	if (angles.x < -90.0f) {

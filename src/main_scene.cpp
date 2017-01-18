@@ -814,7 +814,6 @@ void MainScene::initialize()
 
 	m_objects.push_back(light4);
 
-
 	Object* emitter{ new Object{ "emmiter1" } };
 	EmitterComponent* ec{ new EmitterComponent{ emitter } };
 	ec->set_lifespan(6.0);

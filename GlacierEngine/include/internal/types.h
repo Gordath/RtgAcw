@@ -55,7 +55,6 @@ namespace Glacier
 
 			if (!m_reference_count) {
 				delete m_data;
-				std::cout << "Item deleted" << std::endl;
 			}
 		}
 

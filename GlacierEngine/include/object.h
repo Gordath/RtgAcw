@@ -29,6 +29,15 @@ namespace Glacier
 		{
 		}
 
+		~Object()
+		{
+			for (auto component : m_components) {
+				delete component;
+			}
+
+			m_components.clear();
+		}
+
 		const std::string& get_name() const noexcept
 		{
 			return m_name;
@@ -120,7 +129,7 @@ namespace Glacier
 			return m_alive;
 		}
 
-		void update(float dt, long time = 0) noexcept
+		virtual void update(float dt, long time = 0) noexcept
 		{
 			calculate_xform();
 
@@ -129,14 +138,14 @@ namespace Glacier
 			}
 		}
 
-		void setup() noexcept
+		virtual void setup() noexcept
 		{
 			for (auto component : m_components) {
 				component->setup();
 			}
 		}
 
-		void teardown() noexcept
+		virtual void teardown() noexcept
 		{
 			for (auto component : m_components) {
 				component->teardown();
