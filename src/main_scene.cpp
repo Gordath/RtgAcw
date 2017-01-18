@@ -726,8 +726,10 @@ void MainScene::initialize()
 
 	Object* cam2{ new Object{ "camera2" } };
 	CameraComponent* cc2{ new CameraComponent{ cam2, MathUtils::to_radians(60.0f), win_x, win_y, 0.1f, 1000.0f } };
-
-	cam2->set_position(Vec3f(0.0f, 0.0f, -3.0f));
+	input_comp = new CameraKeyboardInputComponent{ cam2 };
+	input_comp->set_rotation_speed(90.0f);
+	cam2->set_parent(sub1_controller);
+	cam2->set_position(Vec3f(0.0f, 0.0f, -1.0f));
 
 	m_objects.push_back(cam2);
 

@@ -7,10 +7,14 @@ class CameraKeyboardInputComponent : public Glacier::KeyboardInputComponent {
 private:
 	bool m_move_forwards{ false };
 	bool m_move_backwards{ false };
+	bool m_move_left{ false };
+	bool m_move_right{ false };
 	bool m_move_up{ false };
 	bool m_move_down{ false };
 	bool m_rotate_left{ false };
 	bool m_rotate_right{ false };
+	bool m_rotate_donwards{ false };
+	bool m_rotate_upwards{ false };
 
 	float m_movement_speed{ 0.0f };
 	float m_rotation_speed{ 0.0f };
