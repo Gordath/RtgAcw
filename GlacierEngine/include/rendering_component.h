@@ -1,9 +1,9 @@
 #ifndef GLACIER_RENDERING_COMPONENT_H_
 #define GLACIER_RENDERING_COMPONENT_H_
 #include "component.h"
-#include "mesh.h"
+#include "../rendering/include/mesh.h"
 #include "object.h"
-#include "material.h"
+#include "../rendering/include/material.h"
 
 namespace Glacier
 {

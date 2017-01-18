@@ -1,4 +1,5 @@
 #include "scene.h"
+#include "object.h"
 
 namespace Glacier
 {
@@ -9,6 +10,11 @@ namespace Glacier
 		}
 
 		m_objects.clear();
+	}
+
+	void Scene::add_object(Object* object) noexcept
+	{
+		m_objects.push_back(object);
 	}
 
 	void Scene::update(float delta_time, long time) noexcept

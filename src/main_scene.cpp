@@ -10,14 +10,9 @@
 #include "../GlacierEngine/rendering/include/d3d/D3D11_texture.h"
 #include "keypress_message.h"
 #include "camera_keyboard_input_component.h"
+#include "drebel_sub.h"
 
 using namespace Glacier;
-
-
-static Object* sub1_root{ nullptr };
-static Object* sub1_oar_root{ nullptr };
-
-static float cam_theta, cam_phi, cam_dist = 16;
 
 static bool wireframe{ false };
 
@@ -615,99 +610,13 @@ void MainScene::initialize()
 	rc->set_casts_shadows(false);
 	obj->set_position(Vec3f{ 0.0f, -3.0, 0.0f });
 	obj->set_scale(Vec3f{ 1000.0f, 0.1f, 1000.0f });
-
+	obj->setup();
 	m_objects.push_back(obj);
 
 	// Submarine 1 creation -------------------------------------------------------------------------------------------
-	Object* sub1_controller{ new Object{ "sub1_controller" } };
-	sub1_controller->set_euler_angles(Vec3f{ 0, 45.0f, 0 });
-	sub1_root = sub1_controller;
-	m_objects.push_back(sub1_controller);
-
-	Object* body{ new Object{ "sub1_body" } };
-	Material mat2;
-	mat2.diffuse = Vec4f{ 0.0f, 1.0f, 1.0f, 1.0f };
-	mat2.specular = Vec4f{ 1.0f, 1.0f, 1.0f, 60.0f };
-
-	rc = new RenderingComponent{ body };
-	rc->set_mesh(ResourceManager::get<Mesh>(L"sphere"));
-	rc->set_material(mat2);
-	body->set_scale(Vec3f{ 0.2f, 0.2f, 0.5f });
-	body->set_parent(sub1_controller);
-	m_objects.push_back(body);
-
-	Object* top = new Object{ "sub1_top" };
-	rc = new RenderingComponent{ top };
-	rc->set_mesh(ResourceManager::get<Mesh>(L"cube"));
-	rc->set_material(mat2);
-	top->set_position(Vec3f{ 0.0, 1.0, 0.0 });
-	top->set_scale(Vec3f{ 1.0f, 1.0f, 0.6f });
-	top->set_parent(body);
-	m_objects.push_back(top);
-
-	Object* side_fin1{ new Object{ "sub1_side_fin1" } };
-	rc = new RenderingComponent{ side_fin1 };
-	rc->set_mesh(ResourceManager::get<Mesh>(L"cube"));
-	rc->set_material(mat2);
-	side_fin1->set_position(Vec3f{ 0.0f, 0.0f, -0.7f });
-	side_fin1->set_scale(Vec3f{ 1.5f, 0.2f, 0.4f });
-	side_fin1->set_parent(body);
-	m_objects.push_back(side_fin1);
-
-	Object* side_fin2{ new Object{ "sub1_side_fin2" } };
-	rc = new RenderingComponent{ side_fin2 };
-	rc->set_mesh(ResourceManager::get<Mesh>(L"cube"));
-	rc->set_material(mat2);
-	side_fin2->set_position(Vec3f{ 0.0f, 0.0f, -0.7f });
-	side_fin2->set_scale(Vec3f{ 1.5f, 0.2f, 0.4f });
-	side_fin2->set_euler_angles(Vec3f{ 0.0f, 0.0f, 90.0f });
-	side_fin2->set_parent(body);
-	m_objects.push_back(side_fin2);
-
-	Object* sub1_oar_controller{ new Object{ "sub1_oar_controller" } };
-	sub1_oar_controller->set_parent(body);
-	sub1_oar_root = sub1_oar_controller;
-	m_objects.push_back(sub1_oar_controller);
-
-	Object* oar1{ new Object{ "sub1_oar1" } };
-	rc = new RenderingComponent{ oar1 };
-	rc->set_mesh(ResourceManager::get<Mesh>(L"cube"));
-	rc->set_material(mat2);
-	oar1->set_position(Vec3f{ 1.5f, 0.0f, -0.37f });
-	oar1->set_scale(Vec3f{ 1.5f, 0.2f, 0.1f });
-	oar1->set_parent(sub1_oar_controller);
-
-	m_objects.push_back(oar1);
-
-	Object* oar2{ new Object{ "sub1_oar2" } };
-	rc = new RenderingComponent{ oar2 };
-	rc->set_mesh(ResourceManager::get<Mesh>(L"cube"));
-	rc->set_material(mat2);
-	oar2->set_position(Vec3f{ 1.5f, 0.0f, 0.37f });
-	oar2->set_scale(Vec3f{ 1.5f, 0.2f, 0.1f });
-	oar2->set_parent(sub1_oar_controller);
-
-	m_objects.push_back(oar2);
-
-	Object* oar3{ new Object{ "sub1_oar3" } };
-	rc = new RenderingComponent{ oar3 };
-	rc->set_mesh(ResourceManager::get<Mesh>(L"cube"));
-	rc->set_material(mat2);
-	oar3->set_position(Vec3f{ -1.5f, 0.0f, -0.37f });
-	oar3->set_scale(Vec3f{ 1.5f, 0.2f, 0.1f });
-	oar3->set_parent(sub1_oar_controller);
-
-	m_objects.push_back(oar3);
-
-	Object* oar4{ new Object{ "sub1_oar4" } };
-	rc = new RenderingComponent{ oar4 };
-	rc->set_mesh(ResourceManager::get<Mesh>(L"cube"));
-	rc->set_material(mat2);
-	oar4->set_position(Vec3f{ -1.5f, 0.0f, 0.37f });
-	oar4->set_scale(Vec3f{ 1.5f, 0.2f, 0.1f });
-	oar4->set_parent(sub1_oar_controller);
-
-	m_objects.push_back(oar4);
+	m_drebel = new DrebelSubmarine{"drebel_sub", this};
+	m_drebel->setup();
+	m_objects.push_back(m_drebel);
 
 	// -----------------------------------------------------------------------------------------------------------------
 
@@ -719,18 +628,17 @@ void MainScene::initialize()
 	CameraKeyboardInputComponent* input_comp{ new CameraKeyboardInputComponent{ cam } };
 	input_comp->set_movement_speed(30.0f);
 	input_comp->set_rotation_speed(180.0f);
-
 	cam->set_position(Vec3f(0.0f, 0.0f, -20.0f));
-
+	cam->setup();
 	m_objects.push_back(cam);
 
 	Object* cam2{ new Object{ "camera2" } };
 	CameraComponent* cc2{ new CameraComponent{ cam2, MathUtils::to_radians(60.0f), win_x, win_y, 0.1f, 1000.0f } };
 	input_comp = new CameraKeyboardInputComponent{ cam2 };
 	input_comp->set_rotation_speed(90.0f);
-	cam2->set_parent(sub1_controller);
+	cam2->set_parent(m_drebel);
 	cam2->set_position(Vec3f(0.0f, 0.0f, -1.0f));
-
+	cam2->setup();
 	m_objects.push_back(cam2);
 
 	Object* light1{ new Object{ "light1" } };
@@ -744,17 +652,13 @@ void MainScene::initialize()
 	light_desc.flags = Vec4ui{ 1, 1, 0, 0 };
 	light_desc.attenuation = Vec3f{ 1.0f, 0.0f, 0.0f };
 	light_desc.light_projection_matrix = MathUtils::perspective_lh(MathUtils::to_radians(60.0), 2048, 2048, 5.0f, 26.0f);
-
 	lc1->set_light_description(light_desc);
-
 	light1->set_position(Vec3f{ 0.0f, 10.0, 0.0f });
-
+	light1->setup();
 	m_objects.push_back(light1);
 
 	Object* light2{ new Object{ "light2" } };
-
 	LightComponent* lc2{ new LightComponent{ light2 } };
-
 	LightDesc light_desc2;
 	light_desc2.ambient_intensity = Vec4f{ 0.0f, 0.0f, 0.0f, 0.0f };
 	light_desc2.diffuse_intensity = Vec4f{ 1.0f, 1.0f, 1.0f, 1.0f };
@@ -765,17 +669,13 @@ void MainScene::initialize()
 	light_desc2.spot_exponent = 90.0f;
 	light_desc2.spot_direction = Vec3f{ 0.09f, -0.1f, 0.09f };
 	light_desc2.light_projection_matrix = MathUtils::perspective_lh(MathUtils::to_radians(60.0), 2048, 2048, 5.0f, 50.0f);
-
 	lc2->set_light_description(light_desc2);
-
 	light2->set_position(Vec3f{ -10.0f, 10.0, -10.0f });
-
+	light2->setup();
 	m_objects.push_back(light2);
 
 	Object* light3{ new Object{ "light3" } };
-
 	LightComponent* lc3{ new LightComponent{ light3 } };
-
 	LightDesc light_desc3;
 	light_desc3.ambient_intensity = Vec4f{ 0.0f, 0.0f, 0.0f, 0.0f };
 	light_desc3.diffuse_intensity = Vec4f{ 1.0f, 1.0f, 1.0f, 1.0f };
@@ -786,17 +686,13 @@ void MainScene::initialize()
 	light_desc3.spot_exponent = 90.0f;
 	light_desc3.spot_direction = Vec3f{ -0.09f, -0.1f, 0.09f };
 	light_desc3.light_projection_matrix = MathUtils::perspective_lh(MathUtils::to_radians(60.0), 2048, 2048, 5.0f, 50.0f);
-
 	lc3->set_light_description(light_desc3);
-
 	light3->set_position(Vec3f{ 10.0f, 10.0, -10.0f });
-
+	light3->setup();
 	m_objects.push_back(light3);
 
 	Object* light4{ new Object{ "light4" } };
-
 	LightComponent* lc4{ new LightComponent{ light4 } };
-
 	LightDesc light_desc4;
 	light_desc4.ambient_intensity = Vec4f{ 0.0f, 0.0f, 0.0f, 0.0f };
 	light_desc4.diffuse_intensity = Vec4f{ 1.0f, 1.0f, 1.0f, 1.0f };
@@ -807,11 +703,9 @@ void MainScene::initialize()
 	light_desc4.spot_exponent = 90.0f;
 	light_desc4.spot_direction = Vec3f{ 0.0f, -0.1f, -0.1f };
 	light_desc4.light_projection_matrix = MathUtils::perspective_lh(MathUtils::to_radians(60.0), 2048, 2048, 2.0f, 50.0f);
-
 	lc4->set_light_description(light_desc4);
-
 	light4->set_position(Vec3f{ 0.0f, 10.0, 10.0f });
-
+	light4->setup();
 	m_objects.push_back(light4);
 
 	Object* emitter{ new Object{ "emmiter1" } };
@@ -833,7 +727,7 @@ void MainScene::initialize()
 	p_mat.textures[TEX_DIFFUSE] = ResourceManager::get<D3D11_texture>(TEXTURE_PATH + L"bubble10.png");
 	p_mat.textures[TEX_DIFFUSE]->set_texture_type(TEX_DIFFUSE);
 	ec->set_material(p_mat);
-
+	emitter->setup();
 	m_objects.push_back(emitter);
 
 	Window* win{ WindowingService::get_window(0) };
@@ -841,10 +735,6 @@ void MainScene::initialize()
 
 	for (int i = 0; i < 4; ++i) {
 		m_depth_pass_rts[i].create(Vec2f{ 2048, 2048 });
-	}
-
-	for (auto object : m_objects) {
-		object->setup();
 	}
 
 	m_globe->setup();
@@ -893,35 +783,16 @@ static int bnstate[8];
 
 void MainScene::on_mouse_motion(int x, int y) noexcept
 {
-	int dx = x - prev_x;
-	int dy = y - prev_y;
-	prev_x = x;
-	prev_y = y;
 
-	if (!dx && !dy) return;
-
-	if (bnstate[0]) {
-		EngineContext::get_camera_system()->get_active_camera()->set_euler_angles(Vec3f{ dy * 0.5, dx * 0.5, 0 });
-
-		cam_theta += dx * 0.5;
-		cam_phi += dy * 0.5;
-		if (cam_phi < -90) cam_phi = -90;
-		if (cam_phi > 90) cam_phi = 90;
-	}
 }
 
 void MainScene::on_mouse_click(int button, bool state, int x, int y)
 {
-	prev_x = x;
-	prev_y = y;
-	bnstate[button] = state;
+
 }
 
 void MainScene::update(float delta_time, long time) noexcept
 {
-	sub1_oar_root->set_euler_angles(Vec3f{ 0, cos(time / 300.0f) * 3.0f, sin(time / 300.0f) * 2.0f });
-	sub1_root->set_position(Vec3f{ cos(MathUtils::to_radians(time / 100.0f)) * 4.0f, 0.0f, sin(MathUtils::to_radians(time / 100.0f)) * 4.0f });
-
 	Scene::update(delta_time, time);
 
 	CameraSystem* camera_system{ EngineContext::get_camera_system() };

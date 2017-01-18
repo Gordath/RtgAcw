@@ -2,7 +2,8 @@
 #define MAIN_SCENE_H_
 #include "scene.h"
 #include "../GlacierEngine/rendering/include/d3d/D3D11_render_target.h"
-#include "../GlacierEngine/rendering/include/mesh.h"
+
+class DrebelSubmarine;
 
 class MainScene : public Glacier::Scene {
 private:
@@ -21,6 +22,8 @@ private:
 
 	Glacier::Object* m_skybox{ nullptr };
 	Glacier::Object* m_globe{ nullptr };
+
+	DrebelSubmarine* m_drebel{ nullptr };
 
 	void depth_pass() const noexcept;
 	void color_pass() const noexcept;
