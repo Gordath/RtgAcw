@@ -28,6 +28,8 @@ namespace Glacier
 		virtual void update(float delta_time, long time = 0) noexcept;
 
 		virtual void draw() const noexcept = 0;
+
+		virtual void on_message(MessageContainer msg) const noexcept;
 	};
 }
 

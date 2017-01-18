@@ -54,6 +54,12 @@
     <Filter Include="Source Files\Components">
       <UniqueIdentifier>{8bb06ec6-65e4-4f61-be76-0aa1f63e7bbf}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Messages">
+      <UniqueIdentifier>{548a8c7c-edc8-4e74-93d3-4eb616bab2e6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Messages">
+      <UniqueIdentifier>{c59459a9-d008-4fff-a3b3-38166dcf0624}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\application.cpp">
@@ -148,6 +154,21 @@
     </ClCompile>
     <ClCompile Include="rendering\src\d3d\D3D11_depth_stencil_state.cpp">
       <Filter>Rendering\Source Files\d3d</Filter>
+    </ClCompile>
+    <ClCompile Include="src\observer_subject.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\keyboard_input_component.cpp">
+      <Filter>Source Files\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ncf.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ncf_util.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\cfg.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -306,6 +327,30 @@
     </ClInclude>
     <ClInclude Include="rendering\include\d3d\D3D11_depth_stencil_state.h">
       <Filter>Rendering\Header Files\d3d</Filter>
+    </ClInclude>
+    <ClInclude Include="include\message.h">
+      <Filter>Header Files\Messages</Filter>
+    </ClInclude>
+    <ClInclude Include="include\observer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\observer_subject.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\keyboard_input_component.h">
+      <Filter>Header Files\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="include\keypress_message.h">
+      <Filter>Header Files\Messages</Filter>
+    </ClInclude>
+    <ClInclude Include="include\ncf.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\ncf_util.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\cfg.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

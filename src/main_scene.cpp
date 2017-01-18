@@ -8,6 +8,8 @@
 #include "shader_program_manager.h"
 #include "emitter_conponent.h"
 #include "../GlacierEngine/rendering/include/d3d/D3D11_texture.h"
+#include "keypress_message.h"
+#include "camera_keyboard_input_component.h"
 
 using namespace Glacier;
 
@@ -166,11 +168,6 @@ void MainScene::color_pass() const noexcept
 		          return a->get_material().diffuse.w > b->get_material().diffuse.w;
 	          });
 
-	Mat4f cam_matrix{ Mat4f(1.0) };
-	cam_matrix = MathUtils::rotate(cam_matrix, MathUtils::to_radians(cam_theta), Vec3f(0, 1, 0));
-	cam_matrix = MathUtils::rotate(cam_matrix, MathUtils::to_radians(cam_phi), Vec3f(1, 0, 0));
-	cam_matrix = MathUtils::translate(cam_matrix, Vec3f(0, 0, -cam_dist));
-
 	ShaderProgramManager::get("color_pass_sdrprog")->bind();
 
 	device_context->PSSetShaderResources(4, 1, m_light_srv.GetAddressOf());
@@ -184,15 +181,15 @@ void MainScene::color_pass() const noexcept
 
 	device_context->PSSetShaderResources(5, 4, depth_textures.data());
 
+	CameraSystem* camera_system{ EngineContext::get_camera_system() };
+
+	Mat4f view{ camera_system->get_active_camera_view_matrix() };
+
+	Mat4f projection{ camera_system->get_active_camera_projection_matrix() };
+
 	for (auto rendering_component : rendering_components) {
 
 		if (rendering_component->get_mesh() && rendering_component->should_draw()) {
-			CameraSystem* camera_system{ EngineContext::get_camera_system() };
-
-			//Mat4f view{ camera_system->get_active_camera_cam_matrix() };
-			Mat4f view = MathUtils::inverse(cam_matrix);
-
-			Mat4f projection{ camera_system->get_active_camera_projection_matrix() };
 
 			Mat4f model{ rendering_component->get_xform() };
 
@@ -279,8 +276,6 @@ void MainScene::color_pass() const noexcept
 			model = MathUtils::translate(model, particle.position);
 			model = MathUtils::scale(model, Vec3f{ particle.size });
 
-			CameraSystem* camera_system{ EngineContext::get_camera_system() };
-			Mat4f view = MathUtils::inverse(cam_matrix);
 			view[0][0] = 1.0f;
 			view[0][1] = 0.0f;
 			view[0][2] = 0.0f;
@@ -292,8 +287,6 @@ void MainScene::color_pass() const noexcept
 			view[2][0] = 0.0f;
 			view[2][1] = 0.0f;
 			view[2][2] = 1.0f;
-
-			Mat4f projection = camera_system->get_active_camera_projection_matrix();
 
 			Mat4f MVP{ projection * view * model };
 
@@ -329,7 +322,7 @@ void MainScene::color_pass() const noexcept
 	//-------------------------------------------------------------------------------------------------------------
 
 
-	render_globe(cam_matrix);
+	render_globe();
 
 	std::vector<ID3D11ShaderResourceView*> null_srvs{ nullptr, nullptr, nullptr, nullptr };
 
@@ -365,7 +358,7 @@ void MainScene::display_to_screen() const noexcept
 	dev_con->PSSetShaderResources(0, 1, &null_srv);
 }
 
-void MainScene::render_globe(const Mat4f& cam_matrix) const noexcept
+void MainScene::render_globe() const noexcept
 {
 	RenderingComponent* rc{ static_cast<RenderingComponent*>(m_globe->get_component("co_rendering")) };
 
@@ -389,8 +382,7 @@ void MainScene::render_globe(const Mat4f& cam_matrix) const noexcept
 		if (rc->get_mesh() && rc->should_draw()) {
 			CameraSystem* camera_system{ EngineContext::get_camera_system() };
 
-			//Mat4f view{ camera_system->get_active_camera_cam_matrix() };
-			Mat4f view = MathUtils::inverse(cam_matrix);
+			Mat4f view{ camera_system->get_active_camera_view_matrix() };
 
 			Mat4f projection{ camera_system->get_active_camera_projection_matrix() };
 
@@ -610,8 +602,8 @@ void MainScene::initialize()
 	Object* obj = new Object{ "ground" };
 	rc = new RenderingComponent{ obj };
 	rc->set_mesh(ResourceManager::get<Mesh>(L"cube"));
-	mat.diffuse = Vec4f{ 0.9568627450980392f, 0.8627450980392157f, 0.7098039215686275f, 1.0f };
-	mat.specular = Vec4f{ 0.0f };
+	mat.diffuse = Vec4f{ 1.0f, 1.0f, 1.0f, 1.0f };
+	mat.specular = Vec4f{ 1.0f };
 	mat.textures[TEX_DIFFUSE] = ResourceManager::get<D3D11_texture>(TEXTURE_PATH + L"seabed_diff.png");
 	mat.textures[TEX_SPECULAR] = ResourceManager::get<D3D11_texture>(TEXTURE_PATH + L"seabed_spec.png");
 	mat.textures[TEX_NORMAL] = ResourceManager::get<D3D11_texture>(TEXTURE_PATH + L"seabed_norm.png");
@@ -724,6 +716,9 @@ void MainScene::initialize()
 
 	Object* cam{ new Object{ "camera1" } };
 	CameraComponent* cc{ new CameraComponent{ cam, MathUtils::to_radians(60.0f), win_x, win_y, 0.1f, 1000.0f } };
+	CameraKeyboardInputComponent* input_comp{ new CameraKeyboardInputComponent{ cam } };
+	input_comp->set_movement_speed(30.0f);
+	input_comp->set_rotation_speed(180.0f);
 
 	cam->set_position(Vec3f(0.0f, 0.0f, -20.0f));
 
@@ -731,8 +726,10 @@ void MainScene::initialize()
 
 	Object* cam2{ new Object{ "camera2" } };
 	CameraComponent* cc2{ new CameraComponent{ cam2, MathUtils::to_radians(60.0f), win_x, win_y, 0.1f, 1000.0f } };
-
-	cam2->set_position(Vec3f(0.0f, 0.0f, -3.0f));
+	input_comp = new CameraKeyboardInputComponent{ cam2 };
+	input_comp->set_rotation_speed(90.0f);
+	cam2->set_parent(sub1_controller);
+	cam2->set_position(Vec3f(0.0f, 0.0f, -1.0f));
 
 	m_objects.push_back(cam2);
 
@@ -746,7 +743,7 @@ void MainScene::initialize()
 	light_desc.specular_intensity = Vec4f{ 1.0f, 1.0f, 1.0f, 1.0f };
 	light_desc.flags = Vec4ui{ 1, 1, 0, 0 };
 	light_desc.attenuation = Vec3f{ 1.0f, 0.0f, 0.0f };
-	light_desc.light_projection_matrix = MathUtils::perspective_lh(light_desc.light_projection_matrix, MathUtils::to_radians(60.0), 2048, 2048, 5.0f, 26.0f);
+	light_desc.light_projection_matrix = MathUtils::perspective_lh(MathUtils::to_radians(60.0), 2048, 2048, 5.0f, 26.0f);
 
 	lc1->set_light_description(light_desc);
 
@@ -767,7 +764,7 @@ void MainScene::initialize()
 	light_desc2.spot_cutoff = 20.0f;
 	light_desc2.spot_exponent = 90.0f;
 	light_desc2.spot_direction = Vec3f{ 0.09f, -0.1f, 0.09f };
-	light_desc2.light_projection_matrix = MathUtils::perspective_lh(light_desc2.light_projection_matrix, MathUtils::to_radians(60.0), 2048, 2048, 5.0f, 50.0f);
+	light_desc2.light_projection_matrix = MathUtils::perspective_lh(MathUtils::to_radians(60.0), 2048, 2048, 5.0f, 50.0f);
 
 	lc2->set_light_description(light_desc2);
 
@@ -788,7 +785,7 @@ void MainScene::initialize()
 	light_desc3.spot_cutoff = 20.0f;
 	light_desc3.spot_exponent = 90.0f;
 	light_desc3.spot_direction = Vec3f{ -0.09f, -0.1f, 0.09f };
-	light_desc3.light_projection_matrix = MathUtils::perspective_lh(light_desc3.light_projection_matrix, MathUtils::to_radians(60.0), 2048, 2048, 5.0f, 50.0f);
+	light_desc3.light_projection_matrix = MathUtils::perspective_lh(MathUtils::to_radians(60.0), 2048, 2048, 5.0f, 50.0f);
 
 	lc3->set_light_description(light_desc3);
 
@@ -809,7 +806,7 @@ void MainScene::initialize()
 	light_desc4.spot_cutoff = 20.0f;
 	light_desc4.spot_exponent = 90.0f;
 	light_desc4.spot_direction = Vec3f{ 0.0f, -0.1f, -0.1f };
-	light_desc4.light_projection_matrix = MathUtils::perspective_lh(light_desc3.light_projection_matrix, MathUtils::to_radians(60.0), 2048, 2048, 2.0f, 50.0f);
+	light_desc4.light_projection_matrix = MathUtils::perspective_lh(MathUtils::to_radians(60.0), 2048, 2048, 2.0f, 50.0f);
 
 	lc4->set_light_description(light_desc4);
 
@@ -846,10 +843,18 @@ void MainScene::initialize()
 	for (int i = 0; i < 4; ++i) {
 		m_depth_pass_rts[i].create(Vec2f{ 2048, 2048 });
 	}
+
+	for (auto object : m_objects) {
+		object->setup();
+	}
+
+	m_globe->setup();
 }
 
 void MainScene::on_key_down(unsigned char key, int x, int y) noexcept
 {
+	MessageContainer msg{ new KeypressMessage{ key, x, y, true } };
+	Scene::on_message(msg);
 }
 
 void MainScene::on_key_up(unsigned char key, int x, int y) noexcept
@@ -873,12 +878,15 @@ void MainScene::on_key_up(unsigned char key, int x, int y) noexcept
 	case 'V':
 		EngineContext::get_light_system()->toggle_light("light4");
 		break;
-	case 'W':
+	case '0':
 		wireframe = !wireframe;
 		break;
 	default:
 		break;
 	}
+	
+	MessageContainer msg{ new KeypressMessage{key, x, y, false} };
+	Scene::on_message(msg);
 }
 
 static int prev_x, prev_y;

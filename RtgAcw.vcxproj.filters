@@ -16,6 +16,12 @@
     <Filter Include="sdr">
       <UniqueIdentifier>{c1c2f944-7ff2-4eef-b569-025381de5d87}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Components">
+      <UniqueIdentifier>{1ef4ef2b-3d6c-48c4-8ab1-3f556723fb4e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Components">
+      <UniqueIdentifier>{4d37c724-eb20-4101-8ad0-e18ac3a0b130}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp">
@@ -30,6 +36,9 @@
     <ClCompile Include="src\color_pass.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\camera_keyboard_input_component.cpp">
+      <Filter>Source Files\Components</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\rtg_application.h">
@@ -40,6 +49,9 @@
     </ClInclude>
     <ClInclude Include="include\color_pass.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\camera_keyboard_input_component.h">
+      <Filter>Header Files\Components</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

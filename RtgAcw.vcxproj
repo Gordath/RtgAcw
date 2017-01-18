@@ -91,6 +91,7 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;GLACIERENGINE_BUILD_D3D;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
+      <DisableSpecificWarnings>4005</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -149,12 +150,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\camera_keyboard_input_component.cpp" />
     <ClCompile Include="src\color_pass.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\main_scene.cpp" />
     <ClCompile Include="src\rtg_application.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\camera_keyboard_input_component.h" />
     <ClInclude Include="include\color_pass.h" />
     <ClInclude Include="include\main_scene.h" />
     <ClInclude Include="include\rtg_application.h" />

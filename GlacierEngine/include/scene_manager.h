@@ -25,7 +25,7 @@ namespace Glacier
 		static void on_mouse_click(int button, bool state, int x, int y) noexcept;
 
 		// Respond to messages
-		//virtual void OnMessage(Message* msg);
+		static void on_message(MessageContainer msg) noexcept;
 
 		static void update(float delta_time, long time) noexcept;
 
