@@ -602,8 +602,8 @@ void MainScene::initialize()
 	Object* obj = new Object{ "ground" };
 	rc = new RenderingComponent{ obj };
 	rc->set_mesh(ResourceManager::get<Mesh>(L"cube"));
-	mat.diffuse = Vec4f{ 0.9568627450980392f, 0.8627450980392157f, 0.7098039215686275f, 1.0f };
-	mat.specular = Vec4f{ 0.0f };
+	mat.diffuse = Vec4f{ 1.0f, 1.0f, 1.0f, 1.0f };
+	mat.specular = Vec4f{ 1.0f };
 	mat.textures[TEX_DIFFUSE] = ResourceManager::get<D3D11_texture>(TEXTURE_PATH + L"seabed_diff.png");
 	mat.textures[TEX_SPECULAR] = ResourceManager::get<D3D11_texture>(TEXTURE_PATH + L"seabed_spec.png");
 	mat.textures[TEX_NORMAL] = ResourceManager::get<D3D11_texture>(TEXTURE_PATH + L"seabed_norm.png");
