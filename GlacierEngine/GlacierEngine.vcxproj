@@ -176,6 +176,7 @@
     <ClCompile Include="src\ncf.cpp" />
     <ClCompile Include="src\ncf_util.cpp" />
     <ClCompile Include="src\observer_subject.cpp" />
+    <ClCompile Include="src\path_component.cpp" />
     <ClCompile Include="src\rendering_component.cpp" />
     <ClCompile Include="src\resource_manager.cpp" />
     <ClCompile Include="src\scene.cpp" />
@@ -206,6 +207,7 @@
     <ClInclude Include="include\object.h" />
     <ClInclude Include="include\observer.h" />
     <ClInclude Include="include\observer_subject.h" />
+    <ClInclude Include="include\path_component.h" />
     <ClInclude Include="include\rendering_component.h" />
     <ClInclude Include="include\resource.h" />
     <ClInclude Include="include\resource_manager.h" />
