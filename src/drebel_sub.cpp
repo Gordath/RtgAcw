@@ -7,7 +7,6 @@ using namespace Glacier;
 void DrebelSubmarine::update(float dt, long time) noexcept
 {
 	m_oar_controller->set_euler_angles(Vec3f{ 0, sin(time / 300.0f) * 3.0f, cos(time / 300.0f) * 2.0f });
-	set_position(Vec3f{ cos(MathUtils::to_radians(time / 100.0f)) * 4.0f, 0.0f, sin(MathUtils::to_radians(time / 100.0f)) * 4.0f });
 	Object::update(dt, time);
 }
 

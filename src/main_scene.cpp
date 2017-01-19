@@ -11,6 +11,7 @@
 #include "keypress_message.h"
 #include "camera_keyboard_input_component.h"
 #include "drebel_sub.h"
+#include "path_component.h"
 
 using namespace Glacier;
 
@@ -462,9 +463,9 @@ void MainScene::setup_lights() noexcept
 	light_desc.specular_intensity = Vec4f{ 1.0f, 1.0f, 1.0f, 1.0f };
 	light_desc.flags = Vec4ui{ 1, 1, 0, 0 };
 	light_desc.attenuation = Vec3f{ 1.0f, 0.0f, 0.0f };
-	light_desc.light_projection_matrix = MathUtils::perspective_lh(MathUtils::to_radians(60.0), 2048, 2048, 5.0f, 26.0f);
+	light_desc.light_projection_matrix = MathUtils::perspective_lh(MathUtils::to_radians(60.0), 2048, 2048, 5.0f, 46.0f);
 	lc1->set_light_description(light_desc);
-	light1->set_position(Vec3f{ 0.0f, 10.0, 0.0f });
+	light1->set_position(Vec3f{ 0.0f, 30.0, 0.0f });
 	light1->setup();
 	m_objects.push_back(light1);
 
@@ -530,7 +531,7 @@ void MainScene::setup_cameras() noexcept
 	CameraKeyboardInputComponent* input_comp{ new CameraKeyboardInputComponent{ cam } };
 	input_comp->set_movement_speed(30.0f);
 	input_comp->set_rotation_speed(180.0f);
-	cam->set_position(Vec3f(0.0f, 0.0f, -20.0f));
+	cam->set_position(Vec3f(0.0f, 0.0f, -80.0f));
 	cam->setup();
 	m_objects.push_back(cam);
 
@@ -660,8 +661,6 @@ void MainScene::setup_d3d() noexcept
 	}
 }
 
-
-
 void MainScene::initialize()
 {
 	setup_d3d();
@@ -690,7 +689,7 @@ void MainScene::initialize()
 	rc->set_material(mat);
 	rc->set_casts_shadows(false);
 	m_globe->set_position(Vec3f{ 0.0f, 0.0, 0.0f });
-	m_globe->set_scale(Vec3f{ 40.0f, 40.0f, 40.0f });
+	m_globe->set_scale(Vec3f{ 20.0f, 20.0f, 20.0f });
 	m_globe->calculate_xform();
 	m_globe->setup();
 
@@ -708,13 +707,23 @@ void MainScene::initialize()
 	mat.texture_matrix = MathUtils::scale(mat.texture_matrix, Vec3f{ 30.0f, 30.0f , 0.0f });
 	rc->set_material(mat);
 	rc->set_casts_shadows(false);
-	obj->set_position(Vec3f{ 0.0f, -20.0, 0.0f });
+	obj->set_position(Vec3f{ 0.0f, -10.0, 0.0f });
 	obj->set_scale(Vec3f{ 1000.0f, 0.1f, 1000.0f });
 	obj->setup();
-	//m_objects.push_back(obj);
+	m_objects.push_back(obj);
+
+
 
 	// Submarine 1 creation -------------------------------------------------------------------------------------------
 	m_drebel = new DrebelSubmarine{"drebel_sub", this};
+	m_drebel->set_scale(Vec3f{ 5.0f, 5.0f, 5.0f });
+	PathComponent* pc{ new PathComponent{ m_drebel } };
+	pc->add_keyframe(Vec3f{}, 0);
+	pc->add_keyframe(Vec3f{ 10, 0, 10 }, 6000);
+	pc->add_keyframe(Vec3f{ -10, 0, -10 }, 12000);
+	pc->add_keyframe(Vec3f{ 0, 10, 0}, 18000);
+	pc->add_keyframe(Vec3f{ 0, 0, 0 }, 24000);
+	pc->set_looping(true);
 	m_drebel->setup();
 	// -----------------------------------------------------------------------------------------------------------------
 

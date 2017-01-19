@@ -2,12 +2,17 @@
 #define GLACIER_PATH_COMPONENT_H_
 #include "component.h"
 #include <vector>
+#include <tuple>
 
 namespace Glacier
 {
+	using Keyframe = std::tuple<Vec3f, long>;
+
 	class PathComponent : public Component {
 	private:
-		std::vector<Vec4f> m_points;
+		std::vector<Keyframe> m_keyframes;
+
+		bool m_loop{ false };
 
 	public:
 		PathComponent(Object* parent) : Component{ "co_path", parent }
@@ -20,9 +25,11 @@ namespace Glacier
 
 		void teardown() noexcept override;
 
-		void add_point(const Vec4f& point) noexcept
+		void add_keyframe(const Vec3f& position, long time) noexcept;
+
+		void set_looping(bool looping) noexcept
 		{
-			m_points.push_back(point);
+			m_loop = looping;
 		}
 	};
 }
