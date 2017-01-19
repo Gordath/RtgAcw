@@ -450,8 +450,101 @@ void MainScene::render_skybox() const noexcept
 
 }
 
+void MainScene::setup_lights() noexcept
+{
+	Object* light1{ new Object{ "light1" } };
 
-void MainScene::initialize()
+	LightComponent* lc1{ new LightComponent{ light1 } };
+
+	LightDesc light_desc;
+	light_desc.ambient_intensity = Vec4f{ 0.0f, 0.0f, 0.0f, 0.0f };
+	light_desc.diffuse_intensity = Vec4f{ 0.5f, 0.5f, 0.5f, 1.0f };
+	light_desc.specular_intensity = Vec4f{ 1.0f, 1.0f, 1.0f, 1.0f };
+	light_desc.flags = Vec4ui{ 1, 1, 0, 0 };
+	light_desc.attenuation = Vec3f{ 1.0f, 0.0f, 0.0f };
+	light_desc.light_projection_matrix = MathUtils::perspective_lh(MathUtils::to_radians(60.0), 2048, 2048, 5.0f, 26.0f);
+	lc1->set_light_description(light_desc);
+	light1->set_position(Vec3f{ 0.0f, 10.0, 0.0f });
+	light1->setup();
+	m_objects.push_back(light1);
+
+	Object* light2{ new Object{ "light2" } };
+	LightComponent* lc2{ new LightComponent{ light2 } };
+	LightDesc light_desc2;
+	light_desc2.ambient_intensity = Vec4f{ 0.0f, 0.0f, 0.0f, 0.0f };
+	light_desc2.diffuse_intensity = Vec4f{ 1.0f, 1.0f, 1.0f, 1.0f };
+	light_desc2.specular_intensity = Vec4f{ 1.0f, 1.0f, 1.0f, 1.0f };
+	light_desc2.flags = Vec4ui{ 0, 1, 0, 0 };
+	light_desc2.attenuation = Vec3f{ 1.0f, 0.0f, 0.0f };
+	light_desc2.spot_cutoff = 20.0f;
+	light_desc2.spot_exponent = 90.0f;
+	light_desc2.spot_direction = Vec3f{ 0.09f, -0.1f, 0.09f };
+	light_desc2.light_projection_matrix = MathUtils::perspective_lh(MathUtils::to_radians(60.0), 2048, 2048, 5.0f, 50.0f);
+	lc2->set_light_description(light_desc2);
+	light2->set_position(Vec3f{ -10.0f, 10.0, -10.0f });
+	light2->setup();
+	m_objects.push_back(light2);
+
+	Object* light3{ new Object{ "light3" } };
+	LightComponent* lc3{ new LightComponent{ light3 } };
+	LightDesc light_desc3;
+	light_desc3.ambient_intensity = Vec4f{ 0.0f, 0.0f, 0.0f, 0.0f };
+	light_desc3.diffuse_intensity = Vec4f{ 1.0f, 1.0f, 1.0f, 1.0f };
+	light_desc3.specular_intensity = Vec4f{ 1.0f, 1.0f, 1.0f, 1.0f };
+	light_desc3.flags = Vec4ui{ 0, 1, 0, 0 };
+	light_desc3.attenuation = Vec3f{ 1.0f, 0.0f, 0.0f };
+	light_desc3.spot_cutoff = 20.0f;
+	light_desc3.spot_exponent = 90.0f;
+	light_desc3.spot_direction = Vec3f{ -0.09f, -0.1f, 0.09f };
+	light_desc3.light_projection_matrix = MathUtils::perspective_lh(MathUtils::to_radians(60.0), 2048, 2048, 5.0f, 50.0f);
+	lc3->set_light_description(light_desc3);
+	light3->set_position(Vec3f{ 10.0f, 10.0, -10.0f });
+	light3->setup();
+	m_objects.push_back(light3);
+
+	Object* light4{ new Object{ "light4" } };
+	LightComponent* lc4{ new LightComponent{ light4 } };
+	LightDesc light_desc4;
+	light_desc4.ambient_intensity = Vec4f{ 0.0f, 0.0f, 0.0f, 0.0f };
+	light_desc4.diffuse_intensity = Vec4f{ 1.0f, 1.0f, 1.0f, 1.0f };
+	light_desc4.specular_intensity = Vec4f{ 1.0f, 1.0f, 1.0f, 1.0f };
+	light_desc4.flags = Vec4ui{ 0, 1, 0, 0 };
+	light_desc4.attenuation = Vec3f{ 1.0f, 0.0f, 0.0f };
+	light_desc4.spot_cutoff = 20.0f;
+	light_desc4.spot_exponent = 90.0f;
+	light_desc4.spot_direction = Vec3f{ 0.0f, -0.1f, -0.1f };
+	light_desc4.light_projection_matrix = MathUtils::perspective_lh(MathUtils::to_radians(60.0), 2048, 2048, 2.0f, 50.0f);
+	lc4->set_light_description(light_desc4);
+	light4->set_position(Vec3f{ 0.0f, 10.0, 10.0f });
+	light4->setup();
+	m_objects.push_back(light4);
+}
+
+void MainScene::setup_cameras() noexcept
+{
+	float win_x = WindowingService::get_window(0)->get_size().x;
+	float win_y = WindowingService::get_window(0)->get_size().y;
+
+	Object* cam{ new Object{ "camera1" } };
+	CameraComponent* cc{ new CameraComponent{ cam, MathUtils::to_radians(60.0f), win_x, win_y, 0.1f, 1000.0f } };
+	CameraKeyboardInputComponent* input_comp{ new CameraKeyboardInputComponent{ cam } };
+	input_comp->set_movement_speed(30.0f);
+	input_comp->set_rotation_speed(180.0f);
+	cam->set_position(Vec3f(0.0f, 0.0f, -20.0f));
+	cam->setup();
+	m_objects.push_back(cam);
+
+	Object* cam2{ new Object{ "camera2" } };
+	CameraComponent* cc2{ new CameraComponent{ cam2, MathUtils::to_radians(60.0f), win_x, win_y, 0.1f, 1000.0f } };
+	input_comp = new CameraKeyboardInputComponent{ cam2 };
+	input_comp->set_rotation_speed(90.0f);
+	cam2->set_parent(m_drebel);
+	cam2->set_position(Vec3f(0.0f, 0.0f, -1.0f));
+	cam2->setup();
+	m_objects.push_back(cam2);
+}
+
+void MainScene::setup_d3d() noexcept
 {
 	ColorPassUniformBuffer cp_uniforms;
 
@@ -565,7 +658,13 @@ void MainScene::initialize()
 	if (FAILED(res)) {
 		std::cerr << "Linear Texture Wrap sampler creation failed!" << std::endl;
 	}
+}
 
+
+
+void MainScene::initialize()
+{
+	setup_d3d();
 
 	Mesh* m{ MeshUtils::generate_uv_sphere(1.0f, 60, 60) };
 	ResourceManager::register_resource(m, L"sphere");
@@ -591,8 +690,9 @@ void MainScene::initialize()
 	rc->set_material(mat);
 	rc->set_casts_shadows(false);
 	m_globe->set_position(Vec3f{ 0.0f, 0.0, 0.0f });
-	m_globe->set_scale(Vec3f{ 7.0f, 7.0f, 7.0f });
+	m_globe->set_scale(Vec3f{ 40.0f, 40.0f, 40.0f });
 	m_globe->calculate_xform();
+	m_globe->setup();
 
 	Object* obj = new Object{ "ground" };
 	rc = new RenderingComponent{ obj };
@@ -608,125 +708,40 @@ void MainScene::initialize()
 	mat.texture_matrix = MathUtils::scale(mat.texture_matrix, Vec3f{ 30.0f, 30.0f , 0.0f });
 	rc->set_material(mat);
 	rc->set_casts_shadows(false);
-	obj->set_position(Vec3f{ 0.0f, -3.0, 0.0f });
+	obj->set_position(Vec3f{ 0.0f, -20.0, 0.0f });
 	obj->set_scale(Vec3f{ 1000.0f, 0.1f, 1000.0f });
 	obj->setup();
-	m_objects.push_back(obj);
+	//m_objects.push_back(obj);
 
 	// Submarine 1 creation -------------------------------------------------------------------------------------------
 	m_drebel = new DrebelSubmarine{"drebel_sub", this};
 	m_drebel->setup();
-	m_objects.push_back(m_drebel);
-
 	// -----------------------------------------------------------------------------------------------------------------
 
-	float win_x = WindowingService::get_window(0)->get_size().x;
-	float win_y = WindowingService::get_window(0)->get_size().y;
+	setup_cameras();
 
-	Object* cam{ new Object{ "camera1" } };
-	CameraComponent* cc{ new CameraComponent{ cam, MathUtils::to_radians(60.0f), win_x, win_y, 0.1f, 1000.0f } };
-	CameraKeyboardInputComponent* input_comp{ new CameraKeyboardInputComponent{ cam } };
-	input_comp->set_movement_speed(30.0f);
-	input_comp->set_rotation_speed(180.0f);
-	cam->set_position(Vec3f(0.0f, 0.0f, -20.0f));
-	cam->setup();
-	m_objects.push_back(cam);
-
-	Object* cam2{ new Object{ "camera2" } };
-	CameraComponent* cc2{ new CameraComponent{ cam2, MathUtils::to_radians(60.0f), win_x, win_y, 0.1f, 1000.0f } };
-	input_comp = new CameraKeyboardInputComponent{ cam2 };
-	input_comp->set_rotation_speed(90.0f);
-	cam2->set_parent(m_drebel);
-	cam2->set_position(Vec3f(0.0f, 0.0f, -1.0f));
-	cam2->setup();
-	m_objects.push_back(cam2);
-
-	Object* light1{ new Object{ "light1" } };
-
-	LightComponent* lc1{ new LightComponent{ light1 } };
-
-	LightDesc light_desc;
-	light_desc.ambient_intensity = Vec4f{ 0.0f, 0.0f, 0.0f, 0.0f };
-	light_desc.diffuse_intensity = Vec4f{ 0.3f, 0.3f, 0.3f, 1.0f };
-	light_desc.specular_intensity = Vec4f{ 1.0f, 1.0f, 1.0f, 1.0f };
-	light_desc.flags = Vec4ui{ 1, 1, 0, 0 };
-	light_desc.attenuation = Vec3f{ 1.0f, 0.0f, 0.0f };
-	light_desc.light_projection_matrix = MathUtils::perspective_lh(MathUtils::to_radians(60.0), 2048, 2048, 5.0f, 26.0f);
-	lc1->set_light_description(light_desc);
-	light1->set_position(Vec3f{ 0.0f, 10.0, 0.0f });
-	light1->setup();
-	m_objects.push_back(light1);
-
-	Object* light2{ new Object{ "light2" } };
-	LightComponent* lc2{ new LightComponent{ light2 } };
-	LightDesc light_desc2;
-	light_desc2.ambient_intensity = Vec4f{ 0.0f, 0.0f, 0.0f, 0.0f };
-	light_desc2.diffuse_intensity = Vec4f{ 1.0f, 1.0f, 1.0f, 1.0f };
-	light_desc2.specular_intensity = Vec4f{ 1.0f, 1.0f, 1.0f, 1.0f };
-	light_desc2.flags = Vec4ui{ 0, 1, 0, 0 };
-	light_desc2.attenuation = Vec3f{ 1.0f, 0.0f, 0.0f };
-	light_desc2.spot_cutoff = 20.0f;
-	light_desc2.spot_exponent = 90.0f;
-	light_desc2.spot_direction = Vec3f{ 0.09f, -0.1f, 0.09f };
-	light_desc2.light_projection_matrix = MathUtils::perspective_lh(MathUtils::to_radians(60.0), 2048, 2048, 5.0f, 50.0f);
-	lc2->set_light_description(light_desc2);
-	light2->set_position(Vec3f{ -10.0f, 10.0, -10.0f });
-	light2->setup();
-	m_objects.push_back(light2);
-
-	Object* light3{ new Object{ "light3" } };
-	LightComponent* lc3{ new LightComponent{ light3 } };
-	LightDesc light_desc3;
-	light_desc3.ambient_intensity = Vec4f{ 0.0f, 0.0f, 0.0f, 0.0f };
-	light_desc3.diffuse_intensity = Vec4f{ 1.0f, 1.0f, 1.0f, 1.0f };
-	light_desc3.specular_intensity = Vec4f{ 1.0f, 1.0f, 1.0f, 1.0f };
-	light_desc3.flags = Vec4ui{ 0, 1, 0, 0 };
-	light_desc3.attenuation = Vec3f{ 1.0f, 0.0f, 0.0f };
-	light_desc3.spot_cutoff = 20.0f;
-	light_desc3.spot_exponent = 90.0f;
-	light_desc3.spot_direction = Vec3f{ -0.09f, -0.1f, 0.09f };
-	light_desc3.light_projection_matrix = MathUtils::perspective_lh(MathUtils::to_radians(60.0), 2048, 2048, 5.0f, 50.0f);
-	lc3->set_light_description(light_desc3);
-	light3->set_position(Vec3f{ 10.0f, 10.0, -10.0f });
-	light3->setup();
-	m_objects.push_back(light3);
-
-	Object* light4{ new Object{ "light4" } };
-	LightComponent* lc4{ new LightComponent{ light4 } };
-	LightDesc light_desc4;
-	light_desc4.ambient_intensity = Vec4f{ 0.0f, 0.0f, 0.0f, 0.0f };
-	light_desc4.diffuse_intensity = Vec4f{ 1.0f, 1.0f, 1.0f, 1.0f };
-	light_desc4.specular_intensity = Vec4f{ 1.0f, 1.0f, 1.0f, 1.0f };
-	light_desc4.flags = Vec4ui{ 0, 1, 0, 0 };
-	light_desc4.attenuation = Vec3f{ 1.0f, 0.0f, 0.0f };
-	light_desc4.spot_cutoff = 20.0f;
-	light_desc4.spot_exponent = 90.0f;
-	light_desc4.spot_direction = Vec3f{ 0.0f, -0.1f, -0.1f };
-	light_desc4.light_projection_matrix = MathUtils::perspective_lh(MathUtils::to_radians(60.0), 2048, 2048, 2.0f, 50.0f);
-	lc4->set_light_description(light_desc4);
-	light4->set_position(Vec3f{ 0.0f, 10.0, 10.0f });
-	light4->setup();
-	m_objects.push_back(light4);
+	setup_lights();
 
 	Object* emitter{ new Object{ "emmiter1" } };
 	EmitterComponent* ec{ new EmitterComponent{ emitter } };
-	ec->set_lifespan(6.0);
+	ec->set_lifespan(7.5);
 	ec->set_max_particles(1000);
-	ec->set_spawn_rate(10.0);
+	ec->set_spawn_rate(20.0);
 	ec->set_active(true);
-	ec->set_particle_size(0.2f);
-	ec->set_spawn_radius(4.0f);
+	ec->set_particle_size(0.5f);
+	ec->set_spawn_radius(25.0f);
 	ec->set_velocity(Vec3f{ 0.0f, 0.0f, 0.0f });
 	ec->set_velocity_range(0.3f);
-	ec->set_external_force(Vec3f{ 0.0f, 0.0f, 0.0f });
+	ec->set_external_force(Vec3f{ 0.0f, 0.1f, 0.0f });
 	ec->set_mesh(ResourceManager::get<Mesh>(L"plane"));
-	ec->set_start_color(Vec4f{ 1.0f, 1.0f, 1.0f, 0.0f });
-	ec->set_end_color(Vec4f{ 1.0f, 1.0f, 1.0f, 1.0f });
+	ec->set_start_color(Vec4f{ 1.0f, 1.0f, 1.0f, 1.0f });
+	ec->set_end_color(Vec4f{ 1.0f, 1.0f, 1.0f, 0.3f });
 	Material p_mat;
 	p_mat.blend_state = RenderStateType::BS_BLEND_ADDITIVE;
 	p_mat.textures[TEX_DIFFUSE] = ResourceManager::get<D3D11_texture>(TEXTURE_PATH + L"bubble10.png");
 	p_mat.textures[TEX_DIFFUSE]->set_texture_type(TEX_DIFFUSE);
 	ec->set_material(p_mat);
+	//emitter->set_position(Vec3f{ 0.0f, -18.0f, 0.0f });
 	emitter->setup();
 	m_objects.push_back(emitter);
 
@@ -736,8 +751,6 @@ void MainScene::initialize()
 	for (int i = 0; i < 4; ++i) {
 		m_depth_pass_rts[i].create(Vec2f{ 2048, 2048 });
 	}
-
-	m_globe->setup();
 }
 
 void MainScene::on_key_down(unsigned char key, int x, int y) noexcept

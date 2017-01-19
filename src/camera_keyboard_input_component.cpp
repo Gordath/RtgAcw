@@ -64,8 +64,8 @@ void CameraKeyboardInputComponent::update(float dt, long time) noexcept
 		pos.y = 0.0f;
 	}
 
-	if (pos.y > 10.0f) {
-		pos.y = 10.0f;
+	if (pos.y > 30.0f) {
+		pos.y = 30.0f;
 	}
 
 	if (angles.x < -90.0f) {

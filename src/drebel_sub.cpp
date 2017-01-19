@@ -15,6 +15,7 @@ void DrebelSubmarine::setup() noexcept
 {
 	//Self init
 	Object::setup();
+	m_scene->add_object(this);
 	//----
 
 	Object* body{ new Object{ "sub1_body" } };

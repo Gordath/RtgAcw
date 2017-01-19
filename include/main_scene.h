@@ -32,6 +32,10 @@ private:
 	void render_globe() const noexcept;
 	void render_skybox() const noexcept;
 
+	void setup_lights() noexcept;
+	void setup_cameras() noexcept;
+	void setup_d3d() noexcept;
+
 public:
 
 	void initialize() override;
