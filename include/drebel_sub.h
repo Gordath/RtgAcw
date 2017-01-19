@@ -8,7 +8,7 @@ class DrebelSubmarine : public Glacier::Object {
 private:
 	Glacier::Scene* m_scene{ nullptr };
 
-	Glacier::Object* m_oar_controller{ nullptr };
+	Object* m_oar_controller{ nullptr };
 
 public:
 	DrebelSubmarine(const std::string& name, Glacier::Scene* scene)
