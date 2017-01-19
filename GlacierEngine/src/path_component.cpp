@@ -4,6 +4,11 @@
 
 namespace Glacier
 {
+	const Keyframe& PathComponent::get_keyframe(int idx) const noexcept
+	{
+		return m_keyframes[(idx + m_keyframes.size()) % m_keyframes.size()];
+	}
+
 	void PathComponent::setup() noexcept
 	{
 		std::sort(m_keyframes.begin(), m_keyframes.end(),
@@ -43,8 +48,10 @@ namespace Glacier
 		float t{ 0.0 };
 
 		for (int i = 0; i < m_keyframes.size() - 1; ++i) {
-			Keyframe current{ m_keyframes[i] };
-			Keyframe next{ m_keyframes[i + 1] };
+			Keyframe current{ get_keyframe(i) };
+			Keyframe next{ get_keyframe(i + 1) };
+			Keyframe prev{ get_keyframe(i - 1) };
+			Keyframe n_next{ get_keyframe(i + 2) };
 
 			long current_timestamp{ std::get<long>(current) };
 			long next_timestamp{ std::get<long>(next) };
@@ -56,14 +63,27 @@ namespace Glacier
 
 				Vec3f current_pos{ std::get<Vec3f>(current) };
 				Vec3f next_pos{ std::get<Vec3f>(next) };
+				Vec3f prev_pos{ std::get<Vec3f>(prev) };
+				Vec3f n_next_pos{ std::get<Vec3f>(n_next) };
 
-				m_parent->set_position(
-					Vec3f{
-						current_pos.x + (next_pos.x - current_pos.x) * t,
-						current_pos.y + (next_pos.y - current_pos.y) * t,
-						current_pos.z + (next_pos.z - current_pos.z) * t
-					}
-				);
+				Vec3f pos{ MathUtils::catmull_rom(prev_pos, current_pos, next_pos, n_next_pos, t) };
+				Vec3f pos2{ MathUtils::catmull_rom(prev_pos, current_pos, next_pos, n_next_pos, t + 0.05f) };
+
+				m_parent->set_position(pos);
+
+				Vec3f dir_to_align{ MathUtils::normalize(pos2 - pos) };
+
+				float rot_y = atan2f(dir_to_align.x, dir_to_align.z);
+				float rot_x = asinf(dir_to_align.y);
+
+				float rot_y_deg{ MathUtils::to_degrees(rot_y) };
+				float rot_x_deg{ MathUtils::to_degrees(rot_x) };
+
+				Vec3f angles{ m_parent->get_euler_angles() };
+				angles.x = -rot_x_deg;
+				angles.y = rot_y_deg;
+
+				m_parent->set_euler_angles(angles);
 			}
 		}
 	}

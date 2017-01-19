@@ -459,7 +459,7 @@ void MainScene::setup_lights() noexcept
 
 	LightDesc light_desc;
 	light_desc.ambient_intensity = Vec4f{ 0.0f, 0.0f, 0.0f, 0.0f };
-	light_desc.diffuse_intensity = Vec4f{ 0.5f, 0.5f, 0.5f, 1.0f };
+	light_desc.diffuse_intensity = Vec4f{ 0.7f, 0.7f, 0.7f, 1.0f };
 	light_desc.specular_intensity = Vec4f{ 1.0f, 1.0f, 1.0f, 1.0f };
 	light_desc.flags = Vec4ui{ 1, 1, 0, 0 };
 	light_desc.attenuation = Vec3f{ 1.0f, 0.0f, 0.0f };
@@ -712,17 +712,18 @@ void MainScene::initialize()
 	obj->setup();
 	m_objects.push_back(obj);
 
-
-
 	// Submarine 1 creation -------------------------------------------------------------------------------------------
 	m_drebel = new DrebelSubmarine{"drebel_sub", this};
 	m_drebel->set_scale(Vec3f{ 5.0f, 5.0f, 5.0f });
 	PathComponent* pc{ new PathComponent{ m_drebel } };
-	pc->add_keyframe(Vec3f{}, 0);
-	pc->add_keyframe(Vec3f{ 10, 0, 10 }, 6000);
-	pc->add_keyframe(Vec3f{ -10, 0, -10 }, 12000);
-	pc->add_keyframe(Vec3f{ 0, 10, 0}, 18000);
-	pc->add_keyframe(Vec3f{ 0, 0, 0 }, 24000);
+	pc->add_keyframe(Vec3f{ 10, 0, 0 }, 0);
+	pc->add_keyframe(Vec3f{ 8, 0, 2 }, 2000);
+	pc->add_keyframe(Vec3f{ 5, 2, 4 }, 4000);
+	pc->add_keyframe(Vec3f{ 2, 4, 8 }, 6000);
+	pc->add_keyframe(Vec3f{ -5, 2, 4 }, 8000);
+	pc->add_keyframe(Vec3f{ -2, 0, 0 }, 10000);
+	pc->add_keyframe(Vec3f{ 5, 0, 0 }, 12000);
+	pc->add_keyframe(Vec3f{ 10, 0, 0 }, 14000);
 	pc->set_looping(true);
 	m_drebel->setup();
 	// -----------------------------------------------------------------------------------------------------------------
@@ -738,7 +739,7 @@ void MainScene::initialize()
 	ec->set_spawn_rate(20.0);
 	ec->set_active(true);
 	ec->set_particle_size(0.5f);
-	ec->set_spawn_radius(25.0f);
+	ec->set_spawn_radius(15.0f);
 	ec->set_velocity(Vec3f{ 0.0f, 0.0f, 0.0f });
 	ec->set_velocity_range(0.3f);
 	ec->set_external_force(Vec3f{ 0.0f, 0.1f, 0.0f });

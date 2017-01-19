@@ -1,7 +1,8 @@
 #ifndef GLACIER_MATH_UTILS_H_
 #define GLACIER_MATH_UTILS_H_
 #include "types.h"
-#include <GLM/GTC/matrix_transform.inl>
+#include <GLM/gtc/matrix_transform.inl>
+#include <GLM/gtx/spline.hpp>
 
 namespace Glacier
 {
@@ -96,6 +97,11 @@ namespace Glacier
 		inline Mat4f lookat_lh(const Vec3f& position, const Vec3f& target, const Vec3f& up)
 		{
 			return glm::lookAtLH(position, target, up);
+		}
+
+		inline Vec3f catmull_rom(const Vec3f& a, const Vec3f& b, const Vec3f& c, const Vec3f& d, float t)
+		{
+			return glm::catmullRom(a, b, c, d, t);
 		}
 
 		template<typename T>

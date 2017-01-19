@@ -14,6 +14,8 @@ namespace Glacier
 
 		bool m_loop{ false };
 
+		const Keyframe& get_keyframe(int idx) const noexcept;
+
 	public:
 		PathComponent(Object* parent) : Component{ "co_path", parent }
 		{
