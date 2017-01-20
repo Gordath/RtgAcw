@@ -12,9 +12,9 @@ namespace Glacier
 	void PathComponent::setup() noexcept
 	{
 		std::sort(m_keyframes.begin(), m_keyframes.end(),
-			[](auto a, auto b) {
-			return std::get<long>(a) < std::get<long>(b);
-		});
+		          [](auto a, auto b) {
+			          return std::get<long>(a) < std::get<long>(b);
+		          });
 	}
 
 	void PathComponent::update(float dt, long time) noexcept
@@ -71,19 +71,21 @@ namespace Glacier
 
 				m_parent->set_position(pos);
 
-				Vec3f dir_to_align{ MathUtils::normalize(pos2 - pos) };
+				if (m_align_to_path) {
+					Vec3f dir_to_align{ MathUtils::normalize(pos2 - pos) };
 
-				float rot_y = atan2f(dir_to_align.x, dir_to_align.z);
-				float rot_x = asinf(dir_to_align.y);
+					float rot_y = atan2f(dir_to_align.x, dir_to_align.z);
+					float rot_x = asinf(dir_to_align.y);
 
-				float rot_y_deg{ MathUtils::to_degrees(rot_y) };
-				float rot_x_deg{ MathUtils::to_degrees(rot_x) };
+					float rot_y_deg{ MathUtils::to_degrees(rot_y) };
+					float rot_x_deg{ MathUtils::to_degrees(rot_x) };
 
-				Vec3f angles{ m_parent->get_euler_angles() };
-				angles.x = -rot_x_deg;
-				angles.y = rot_y_deg;
+					Vec3f angles{ m_parent->get_euler_angles() };
+					angles.x = -rot_x_deg;
+					angles.y = rot_y_deg;
 
-				m_parent->set_euler_angles(angles);
+					m_parent->set_euler_angles(angles);
+				}
 			}
 		}
 	}
@@ -95,7 +97,7 @@ namespace Glacier
 	void PathComponent::add_keyframe(const Vec3f& position, long time) noexcept
 	{
 		auto it{ m_keyframes.begin() };
-		while(it != m_keyframes.end()) {
+		while (it != m_keyframes.end()) {
 			if (std::get<long>(*it) == time) {
 				std::get<Vec3f>(*it) = position;
 				return;

@@ -149,9 +149,8 @@ void calculate_lighting(StructuredBuffer<Light> lights,
 			float n_dot_l = max(dot(normal.xyz, light_vector), 0.0);
 			float3 h = normalize(view_direction + light_vector);
 			float n_dot_h = max(dot(normal, h), 0.0);
-			float exponent = 60.0;
 
-			float4 lit_result = lit(n_dot_l, n_dot_h, exponent);
+			float4 lit_result = lit(n_dot_l, n_dot_h, shininess);
 
 			shadow /= 9.0;
 
@@ -187,7 +186,7 @@ float4 main(VOut input) : SV_TARGET
 		n,
 		vdir,
 		input.vertexWorld,
-		60.0,
+		specular.a,
 		TBN,
 		amb_light,
 		diff_light,

@@ -91,5 +91,11 @@
     <FxCompile Include="sdr\particles.ps.hlsl">
       <Filter>sdr</Filter>
     </FxCompile>
+    <FxCompile Include="sdr\skybox.vs.hlsl">
+      <Filter>sdr</Filter>
+    </FxCompile>
+    <FxCompile Include="sdr\skybox.ps.hlsl">
+      <Filter>sdr</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>

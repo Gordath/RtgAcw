@@ -6,6 +6,7 @@
 #include "timer.h"
 #include <iostream>
 #include "scene_manager.h"
+#include "../GlacierEngine/windowing/include/windowing_service.h"
 
 using namespace Glacier;
 
@@ -88,6 +89,10 @@ bool RtgApplication::initialize(int* argc, char* argv[])
 	}
 
 	if (!ShaderProgramManager::create("particles_sdrprog", IL_POSITION | IL_TEXCOORD, L"particles.vs.hlsl", L"particles.ps.hlsl")) {
+		return false;
+	}
+
+	if (!ShaderProgramManager::create("skybox_sdrprog", IL_POSITION | IL_NORMAL, L"skybox.vs.hlsl", L"skybox.ps.hlsl")) {
 		return false;
 	}
 

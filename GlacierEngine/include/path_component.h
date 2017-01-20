@@ -13,6 +13,8 @@ namespace Glacier
 		std::vector<Keyframe> m_keyframes;
 
 		bool m_loop{ false };
+		
+		bool m_align_to_path{ false };
 
 		const Keyframe& get_keyframe(int idx) const noexcept;
 
@@ -32,6 +34,11 @@ namespace Glacier
 		void set_looping(bool looping) noexcept
 		{
 			m_loop = looping;
+		}
+
+		void set_align_to_path(bool align) noexcept
+		{
+			m_align_to_path = align;
 		}
 	};
 }

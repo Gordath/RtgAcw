@@ -38,6 +38,11 @@ struct ParticleUniformBuffer {
 	Vec4f diffuse;
 };
 
+struct SkyboxUniformBuffer {
+	Mat4f VP;
+	Mat4f ITV;
+};
+
 void MainScene::depth_pass() const noexcept
 {
 	D3D11Context* GAPI_context{ EngineContext::get_GAPI_context() };
@@ -103,8 +108,7 @@ void MainScene::depth_pass() const noexcept
 					if (mesh->get_index_count()) {
 						mesh->get_ibo()->bind();
 						mesh->get_ibo()->draw();
-					}
-					else {
+					} else {
 						mesh->get_vbo()->draw();
 					}
 				}
@@ -119,8 +123,8 @@ void MainScene::depth_pass() const noexcept
 
 void MainScene::color_pass() const noexcept
 {
-	float clear_color[4]{ 0.0470588235294118f, 0.3019607843137255f, 0.4117647058823529f, 1.0f };
-	//float clear_color[4]{ 0.0f, 0.0f, 0.0f, 1.0f };
+//	float clear_color[4]{ 0.0470588235294118f, 0.3019607843137255f, 0.4117647058823529f, 1.0f };
+	float clear_color[4]{ 0.0f, 0.0f, 0.0f, 1.0f };
 
 	m_color_pass_rt.bind(RenderTargetBindType::COLOR_AND_DEPTH);
 	m_color_pass_rt.clear(clear_color);
@@ -141,6 +145,8 @@ void MainScene::color_pass() const noexcept
 	viewport.MaxDepth = 1.0f;
 
 	device_context->RSSetViewports(1, &viewport);
+
+	render_skybox();
 
 	std::vector<RenderingComponent*> rendering_components;
 	std::vector<EmitterComponent*> emitter_components;
@@ -208,22 +214,19 @@ void MainScene::color_pass() const noexcept
 
 			if (material.textures[TEX_DIFFUSE]) {
 				material.textures[TEX_DIFFUSE]->bind();
-			}
-			else {
+			} else {
 				ResourceManager::get<D3D11_texture>(TEXTURE_PATH + L"dummyDiff.jpg")->bind();
 			}
 
 			if (material.textures[TEX_SPECULAR]) {
 				material.textures[TEX_SPECULAR]->bind();
-			}
-			else {
+			} else {
 				ResourceManager::get<D3D11_texture>(TEXTURE_PATH + L"dummySpec.jpg")->bind();
 			}
 
 			if (material.textures[TEX_NORMAL]) {
 				material.textures[TEX_NORMAL]->bind();
-			}
-			else {
+			} else {
 				ResourceManager::get<D3D11_texture>(TEXTURE_PATH + L"dummyNorm.png")->bind();
 			}
 
@@ -245,8 +248,7 @@ void MainScene::color_pass() const noexcept
 			if (mesh->get_index_count()) {
 				mesh->get_ibo()->bind();
 				mesh->get_ibo()->draw();
-			}
-			else {
+			} else {
 				mesh->get_vbo()->draw();
 			}
 
@@ -306,8 +308,7 @@ void MainScene::color_pass() const noexcept
 			if (mesh->get_index_count()) {
 				mesh->get_ibo()->bind();
 				mesh->get_ibo()->draw();
-			}
-			else {
+			} else {
 				mesh->get_vbo()->draw();
 			}
 		}
@@ -356,26 +357,26 @@ void MainScene::display_to_screen() const noexcept
 
 void MainScene::render_globe() const noexcept
 {
-	RenderingComponent* rc{ static_cast<RenderingComponent*>(m_globe->get_component("co_rendering")) };
+	RenderingComponent* rc{ dynamic_cast<RenderingComponent*>(m_globe->get_component("co_rendering")) };
 
 	if (rc) {
 
-		ShaderProgramManager::get("color_pass_sdrprog")->bind();
-		D3D11Context* GAPI_context{ EngineContext::get_GAPI_context() };
-		ComPtr<ID3D11DeviceContext> device_context{ GAPI_context->get_device_context() };
-
-		device_context->PSSetShaderResources(4, 1, m_light_srv.GetAddressOf());
-		device_context->PSSetSamplers(0, 1, m_sampler_linear_wrap.GetAddressOf());
-		device_context->PSSetSamplers(1, 1, m_sampler_shadow_comparison.GetAddressOf());
-
-		std::vector<ID3D11ShaderResourceView*> depth_textures;
-		for (int i = 0; i < 4; ++i) {
-			depth_textures.push_back(m_depth_pass_rts[i].get_depth_attachment());
-		}
-
-		device_context->PSSetShaderResources(5, 4, depth_textures.data());
-
 		if (rc->get_mesh() && rc->should_draw()) {
+			ShaderProgramManager::get("color_pass_sdrprog")->bind();
+			D3D11Context* GAPI_context{ EngineContext::get_GAPI_context() };
+			ComPtr<ID3D11DeviceContext> device_context{ GAPI_context->get_device_context() };
+
+			device_context->PSSetShaderResources(4, 1, m_light_srv.GetAddressOf());
+			device_context->PSSetSamplers(0, 1, m_sampler_linear_wrap.GetAddressOf());
+			device_context->PSSetSamplers(1, 1, m_sampler_shadow_comparison.GetAddressOf());
+
+			std::vector<ID3D11ShaderResourceView*> depth_textures;
+			for (int i = 0; i < 4; ++i) {
+				depth_textures.push_back(m_depth_pass_rts[i].get_depth_attachment());
+			}
+
+			device_context->PSSetShaderResources(5, 4, depth_textures.data());
+
 			CameraSystem* camera_system{ EngineContext::get_camera_system() };
 
 			Mat4f view{ camera_system->get_active_camera_view_matrix() };
@@ -436,8 +437,7 @@ void MainScene::render_globe() const noexcept
 			if (mesh->get_index_count()) {
 				mesh->get_ibo()->bind();
 				mesh->get_ibo()->draw();
-			}
-			else {
+			} else {
 				mesh->get_vbo()->draw();
 			}
 
@@ -448,7 +448,71 @@ void MainScene::render_globe() const noexcept
 
 void MainScene::render_skybox() const noexcept
 {
+	RenderingComponent* rc{ dynamic_cast<RenderingComponent*>(m_skybox->get_component("co_rendering")) };
 
+	if (rc) {
+		if (rc->get_mesh() && rc->should_draw()) {
+			D3D11Context* GAPI_context{ EngineContext::get_GAPI_context() };
+			ComPtr<ID3D11DeviceContext> device_context{ GAPI_context->get_device_context() };
+
+			RenderStateManager::set(RenderStateType::DSS_DEPTH_MASK_0);
+			ShaderProgramManager::get("skybox_sdrprog")->bind();
+
+			device_context->PSSetSamplers(0, 1, m_sampler_linear_wrap.GetAddressOf());
+
+			CameraSystem* camera_system{ EngineContext::get_camera_system() };
+
+			Mat4f view{ camera_system->get_active_camera_view_matrix() };
+			view[3][0] = 0.0f;
+			view[3][1] = 0.0f;
+			view[3][2] = 0.0f;
+			view[3][3] = 1.0f;
+
+			view[0][3] = 0.0f;
+			view[1][3] = 0.0f;
+			view[2][3] = 0.0f;
+
+			Mat4f projection{ camera_system->get_active_camera_projection_matrix() };
+
+			Mat4f VP{ projection * view};
+			Mat4f ITV{ view };
+
+			SkyboxUniformBuffer uniforms;
+			uniforms.VP = MathUtils::transpose(VP);
+			uniforms.ITV = MathUtils::transpose(ITV);
+
+			Material material{ rc->get_material() };
+			if (material.textures[TEX_DIFFUSE]) {
+				material.textures[TEX_DIFFUSE]->bind();
+			}
+			else {
+				ResourceManager::get<D3D11_texture>(TEXTURE_PATH + L"dummyDiff.jpg")->bind();
+			}
+
+			D3D11_MAPPED_SUBRESOURCE ms;
+			device_context->Map(m_skybox_uniform_buffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &ms);
+			memcpy(ms.pData, &uniforms, sizeof(SkyboxUniformBuffer));
+			device_context->Unmap(m_skybox_uniform_buffer.Get(), 0);
+
+			device_context->VSSetConstantBuffers(0, 1, m_skybox_uniform_buffer.GetAddressOf());
+
+			Mesh* mesh{ rc->get_mesh() };
+
+			//RenderStateManager::set(material.blend_state);
+
+			mesh->get_vbo()->bind();
+
+			if (mesh->get_index_count()) {
+				mesh->get_ibo()->bind();
+				mesh->get_ibo()->draw();
+			}
+			else {
+				mesh->get_vbo()->draw();
+			}
+
+			RenderStateManager::set(RenderStateType::DSS_DEPTH_MASK_1);
+		}
+	}
 }
 
 void MainScene::setup_lights() noexcept
@@ -598,6 +662,21 @@ void MainScene::setup_d3d() noexcept
 		std::cerr << "Renderer initialization failed: Uniform buffer creation failed." << std::endl;
 	}
 
+	SkyboxUniformBuffer sky_uniforms;
+	ZeroMemory(&cb_desc, sizeof(cb_desc));
+	cb_desc.ByteWidth = sizeof(sky_uniforms);
+	cb_desc.Usage = D3D11_USAGE_DYNAMIC;
+	cb_desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	cb_desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	cb_desc.MiscFlags = 0;
+	cb_desc.StructureByteStride = 0;
+
+	res = device->CreateBuffer(&cb_desc, nullptr, m_skybox_uniform_buffer.ReleaseAndGetAddressOf());
+
+	if (FAILED(res)) {
+		std::cerr << "Renderer initialization failed: Uniform buffer creation failed." << std::endl;
+	}
+
 	// LIGHTS STRUCTURED 
 	D3D11_BUFFER_DESC sb_desc;
 	ZeroMemory(&sb_desc, sizeof(sb_desc));
@@ -623,7 +702,7 @@ void MainScene::setup_d3d() noexcept
 
 	D3D11_SAMPLER_DESC samplerDesc;
 	ZeroMemory(&samplerDesc, sizeof(D3D11_SAMPLER_DESC));
-	samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+	samplerDesc.Filter = D3D11_FILTER_ANISOTROPIC;
 	samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
 	samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
 	samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
@@ -671,18 +750,22 @@ void MainScene::initialize()
 	m = MeshUtils::generate_cube(1.0f);
 	ResourceManager::register_resource(m, L"cube");
 
+	m = MeshUtils::generate_cube(1.0f, VertexWinding::ANTICLOCKWISE);
+	ResourceManager::register_resource(m, L"flipped_cube");
+
 	m = MeshUtils::generate_plane_xy(1.0f);
 	ResourceManager::register_resource(m, L"plane");
 
 	ResourceManager::get<D3D11_texture>(TEXTURE_PATH + L"dummyDiff.jpg")->set_texture_type(TEX_DIFFUSE);
 	ResourceManager::get<D3D11_texture>(TEXTURE_PATH + L"dummySpec.jpg")->set_texture_type(TEX_SPECULAR);
 	ResourceManager::get<D3D11_texture>(TEXTURE_PATH + L"dummyNorm.png")->set_texture_type(TEX_NORMAL);
+	ResourceManager::get<D3D11_texture>(TEXTURE_PATH + L"sky.dds")->set_texture_type(TEX_DIFFUSE);
 
 	Material mat;
 	mat.diffuse = Vec4f{ 0.0470588235294118f, 0.3019607843137255f, 0.4117647058823529f, 0.5f };
 	mat.specular = Vec4f{ 0.5f, 0.5f, 0.5f, 128.0f };
 	mat.blend_state = RenderStateType::BS_BLEND_ALPHA;
-	
+
 	m_globe = new Object{ "globe" };
 	RenderingComponent* rc{ new RenderingComponent{ m_globe } };
 	rc->set_mesh(ResourceManager::get<Mesh>(L"sphere"));
@@ -693,14 +776,22 @@ void MainScene::initialize()
 	m_globe->calculate_xform();
 	m_globe->setup();
 
+	m_skybox = new Object{ "skybox" };
+	rc = new RenderingComponent{ m_skybox };
+	rc->set_mesh(ResourceManager::get<Mesh>(L"flipped_cube"));
+	Material skybox_mat;
+	skybox_mat.textures[TEX_DIFFUSE] = ResourceManager::get<D3D11_texture>(TEXTURE_PATH + L"sky.dds");
+	rc->set_material(skybox_mat);
+	m_skybox->setup();
+
 	Object* obj = new Object{ "ground" };
 	rc = new RenderingComponent{ obj };
 	rc->set_mesh(ResourceManager::get<Mesh>(L"cube"));
 	mat.diffuse = Vec4f{ 1.0f, 1.0f, 1.0f, 1.0f };
-	mat.specular = Vec4f{ 1.0f };
-	mat.textures[TEX_DIFFUSE] = ResourceManager::get<D3D11_texture>(TEXTURE_PATH + L"seabed_diff.png");
-	mat.textures[TEX_SPECULAR] = ResourceManager::get<D3D11_texture>(TEXTURE_PATH + L"seabed_spec.png");
-	mat.textures[TEX_NORMAL] = ResourceManager::get<D3D11_texture>(TEXTURE_PATH + L"seabed_norm.png");
+	mat.specular = Vec4f{ 0.2f, 0.2f, 0.2f, 30.0f };
+	mat.textures[TEX_DIFFUSE] = ResourceManager::get<D3D11_texture>(TEXTURE_PATH + L"mars_diff.png");
+	mat.textures[TEX_SPECULAR] = ResourceManager::get<D3D11_texture>(TEXTURE_PATH + L"mars_spec.png");
+	mat.textures[TEX_NORMAL] = ResourceManager::get<D3D11_texture>(TEXTURE_PATH + L"mars_norm.png");
 	mat.textures[TEX_DIFFUSE]->set_texture_type(TEX_DIFFUSE);
 	mat.textures[TEX_SPECULAR]->set_texture_type(TEX_SPECULAR);
 	mat.textures[TEX_NORMAL]->set_texture_type(TEX_NORMAL);
@@ -708,12 +799,12 @@ void MainScene::initialize()
 	rc->set_material(mat);
 	rc->set_casts_shadows(false);
 	obj->set_position(Vec3f{ 0.0f, -10.0, 0.0f });
-	obj->set_scale(Vec3f{ 1000.0f, 0.1f, 1000.0f });
+	obj->set_scale(Vec3f{ 2000.0f, 0.1f, 2000.0f });
 	obj->setup();
 	m_objects.push_back(obj);
 
 	// Submarine 1 creation -------------------------------------------------------------------------------------------
-	m_drebel = new DrebelSubmarine{"drebel_sub", this};
+	m_drebel = new DrebelSubmarine{ "drebel_sub", this };
 	m_drebel->set_scale(Vec3f{ 5.0f, 5.0f, 5.0f });
 	PathComponent* pc{ new PathComponent{ m_drebel } };
 	pc->add_keyframe(Vec3f{ 10, 0, 0 }, 0);
@@ -725,6 +816,7 @@ void MainScene::initialize()
 	pc->add_keyframe(Vec3f{ 5, 0, 0 }, 12000);
 	pc->add_keyframe(Vec3f{ 10, 0, 0 }, 14000);
 	pc->set_looping(true);
+	pc->set_align_to_path(true);
 	m_drebel->setup();
 	// -----------------------------------------------------------------------------------------------------------------
 
@@ -734,14 +826,14 @@ void MainScene::initialize()
 
 	Object* emitter{ new Object{ "emmiter1" } };
 	EmitterComponent* ec{ new EmitterComponent{ emitter } };
-	ec->set_lifespan(7.5);
+	ec->set_lifespan(6.0);
 	ec->set_max_particles(1000);
 	ec->set_spawn_rate(20.0);
 	ec->set_active(true);
-	ec->set_particle_size(0.5f);
-	ec->set_spawn_radius(15.0f);
+	ec->set_particle_size(0.3f);
+	ec->set_spawn_radius(13.0f);
 	ec->set_velocity(Vec3f{ 0.0f, 0.0f, 0.0f });
-	ec->set_velocity_range(0.3f);
+	ec->set_velocity_range(0.05f);
 	ec->set_external_force(Vec3f{ 0.0f, 0.1f, 0.0f });
 	ec->set_mesh(ResourceManager::get<Mesh>(L"plane"));
 	ec->set_start_color(Vec4f{ 1.0f, 1.0f, 1.0f, 1.0f });
@@ -796,8 +888,8 @@ void MainScene::on_key_up(unsigned char key, int x, int y) noexcept
 	default:
 		break;
 	}
-	
-	MessageContainer msg{ new KeypressMessage{key, x, y, false} };
+
+	MessageContainer msg{ new KeypressMessage{ key, x, y, false } };
 	Scene::on_message(msg);
 }
 
@@ -806,12 +898,10 @@ static int bnstate[8];
 
 void MainScene::on_mouse_motion(int x, int y) noexcept
 {
-
 }
 
 void MainScene::on_mouse_click(int button, bool state, int x, int y)
 {
-
 }
 
 void MainScene::update(float delta_time, long time) noexcept

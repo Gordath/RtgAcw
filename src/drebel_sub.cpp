@@ -1,6 +1,7 @@
 #include "drebel_sub.h"
 #include "rendering_component.h"
 #include "resource_manager.h"
+#include "../GlacierEngine/rendering/include/d3d/D3D11_texture.h"
 
 using namespace Glacier;
 
@@ -19,8 +20,15 @@ void DrebelSubmarine::setup() noexcept
 
 	Object* body{ new Object{ "sub1_body" } };
 	Material mat2;
-	mat2.diffuse = Vec4f{ 0.0f, 1.0f, 1.0f, 1.0f };
-	mat2.specular = Vec4f{ 1.0f, 1.0f, 1.0f, 60.0f };
+	mat2.diffuse = Vec4f{ 1.0f, 1.0f, 1.0f, 1.0f };
+	mat2.specular = Vec4f{ 1.0f, 1.0f, 1.0f, 20.0f };
+	mat2.textures[TEX_DIFFUSE] = ResourceManager::get<D3D11_texture>(TEXTURE_PATH + L"drebel_diff.png");
+	mat2.textures[TEX_SPECULAR] = ResourceManager::get<D3D11_texture>(TEXTURE_PATH + L"drebel_spec.png");
+	mat2.textures[TEX_NORMAL] = ResourceManager::get<D3D11_texture>(TEXTURE_PATH + L"drebel_norm.png");
+	mat2.textures[TEX_DIFFUSE]->set_texture_type(TEX_DIFFUSE);
+	mat2.textures[TEX_SPECULAR]->set_texture_type(TEX_SPECULAR);
+	mat2.textures[TEX_NORMAL]->set_texture_type(TEX_NORMAL);
+	mat2.texture_matrix = MathUtils::scale(Mat4f{}, Vec3f{ 3.0f, 3.0f, 3.0f });
 
 	RenderingComponent* rc{ new RenderingComponent{ body } };
 	rc->set_mesh(ResourceManager::get<Mesh>(L"sphere"));

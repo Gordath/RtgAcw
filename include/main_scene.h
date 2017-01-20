@@ -11,6 +11,7 @@ private:
 	Glacier::ComPtr<ID3D11Buffer> m_color_pass_uniform_buffer;
 	Glacier::ComPtr<ID3D11Buffer> m_depth_pass_uniform_buffer;
 	Glacier::ComPtr<ID3D11Buffer> m_particle_uniform_buffer;
+	Glacier::ComPtr<ID3D11Buffer> m_skybox_uniform_buffer;
 
 	Glacier::D3D11RenderTarget m_depth_pass_rts[4];
 

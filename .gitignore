@@ -139,3 +139,4 @@ Contact GitHub API Training Shop Blog About
 sdr/*.compilation_errors.txt
 *.enc
 nsight_profiler.cfg
+data/
