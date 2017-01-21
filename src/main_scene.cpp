@@ -318,12 +318,11 @@ void MainScene::color_pass() const noexcept
 	RenderStateManager::set(RenderStateType::DSS_DEPTH_MASK_1);
 	//-------------------------------------------------------------------------------------------------------------
 
-
-	render_globe();
-
 	std::vector<ID3D11ShaderResourceView*> null_srvs{ nullptr, nullptr, nullptr, nullptr };
 
 	device_context->PSSetShaderResources(5, 4, null_srvs.data());
+
+	render_globe();
 
 	m_color_pass_rt.unbind();
 }
@@ -362,20 +361,12 @@ void MainScene::render_globe() const noexcept
 	if (rc) {
 
 		if (rc->get_mesh() && rc->should_draw()) {
-			ShaderProgramManager::get("color_pass_sdrprog")->bind();
+			ShaderProgramManager::get("globe_sdrprog")->bind();
 			D3D11Context* GAPI_context{ EngineContext::get_GAPI_context() };
 			ComPtr<ID3D11DeviceContext> device_context{ GAPI_context->get_device_context() };
 
 			device_context->PSSetShaderResources(4, 1, m_light_srv.GetAddressOf());
 			device_context->PSSetSamplers(0, 1, m_sampler_linear_wrap.GetAddressOf());
-			device_context->PSSetSamplers(1, 1, m_sampler_shadow_comparison.GetAddressOf());
-
-			std::vector<ID3D11ShaderResourceView*> depth_textures;
-			for (int i = 0; i < 4; ++i) {
-				depth_textures.push_back(m_depth_pass_rts[i].get_depth_attachment());
-			}
-
-			device_context->PSSetShaderResources(5, 4, depth_textures.data());
 
 			CameraSystem* camera_system{ EngineContext::get_camera_system() };
 
@@ -762,9 +753,10 @@ void MainScene::initialize()
 	ResourceManager::get<D3D11_texture>(TEXTURE_PATH + L"sky.dds")->set_texture_type(TEX_DIFFUSE);
 
 	Material mat;
-	mat.diffuse = Vec4f{ 0.0470588235294118f, 0.3019607843137255f, 0.4117647058823529f, 0.5f };
+	mat.diffuse = Vec4f{ 0.0470588235294118f, 0.3019607843137255f, 0.4117647058823529f, 1.0f };
 	mat.specular = Vec4f{ 0.5f, 0.5f, 0.5f, 128.0f };
 	mat.blend_state = RenderStateType::BS_BLEND_ALPHA;
+	mat.textures[TEX_DIFFUSE] = ResourceManager::get<D3D11_texture>(TEXTURE_PATH + L"sky.dds");
 
 	m_globe = new Object{ "globe" };
 	RenderingComponent* rc{ new RenderingComponent{ m_globe } };

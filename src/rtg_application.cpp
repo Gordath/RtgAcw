@@ -96,6 +96,10 @@ bool RtgApplication::initialize(int* argc, char* argv[])
 		return false;
 	}
 
+	if (!ShaderProgramManager::create("globe_sdrprog", IL_POSITION | IL_NORMAL | IL_TANGENT | IL_TEXCOORD | IL_COLOR, L"globe.vs.hlsl", L"globe.ps.hlsl")) {
+		return false;
+	}
+
 	scene = new MainScene;
 	SceneManager::push_scene(scene);
 
