@@ -5,7 +5,6 @@ struct VOut {
 	float3 view_direction : VIEW_DIRECTION;
 	float3 view_space_pos : VIEW_SPACE_POS;
 	float fog_factor : TEXCOORD2;
-	float fresnel_term : TEXCOORD3;
 	float4 texcoord : TEXCOORD0;
 	float3 tangent : TEXCOORD4;
 	float3 binormal : TEXCOORD5;
@@ -21,6 +20,10 @@ cbuffer uniforms {
 	float4x4 texture_matrix;
 	float4 diffuse;
 	float4 specular;
+	float fpower;
+	float fbias;
+	float pad;
+	float pad1;
 };
 
 struct Light {
@@ -51,6 +54,16 @@ Texture2D depth_maps[4] : register(t5);
 SamplerState texture_sampler_linear_wrap : register(s0);
 SamplerComparisonState depth_comparison_sampler : register(s1);
 
+float get_light_attenuation(Light lgt, float dist)
+{
+	float attenuation_at_lpos_infty = 1.0;
+	return ((lgt.flags.x == 0)
+		? 1.0 / ((lgt.attenuation.x) +
+		(lgt.attenuation.y * dist) +
+			(lgt.attenuation.z * dist * dist))
+		: attenuation_at_lpos_infty);
+}
+
 float3 get_light_vector(Light light, float3 pos)
 {
 	if (light.flags.x == 0) { //not directional
@@ -78,9 +91,11 @@ void calculate_lighting(StructuredBuffer<Light> lights,
 
 	for (uint i = 0; i < buffer_size; i++) {
 		if (lights[i].flags.y == 1) { //is enabled
-			float3 light_vector = normalize(get_light_vector(lights[i], view_position));
+			float3 light_vector = get_light_vector(lights[i], view_position);
 			
-			float attenuation = 1.0;
+			float attenuation = get_light_attenuation(lights[i], length(light_vector));// 1.0;
+
+			light_vector = normalize(light_vector);
 
 			if (lights[i].flags.x == 0) { //not directional
 				
@@ -201,12 +216,8 @@ float4 main(VOut input) : SV_TARGET
 	float4 final_color = diff_color + spec_color + amb_light;
 	//final_color = lerp(float4(0.0470588235294118f, 0.3019607843137255f, 0.4117647058823529f, 1.0), final_color, input.fog_factor);
 	
-	if (diffuse.a < 1.0) {
-		final_color.a = diffuse.a * input.fresnel_term;
-	}
-	else {
-		final_color.a = diffuse.a;
-	}
+	final_color.a = diffuse.a;
+
 
 	return final_color;
 }

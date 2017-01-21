@@ -21,6 +21,10 @@ cbuffer uniforms {
 	float4x4 texture_matrix;
 	float4 diffuse;
 	float4 specular;
+	float fpower;
+	float fbias;
+	float pad;
+	float pad1;
 };
 
 struct Light {
@@ -47,6 +51,16 @@ Texture2D normal_tex : register(t2);
 StructuredBuffer<Light> lights : register(t4);
 
 SamplerState texture_sampler_linear_wrap : register(s0);
+
+float get_light_attenuation(Light lgt, float dist)
+{
+	float attenuation_at_lpos_infty = 1.0;
+	return ((lgt.flags.x == 0)
+		? 1.0 / ((lgt.attenuation.x) +
+		(lgt.attenuation.y * dist) +
+			(lgt.attenuation.z * dist * dist))
+		: attenuation_at_lpos_infty);
+}
 
 float3 get_light_vector(Light light, float3 pos)
 {
@@ -75,9 +89,11 @@ void calculate_lighting(StructuredBuffer<Light> lights,
 
 	for (uint i = 0; i < buffer_size; i++) {
 		if (lights[i].flags.y == 1) { //is enabled
-			float3 light_vector = normalize(get_light_vector(lights[i], view_position));
-			
-			float attenuation = 1.0;
+			float3 light_vector = get_light_vector(lights[i], view_position);
+
+			float attenuation = get_light_attenuation(lights[i], length(light_vector));
+
+			light_vector = normalize(light_vector);
 
 			if (lights[i].flags.x == 0) { //not directional
 				
@@ -102,7 +118,7 @@ void calculate_lighting(StructuredBuffer<Light> lights,
 
 			ambient_light += attenuation * lights[i].ambient_intensity * lit_result.x;
 			diffuse_light += attenuation * lights[i].diffuse_intensity * lit_result.y;
-			specular_light += attenuation * lights[i].specular_intensity * lit_result.z;
+			specular_light += attenuation * lights[i].specular_intensity * 7.0f * lit_result.z;
 		}
 	}
 
@@ -139,18 +155,14 @@ float4 main(VOut input) : SV_TARGET
 		spec_light); 
 
 	float3 refl_view_dir = normalize(input.reflected_view_dir);
-	float4 diff_texel = diffuse_tex.Sample(texture_sampler_linear_wrap, refl_view_dir);
-	float4 spec_texel = specular_tex.Sample(texture_sampler_linear_wrap, input.texcoord.xy);
+	float4 cube_texel = diffuse_tex.Sample(texture_sampler_linear_wrap, refl_view_dir);
 
 	float4 diff_color = diffuse * diff_light;
-	float4 spec_color = spec_texel * specular * spec_light;
+	float4 spec_color = specular * (spec_light + cube_texel);
 
 	float4 final_color = diff_color + spec_color + amb_light;
 	
-	final_color = final_color + diff_texel;
 	final_color.a = diffuse.a * input.fresnel_term;
-
-	//diff_texel.a = diffuse.a * input.fresnel_term;
 
 	return final_color;
 }

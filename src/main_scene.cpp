@@ -12,10 +12,28 @@
 #include "camera_keyboard_input_component.h"
 #include "drebel_sub.h"
 #include "path_component.h"
+#include "AntTweakBar.h"
 
 using namespace Glacier;
 
 static bool wireframe{ false };
+static float simulation_speed{ 1.0f };
+static float fps{ 0.0f };
+static bool shadows{ true };
+static long dt_ms{ 0 };
+
+static float fresnel_power{ 2.1f };
+static float fresnel_bias{ 0.10f };
+
+static LightDesc* directional_desc{ nullptr };
+static LightDesc* spotlight1_desc{ nullptr };
+static LightDesc* spotlight2_desc{ nullptr };
+static LightDesc* spotlight3_desc{ nullptr };
+
+static LightDesc default_directional;
+static LightDesc default_spotlight1;
+static LightDesc default_spotlight2;
+static LightDesc default_spotlight3;
 
 struct ColorPassUniformBuffer {
 	Mat4f MVP;
@@ -27,6 +45,10 @@ struct ColorPassUniformBuffer {
 	Mat4f texture_matrix;
 	Vec4f diffuse;
 	Vec4f specular;
+	float fpower;
+	float fbias;
+	float pad;
+	float pad1;
 };
 
 struct DepthPassUniformBuffer {
@@ -43,82 +65,153 @@ struct SkyboxUniformBuffer {
 	Mat4f ITV;
 };
 
+static void TW_CALL toggle_spotlight_one(void* cient_data)
+{
+	EngineContext::get_light_system()->toggle_light("light2");
+}
+
+static void TW_CALL toggle_spotlight_two(void* client_data)
+{
+	EngineContext::get_light_system()->toggle_light("light3");
+}
+
+static void TW_CALL toggle_spotlight_three(void* client_data)
+{
+	EngineContext::get_light_system()->toggle_light("light4");
+}
+
+static void TW_CALL toggle_directional_light(void* client_data)
+{
+	EngineContext::get_light_system()->toggle_light("light1");
+}
+
+static void TW_CALL toggle_shadows(void* client_data)
+{
+	shadows = !shadows;
+}
+
+static void TW_CALL toggle_wireframe(void* client_data)
+{
+	wireframe = !wireframe;
+}
+
+static void TW_CALL activate_outer_camera(void* client_data)
+{
+	EngineContext::get_camera_system()->set_active_camera("camera1");
+}
+
+static void TW_CALL activate_inner_follow_camera(void* client_data)
+{
+	EngineContext::get_camera_system()->set_active_camera("camera2");
+}
+
+static void TW_CALL reset_scene(void* client_data)
+{
+	*directional_desc = default_directional;
+	*spotlight1_desc = default_spotlight1;
+	*spotlight2_desc = default_spotlight2;
+	*spotlight3_desc = default_spotlight3;
+
+	wireframe = false;
+	simulation_speed = 1.0f;
+	shadows = true;
+	
+	fresnel_power = 2.1f;
+    fresnel_bias = 0.10f;
+}
+
+MainScene::~MainScene()
+{
+	TwTerminate();
+}
+
 void MainScene::depth_pass() const noexcept
 {
-	D3D11Context* GAPI_context{ EngineContext::get_GAPI_context() };
-	ComPtr<ID3D11DeviceContext> device_context{ GAPI_context->get_device_context() };
-
-	std::vector<RenderingComponent*> rendering_components;
-
-	for (auto object : m_objects) {
-		RenderingComponent* rc{ static_cast<RenderingComponent*>(object->get_component("co_rendering")) };
-
-		if (rc) {
-			rendering_components.push_back(rc);
-		}
-	}
-
 	auto lights{ EngineContext::get_light_system()->get_active_light_descriptions() };
 
-	float clear_color[4]{ 1.0f, 1.0f, 1.0f, 1.0f };
+	if (shadows) {
+		D3D11Context* GAPI_context{ EngineContext::get_GAPI_context() };
+		ComPtr<ID3D11DeviceContext> device_context{ GAPI_context->get_device_context() };
 
-	RenderStateManager::set(RenderStateType::RS_CULL_FRONT);
+		std::vector<RenderingComponent*> rendering_components;
 
-	for (int i = 0; i < lights.size(); ++i) {
-		m_depth_pass_rts[i].bind(RenderTargetBindType::DEPTH);
-		m_depth_pass_rts[i].clear(clear_color);
+		for (auto object : m_objects) {
+			RenderingComponent* rc{ static_cast<RenderingComponent*>(object->get_component("co_rendering")) };
 
-		if (lights[i].flags.y == true) {
-			ShaderProgramManager::get("depth_pass_sdrprog")->bind();
-
-			for (auto rendering_component : rendering_components) {
-
-				if (rendering_component->get_mesh() && rendering_component->should_draw() && rendering_component->casts_shadows()) {
-
-					Mat4f model{ rendering_component->get_xform() };
-					Mat4f light_view{ lights[i].light_view_matrix };
-					Mat4f light_projection{ lights[i].light_projection_matrix };
-
-					Mat4f MVP{ light_projection * light_view * model };
-
-					DepthPassUniformBuffer uniforms;
-					uniforms.MVP = MathUtils::transpose(MVP);
-
-					D3D11_MAPPED_SUBRESOURCE ms;
-					device_context->Map(m_depth_pass_uniform_buffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &ms);
-					memcpy(ms.pData, &uniforms, sizeof(DepthPassUniformBuffer));
-					device_context->Unmap(m_depth_pass_uniform_buffer.Get(), 0);
-
-					device_context->VSSetConstantBuffers(0, 1, m_depth_pass_uniform_buffer.GetAddressOf());
-
-					D3D11_VIEWPORT viewport;
-					viewport.TopLeftX = 0.0f;
-					viewport.TopLeftY = 0.0f;
-					viewport.Width = static_cast<float>(m_depth_pass_rts->get_size().x);
-					viewport.Height = static_cast<float>(m_depth_pass_rts->get_size().y);
-					viewport.MinDepth = 0.0f;
-					viewport.MaxDepth = 1.0f;
-
-					device_context->RSSetViewports(1, &viewport);
-
-					Mesh* mesh{ rendering_component->get_mesh() };
-
-					mesh->get_vbo()->bind();
-
-					if (mesh->get_index_count()) {
-						mesh->get_ibo()->bind();
-						mesh->get_ibo()->draw();
-					} else {
-						mesh->get_vbo()->draw();
-					}
-				}
+			if (rc) {
+				rendering_components.push_back(rc);
 			}
 		}
 
-		m_depth_pass_rts[i].unbind();
-	}
+		float clear_color[4]{ 1.0f, 1.0f, 1.0f, 1.0f };
 
-	RenderStateManager::set(RenderStateType::RS_CULL_BACK);
+		RenderStateManager::set(RenderStateType::RS_CULL_FRONT);
+
+		for (int i = 0; i < lights.size(); ++i) {
+			m_depth_pass_rts[i].bind(RenderTargetBindType::DEPTH);
+			m_depth_pass_rts[i].clear(clear_color);
+
+			if (lights[i].flags.y == true) {
+				ShaderProgramManager::get("depth_pass_sdrprog")->bind();
+
+				for (auto rendering_component : rendering_components) {
+
+					if (rendering_component->get_mesh() && rendering_component->should_draw() && rendering_component->casts_shadows()) {
+
+						Mat4f model{ rendering_component->get_xform() };
+						Mat4f light_view{ lights[i].light_view_matrix };
+						Mat4f light_projection{ lights[i].light_projection_matrix };
+
+						Mat4f MVP{ light_projection * light_view * model };
+
+						DepthPassUniformBuffer uniforms;
+						uniforms.MVP = MathUtils::transpose(MVP);
+
+						D3D11_MAPPED_SUBRESOURCE ms;
+						device_context->Map(m_depth_pass_uniform_buffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &ms);
+						memcpy(ms.pData, &uniforms, sizeof(DepthPassUniformBuffer));
+						device_context->Unmap(m_depth_pass_uniform_buffer.Get(), 0);
+
+						device_context->VSSetConstantBuffers(0, 1, m_depth_pass_uniform_buffer.GetAddressOf());
+
+						D3D11_VIEWPORT viewport;
+						viewport.TopLeftX = 0.0f;
+						viewport.TopLeftY = 0.0f;
+						viewport.Width = static_cast<float>(m_depth_pass_rts->get_size().x);
+						viewport.Height = static_cast<float>(m_depth_pass_rts->get_size().y);
+						viewport.MinDepth = 0.0f;
+						viewport.MaxDepth = 1.0f;
+
+						device_context->RSSetViewports(1, &viewport);
+
+						Mesh* mesh{ rendering_component->get_mesh() };
+
+						mesh->get_vbo()->bind();
+
+						if (mesh->get_index_count()) {
+							mesh->get_ibo()->bind();
+							mesh->get_ibo()->draw();
+						}
+						else {
+							mesh->get_vbo()->draw();
+						}
+					}
+				}
+			}
+
+			m_depth_pass_rts[i].unbind();
+		}
+
+		RenderStateManager::set(RenderStateType::RS_CULL_BACK);
+	} else {
+		float clear_color[4]{ 1.0f, 1.0f, 1.0f, 1.0f };
+
+		for (int i = 0; i < lights.size(); ++i) {
+			m_depth_pass_rts[i].bind(RenderTargetBindType::DEPTH);
+			m_depth_pass_rts[i].clear(clear_color);
+			m_depth_pass_rts[i].unbind();
+		}
+	}
 }
 
 void MainScene::color_pass() const noexcept
@@ -272,21 +365,23 @@ void MainScene::color_pass() const noexcept
 		for (auto particle : particles) {
 			Mat4f model;
 			model = MathUtils::translate(model, particle.position);
-			model = MathUtils::scale(model, Vec3f{ particle.size });
+			Mat4f MV{ view * model };
 
-			view[0][0] = 1.0f;
-			view[0][1] = 0.0f;
-			view[0][2] = 0.0f;
+			MV[0][0] = 1.0f;
+			MV[0][1] = 0.0f;
+			MV[0][2] = 0.0f;
 
-			view[1][0] = 0.0f;
-			view[1][1] = 1.0f;
-			view[1][2] = 0.0f;
+			MV[1][0] = 0.0f;
+			MV[1][1] = 1.0f;
+			MV[1][2] = 0.0f;
 
-			view[2][0] = 0.0f;
-			view[2][1] = 0.0f;
-			view[2][2] = 1.0f;
+			MV[2][0] = 0.0f;
+			MV[2][1] = 0.0f;
+			MV[2][2] = 1.0f;
 
-			Mat4f MVP{ projection * view * model };
+			MV = MathUtils::scale(MV, Vec3f{ particle.size });
+
+			Mat4f MVP{ projection * MV };
 
 			ParticleUniformBuffer uniforms;
 			uniforms.MVP = MathUtils::transpose(MVP);
@@ -323,6 +418,8 @@ void MainScene::color_pass() const noexcept
 	device_context->PSSetShaderResources(5, 4, null_srvs.data());
 
 	render_globe();
+
+	TwDraw();
 
 	m_color_pass_rt.unbind();
 }
@@ -391,6 +488,8 @@ void MainScene::render_globe() const noexcept
 			uniforms.ITMV = MathUtils::transpose(ITMV);
 			uniforms.diffuse = material.diffuse;
 			uniforms.specular = material.specular;
+			uniforms.fpower = fresnel_power;
+			uniforms.fbias = fresnel_bias;
 
 			if (material.textures[TEX_DIFFUSE]) {
 				material.textures[TEX_DIFFUSE]->bind();
@@ -523,6 +622,8 @@ void MainScene::setup_lights() noexcept
 	light1->set_position(Vec3f{ 0.0f, 30.0, 0.0f });
 	light1->setup();
 	m_objects.push_back(light1);
+	directional_desc = lc1->get_light_description_ptr();
+	default_directional = light_desc;
 
 	Object* light2{ new Object{ "light2" } };
 	LightComponent* lc2{ new LightComponent{ light2 } };
@@ -537,9 +638,11 @@ void MainScene::setup_lights() noexcept
 	light_desc2.spot_direction = Vec3f{ 0.09f, -0.1f, 0.09f };
 	light_desc2.light_projection_matrix = MathUtils::perspective_lh(MathUtils::to_radians(60.0), 2048, 2048, 5.0f, 50.0f);
 	lc2->set_light_description(light_desc2);
-	light2->set_position(Vec3f{ -10.0f, 10.0, -10.0f });
+	light2->set_position(Vec3f{ -30.0f, 30.0, -30.0f });
 	light2->setup();
 	m_objects.push_back(light2);
+	spotlight1_desc = lc2->get_light_description_ptr();
+	default_spotlight1 = light_desc2;
 
 	Object* light3{ new Object{ "light3" } };
 	LightComponent* lc3{ new LightComponent{ light3 } };
@@ -554,9 +657,11 @@ void MainScene::setup_lights() noexcept
 	light_desc3.spot_direction = Vec3f{ -0.09f, -0.1f, 0.09f };
 	light_desc3.light_projection_matrix = MathUtils::perspective_lh(MathUtils::to_radians(60.0), 2048, 2048, 5.0f, 50.0f);
 	lc3->set_light_description(light_desc3);
-	light3->set_position(Vec3f{ 10.0f, 10.0, -10.0f });
+	light3->set_position(Vec3f{ 30.0f, 30.0, -30.0f });
 	light3->setup();
 	m_objects.push_back(light3);
+	spotlight2_desc = lc3->get_light_description_ptr();
+	default_spotlight2 = light_desc3;
 
 	Object* light4{ new Object{ "light4" } };
 	LightComponent* lc4{ new LightComponent{ light4 } };
@@ -571,9 +676,11 @@ void MainScene::setup_lights() noexcept
 	light_desc4.spot_direction = Vec3f{ 0.0f, -0.1f, -0.1f };
 	light_desc4.light_projection_matrix = MathUtils::perspective_lh(MathUtils::to_radians(60.0), 2048, 2048, 2.0f, 50.0f);
 	lc4->set_light_description(light_desc4);
-	light4->set_position(Vec3f{ 0.0f, 10.0, 10.0f });
+	light4->set_position(Vec3f{ 0.0f, 30.0, 30.0f });
 	light4->setup();
 	m_objects.push_back(light4);
+	spotlight3_desc = lc4->get_light_description_ptr();
+	default_spotlight3 = light_desc4;
 }
 
 void MainScene::setup_cameras() noexcept
@@ -586,7 +693,8 @@ void MainScene::setup_cameras() noexcept
 	CameraKeyboardInputComponent* input_comp{ new CameraKeyboardInputComponent{ cam } };
 	input_comp->set_movement_speed(30.0f);
 	input_comp->set_rotation_speed(180.0f);
-	cam->set_position(Vec3f(0.0f, 0.0f, -80.0f));
+	cam->set_position(Vec3f(-30.0f, 0.0f, -30.0f));
+	cam->set_euler_angles(Vec3f{ 0.0f, 45.0f, 0.0f });
 	cam->setup();
 	m_objects.push_back(cam);
 
@@ -729,12 +837,82 @@ void MainScene::setup_d3d() noexcept
 	if (FAILED(res)) {
 		std::cerr << "Linear Texture Wrap sampler creation failed!" << std::endl;
 	}
+
+	if(!TwInit(TW_DIRECT3D11, device.Get())) {
+		std::cerr << "Failed to initialze AntTweakBar" << std::endl;
+	}
+
+	TwBar* tw_bar{ TwNewBar("TweakBar") };
+
+	int bar_size[2]{ 260, 520 };
+	TwSetParam(tw_bar, nullptr, "size", TW_PARAM_INT32, 2, bar_size);
+
+	TwAddButton(tw_bar, "toggle", toggle_directional_light, nullptr, "group=Directional");
+	TwAddVarRW(tw_bar, "diffuse", TW_TYPE_COLOR3F, &directional_desc->diffuse_intensity.data, "group=Directional");
+	TwAddVarRW(tw_bar, "specular", TW_TYPE_COLOR3F, &directional_desc->specular_intensity.data, "group=Directional");
+
+	TwAddButton(tw_bar, "toggle spotlight1", toggle_spotlight_one, nullptr, "group=Spotlight1");
+	TwAddVarRW(tw_bar, "spot1 diffuse", TW_TYPE_COLOR3F, &spotlight1_desc->diffuse_intensity.data, "group=Spotlight1");
+	TwAddVarRW(tw_bar, "spot1 specular", TW_TYPE_COLOR3F, &spotlight1_desc->specular_intensity.data, "group=Spotlight1");
+	TwAddVarRW(tw_bar, "spot1 cutoff", TW_TYPE_FLOAT, &spotlight1_desc->spot_cutoff, "group=Spotlight1 min=0 max=180");
+	TwAddVarRW(tw_bar, "spot1 exponent", TW_TYPE_FLOAT, &spotlight1_desc->spot_exponent, "group=Spotlight1 min=0 max=128");
+	TwAddVarRW(tw_bar, "spot1 direction", TW_TYPE_DIR3F, &spotlight1_desc->spot_direction[0], "group=Spotlight1");
+	TwAddVarRW(tw_bar, "spot1 attenuation constant", TW_TYPE_FLOAT, &spotlight1_desc->attenuation[0], "group=Spotlight1 min=0 max=1 step=0.01");
+	TwAddVarRW(tw_bar, "spot1 attenuation linear", TW_TYPE_FLOAT, &spotlight1_desc->attenuation[1], "group=Spotlight1 min=0 max=1 step=0.0001");
+	TwAddVarRW(tw_bar, "spot1 attenuation quadratic", TW_TYPE_FLOAT, &spotlight1_desc->attenuation[2], "group=Spotlight1 min=0 max=1 step=0.00001");
+
+	TwAddButton(tw_bar, "toggle spotlight2", toggle_spotlight_two, nullptr, "group=Spotlight2");
+	TwAddVarRW(tw_bar, "spot2 diffuse", TW_TYPE_COLOR3F, &spotlight2_desc->diffuse_intensity.data, "group=Spotlight2");
+	TwAddVarRW(tw_bar, "spot2 specular", TW_TYPE_COLOR3F, &spotlight2_desc->specular_intensity.data, "group=Spotlight2");
+	TwAddVarRW(tw_bar, "spot2 cutoff", TW_TYPE_FLOAT, &spotlight2_desc->spot_cutoff, "group=Spotlight2 min=0 max=180");
+	TwAddVarRW(tw_bar, "spot2 exponent", TW_TYPE_FLOAT, &spotlight2_desc->spot_exponent, "group=Spotlight2 min=0 max=128");
+	TwAddVarRW(tw_bar, "spot2 direction", TW_TYPE_DIR3F, &spotlight2_desc->spot_direction[0], "group=Spotlight2");
+	TwAddVarRW(tw_bar, "spot2 attenuation constant", TW_TYPE_FLOAT, &spotlight2_desc->attenuation[0], "group=Spotlight2 min=0 max=1 step=0.01");
+	TwAddVarRW(tw_bar, "spot2 attenuation linear", TW_TYPE_FLOAT, &spotlight2_desc->attenuation[1], "group=Spotlight2 min=0 max=1 step=0.0001");
+	TwAddVarRW(tw_bar, "spot2 attenuation quadratic", TW_TYPE_FLOAT, &spotlight2_desc->attenuation[2], "group=Spotlight2 min=0 max=1 step=0.00001");
+
+	TwAddButton(tw_bar, "toggle spotlight3", toggle_spotlight_three, nullptr, "group=Spotlight3");
+	TwAddVarRW(tw_bar, "spot3 diffuse", TW_TYPE_COLOR3F, &spotlight3_desc->diffuse_intensity.data, "group=Spotlight3");
+	TwAddVarRW(tw_bar, "spot3 specular", TW_TYPE_COLOR3F, &spotlight3_desc->specular_intensity.data, "group=Spotlight3");
+	TwAddVarRW(tw_bar, "spot3 cutoff", TW_TYPE_FLOAT, &spotlight3_desc->spot_cutoff, "group=Spotlight3 min=0 max=180");
+	TwAddVarRW(tw_bar, "spot3 exponent", TW_TYPE_FLOAT, &spotlight3_desc->spot_exponent, "group=Spotlight3 min=0 max=128");
+	TwAddVarRW(tw_bar, "spot3 direction", TW_TYPE_DIR3F, &spotlight3_desc->spot_direction[0], "group=Spotlight3");
+	TwAddVarRW(tw_bar, "spot3 attenuation constant", TW_TYPE_FLOAT, &spotlight3_desc->attenuation[0], "group=Spotlight3 min=0 max=1 step=0.01");
+	TwAddVarRW(tw_bar, "spot3 attenuation linear", TW_TYPE_FLOAT, &spotlight3_desc->attenuation[1], "group=Spotlight3 min=0 max=1 step=0.0001");
+	TwAddVarRW(tw_bar, "spot3 attenuation quadratic", TW_TYPE_FLOAT, &spotlight3_desc->attenuation[2], "group=Spotlight3 min=0 max=1 step=0.00001");
+
+	TwAddButton(tw_bar, "toggle shadows", toggle_shadows, nullptr, "group=Shadows");
+	TwDefine("TweakBar/Directional group=Lights");
+	TwDefine("TweakBar/Spotlight1 group=Lights");
+	TwDefine("TweakBar/Spotlight2 group=Lights");
+	TwDefine("TweakBar/Spotlight3 group=Lights");
+	TwDefine("TweakBar/Shadows group=Lights");
+
+	TwAddSeparator(tw_bar, "sep1", nullptr);
+
+	TwAddButton(tw_bar, "Wireframe", toggle_wireframe, nullptr, nullptr);
+	
+	TwAddSeparator(tw_bar, "sep2", nullptr);
+
+	TwAddButton(tw_bar, "Outer Camera", activate_outer_camera, nullptr, "key=f1");
+	TwAddButton(tw_bar, "Inner Follow Camera", activate_inner_follow_camera, nullptr, "key=f3");
+
+	TwAddSeparator(tw_bar, "sep3", nullptr);
+
+	TwAddVarRW(tw_bar, "Fresnel power", TW_TYPE_FLOAT, &fresnel_power, "min=1 max=10 step=0.1");
+	TwAddVarRW(tw_bar, "Fresnel bias", TW_TYPE_FLOAT, &fresnel_bias, "min=0 max=1 step=0.05");
+
+	TwAddSeparator(tw_bar, "sep4", nullptr);
+
+	TwAddVarRW(tw_bar, "Simulation Speed", TW_TYPE_FLOAT, &simulation_speed, "min=0 max=10 step=0.1 keyincr=t");
+	TwAddVarRO(tw_bar, "Milliseconds per frame", TW_TYPE_INT32, &dt_ms, nullptr);
+	TwAddSeparator(tw_bar, "sep5", nullptr);
+
+	TwAddButton(tw_bar, "Reset Scene", reset_scene, nullptr, "key=r");
 }
 
 void MainScene::initialize()
 {
-	setup_d3d();
-
 	Mesh* m{ MeshUtils::generate_uv_sphere(1.0f, 60, 60) };
 	ResourceManager::register_resource(m, L"sphere");
 
@@ -753,7 +931,7 @@ void MainScene::initialize()
 	ResourceManager::get<D3D11_texture>(TEXTURE_PATH + L"sky.dds")->set_texture_type(TEX_DIFFUSE);
 
 	Material mat;
-	mat.diffuse = Vec4f{ 0.0470588235294118f, 0.3019607843137255f, 0.4117647058823529f, 1.0f };
+	mat.diffuse = Vec4f{ 0.1f, 0.1f, 0.1f, 1.0f };
 	mat.specular = Vec4f{ 0.5f, 0.5f, 0.5f, 128.0f };
 	mat.blend_state = RenderStateType::BS_BLEND_ALPHA;
 	mat.textures[TEX_DIFFUSE] = ResourceManager::get<D3D11_texture>(TEXTURE_PATH + L"sky.dds");
@@ -839,7 +1017,6 @@ void MainScene::initialize()
 	p_mat.textures[TEX_DIFFUSE] = ResourceManager::get<D3D11_texture>(TEXTURE_PATH + L"bubble10.png");
 	p_mat.textures[TEX_DIFFUSE]->set_texture_type(TEX_DIFFUSE);
 	ec->set_material(p_mat);
-	//emitter->set_position(Vec3f{ 0.0f, -18.0f, 0.0f });
 	emitter->setup();
 	m_objects.push_back(emitter);
 
@@ -849,6 +1026,8 @@ void MainScene::initialize()
 	for (int i = 0; i < 4; ++i) {
 		m_depth_pass_rts[i].create(Vec2f{ 2048, 2048 });
 	}
+
+	setup_d3d();
 }
 
 void MainScene::on_key_down(unsigned char key, int x, int y) noexcept
@@ -866,18 +1045,6 @@ void MainScene::on_key_up(unsigned char key, int x, int y) noexcept
 	case '2':
 		EngineContext::get_camera_system()->set_active_camera("camera2");
 		break;
-	case 'Z':
-		EngineContext::get_light_system()->toggle_light("light1");
-		break;
-	case 'X':
-		EngineContext::get_light_system()->toggle_light("light2");
-		break;
-	case 'C':
-		EngineContext::get_light_system()->toggle_light("light3");
-		break;
-	case 'V':
-		EngineContext::get_light_system()->toggle_light("light4");
-		break;
 	case '0':
 		wireframe = !wireframe;
 		break;
@@ -889,9 +1056,6 @@ void MainScene::on_key_up(unsigned char key, int x, int y) noexcept
 	Scene::on_message(msg);
 }
 
-static int prev_x, prev_y;
-static int bnstate[8];
-
 void MainScene::on_mouse_motion(int x, int y) noexcept
 {
 }
@@ -900,17 +1064,19 @@ void MainScene::on_mouse_click(int button, bool state, int x, int y)
 {
 }
 
+
 void MainScene::update(float delta_time, long time) noexcept
 {
-	Scene::update(delta_time, time);
+	dt_ms = static_cast<long>(delta_time * 1000.0f);
+	Scene::update(delta_time * simulation_speed, time * simulation_speed);
 
 	CameraSystem* camera_system{ EngineContext::get_camera_system() };
 
-	camera_system->process(m_objects, delta_time);
+	camera_system->process(m_objects, delta_time * simulation_speed);
 
 	LightSystem* light_system{ EngineContext::get_light_system() };
 
-	light_system->process(m_objects, delta_time);
+	light_system->process(m_objects, delta_time * simulation_speed);
 
 	D3D11Context* GAPI_context{ EngineContext::get_GAPI_context() };
 	ComPtr<ID3D11DeviceContext> device_context{ GAPI_context->get_device_context() };

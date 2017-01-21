@@ -2,6 +2,7 @@
 #include <sstream>
 #include <iostream>
 #include "win32_utils.h"
+#include <AntTweakBar.h>
 
 namespace Glacier
 {
@@ -113,6 +114,10 @@ namespace Glacier
 
 	LRESULT CALLBACK Win32Window::win_proc(HWND handle, UINT msg, WPARAM wparam, LPARAM lparam)
 	{
+
+		if (TwEventWin(handle, msg, wparam, lparam))
+			return 0; // Event has been handled by AntTweakBar
+
 		switch (msg) {
 		case WM_PAINT:
 			ValidateRect(handle, nullptr);

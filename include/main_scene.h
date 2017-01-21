@@ -40,6 +40,7 @@ private:
 	void setup_d3d() noexcept;
 
 public:
+	~MainScene();
 
 	void initialize() override;
 
