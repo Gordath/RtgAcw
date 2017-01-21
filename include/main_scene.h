@@ -2,6 +2,7 @@
 #define MAIN_SCENE_H_
 #include "scene.h"
 #include "../GlacierEngine/rendering/include/d3d/D3D11_render_target.h"
+#include "water_jet_sub.h"
 
 class DrebelSubmarine;
 
@@ -25,6 +26,7 @@ private:
 	Glacier::Object* m_globe{ nullptr };
 
 	DrebelSubmarine* m_drebel{ nullptr };
+	WaterJetSubmarine* m_water_jet_sub{ nullptr };
 
 	void depth_pass() const noexcept;
 	void color_pass() const noexcept;

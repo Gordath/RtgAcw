@@ -810,6 +810,10 @@ void MainScene::initialize()
 	pc->set_looping(true);
 	pc->set_align_to_path(true);
 	m_drebel->setup();
+
+	m_water_jet_sub = new WaterJetSubmarine{ "water_jet_sub", this };
+	m_water_jet_sub->set_scale(Vec3f{ 5.0f, 5.0f, 5.0f });
+	m_water_jet_sub->setup();
 	// -----------------------------------------------------------------------------------------------------------------
 
 	setup_cameras();

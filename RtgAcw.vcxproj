@@ -156,6 +156,7 @@
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\main_scene.cpp" />
     <ClCompile Include="src\rtg_application.cpp" />
+    <ClCompile Include="src\water_jet_sub.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="deep_sea_fish.h" />

@@ -48,8 +48,8 @@ VOut main(VIn input)
 
 	output.reflected_view_dir = reflect(output.view_direction, input.normal.xyz);
 
-	float fresnel_power = 8.0;
-	float fresnel_bias = 0.25;
+	float fresnel_power = 3.0;
+	float fresnel_bias = 0.1;
 	float fresnel_scale = 1.0 - fresnel_bias;
 
 	float3 i = normalize(output.view_space_pos);
