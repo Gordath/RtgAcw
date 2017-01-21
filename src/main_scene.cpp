@@ -25,9 +25,15 @@ static long dt_ms{ 0 };
 static float fresnel_power{ 2.1f };
 static float fresnel_bias{ 0.10f };
 
-LightDesc* directional_desc{ nullptr };
-LightDesc* spotlight1_desc{ nullptr };
-LightDesc* spotlight2_desc{ nullptr };
+static LightDesc* directional_desc{ nullptr };
+static LightDesc* spotlight1_desc{ nullptr };
+static LightDesc* spotlight2_desc{ nullptr };
+static LightDesc* spotlight3_desc{ nullptr };
+
+static LightDesc default_directional;
+static LightDesc default_spotlight1;
+static LightDesc default_spotlight2;
+static LightDesc default_spotlight3;
 
 struct ColorPassUniformBuffer {
 	Mat4f MVP;
@@ -97,6 +103,21 @@ static void TW_CALL activate_outer_camera(void* client_data)
 static void TW_CALL activate_inner_follow_camera(void* client_data)
 {
 	EngineContext::get_camera_system()->set_active_camera("camera2");
+}
+
+static void TW_CALL reset_scene(void* client_data)
+{
+	*directional_desc = default_directional;
+	*spotlight1_desc = default_spotlight1;
+	*spotlight2_desc = default_spotlight2;
+	*spotlight3_desc = default_spotlight3;
+
+	wireframe = false;
+	simulation_speed = 1.0f;
+	shadows = true;
+	
+	fresnel_power = 2.1f;
+    fresnel_bias = 0.10f;
 }
 
 MainScene::~MainScene()
@@ -346,7 +367,7 @@ void MainScene::color_pass() const noexcept
 			model = MathUtils::translate(model, particle.position);
 
 			Mat4f MV{ view * model };
-			//model = MathUtils::scale(model, Vec3f{ particle.size });
+			model = MathUtils::scale(model, Vec3f{ particle.size });
 
 			MV[0][0] = 1.0f;
 			MV[0][1] = 0.0f;
@@ -602,6 +623,7 @@ void MainScene::setup_lights() noexcept
 	light1->setup();
 	m_objects.push_back(light1);
 	directional_desc = lc1->get_light_description_ptr();
+	default_directional = light_desc;
 
 	Object* light2{ new Object{ "light2" } };
 	LightComponent* lc2{ new LightComponent{ light2 } };
@@ -619,6 +641,8 @@ void MainScene::setup_lights() noexcept
 	light2->set_position(Vec3f{ -30.0f, 30.0, -30.0f });
 	light2->setup();
 	m_objects.push_back(light2);
+	spotlight1_desc = lc2->get_light_description_ptr();
+	default_spotlight1 = light_desc2;
 
 	Object* light3{ new Object{ "light3" } };
 	LightComponent* lc3{ new LightComponent{ light3 } };
@@ -636,6 +660,8 @@ void MainScene::setup_lights() noexcept
 	light3->set_position(Vec3f{ 30.0f, 30.0, -30.0f });
 	light3->setup();
 	m_objects.push_back(light3);
+	spotlight2_desc = lc3->get_light_description_ptr();
+	default_spotlight2 = light_desc3;
 
 	Object* light4{ new Object{ "light4" } };
 	LightComponent* lc4{ new LightComponent{ light4 } };
@@ -653,6 +679,8 @@ void MainScene::setup_lights() noexcept
 	light4->set_position(Vec3f{ 0.0f, 30.0, 30.0f });
 	light4->setup();
 	m_objects.push_back(light4);
+	spotlight3_desc = lc4->get_light_description_ptr();
+	default_spotlight3 = light_desc4;
 }
 
 void MainScene::setup_cameras() noexcept
@@ -815,22 +843,50 @@ void MainScene::setup_d3d() noexcept
 	}
 
 	TwBar* tw_bar{ TwNewBar("TweakBar") };
-	TwDefine(" GLOBAL help = 'This example shows how to integrate AntTweakBar into a DirectX11 application.' ");
 
-	int bar_size[2]{ 224, 320 };
-	TwSetParam(tw_bar, "tw_bar", "size", TW_PARAM_INT32, 2, bar_size);
+	int bar_size[2]{ 260, 520 };
+	TwSetParam(tw_bar, nullptr, "size", TW_PARAM_INT32, 2, bar_size);
 
 	TwAddButton(tw_bar, "toggle", toggle_directional_light, nullptr, "group=Directional");
 	TwAddVarRW(tw_bar, "diffuse", TW_TYPE_COLOR3F, &directional_desc->diffuse_intensity.data, "group=Directional");
 	TwAddVarRW(tw_bar, "specular", TW_TYPE_COLOR3F, &directional_desc->specular_intensity.data, "group=Directional");
-	TwDefine("group=Lights");
-	TwDefine("TweakBar/Directional group=Lights");
-	TwAddSeparator(tw_bar, "directional light separator", nullptr);
 
-	TwAddButton(tw_bar, "Toggle Spotlight1", toggle_spotlight_one, nullptr, nullptr);
-	TwAddButton(tw_bar, "Toggle Spotlight2", toggle_spotlight_two, nullptr, nullptr);
-	TwAddButton(tw_bar, "Toggle Spotlight3", toggle_spotlight_three, nullptr, nullptr);
-	TwAddButton(tw_bar, "Toggle Shadows", toggle_shadows, nullptr, nullptr);
+	TwAddButton(tw_bar, "toggle spotlight1", toggle_spotlight_one, nullptr, "group=Spotlight1");
+	TwAddVarRW(tw_bar, "spot1 diffuse", TW_TYPE_COLOR3F, &spotlight1_desc->diffuse_intensity.data, "group=Spotlight1");
+	TwAddVarRW(tw_bar, "spot1 specular", TW_TYPE_COLOR3F, &spotlight1_desc->specular_intensity.data, "group=Spotlight1");
+	TwAddVarRW(tw_bar, "spot1 cutoff", TW_TYPE_FLOAT, &spotlight1_desc->spot_cutoff, "group=Spotlight1 min=0 max=180");
+	TwAddVarRW(tw_bar, "spot1 exponent", TW_TYPE_FLOAT, &spotlight1_desc->spot_exponent, "group=Spotlight1 min=0 max=128");
+	TwAddVarRW(tw_bar, "spot1 direction", TW_TYPE_DIR3F, &spotlight1_desc->spot_direction[0], "group=Spotlight1");
+	TwAddVarRW(tw_bar, "spot1 attenuation constant", TW_TYPE_FLOAT, &spotlight1_desc->attenuation[0], "group=Spotlight1 min=0 max=1 step=0.01");
+	TwAddVarRW(tw_bar, "spot1 attenuation linear", TW_TYPE_FLOAT, &spotlight1_desc->attenuation[1], "group=Spotlight1 min=0 max=1 step=0.0001");
+	TwAddVarRW(tw_bar, "spot1 attenuation quadratic", TW_TYPE_FLOAT, &spotlight1_desc->attenuation[2], "group=Spotlight1 min=0 max=1 step=0.00001");
+
+	TwAddButton(tw_bar, "toggle spotlight2", toggle_spotlight_two, nullptr, "group=Spotlight2");
+	TwAddVarRW(tw_bar, "spot2 diffuse", TW_TYPE_COLOR3F, &spotlight2_desc->diffuse_intensity.data, "group=Spotlight2");
+	TwAddVarRW(tw_bar, "spot2 specular", TW_TYPE_COLOR3F, &spotlight2_desc->specular_intensity.data, "group=Spotlight2");
+	TwAddVarRW(tw_bar, "spot2 cutoff", TW_TYPE_FLOAT, &spotlight2_desc->spot_cutoff, "group=Spotlight2 min=0 max=180");
+	TwAddVarRW(tw_bar, "spot2 exponent", TW_TYPE_FLOAT, &spotlight2_desc->spot_exponent, "group=Spotlight2 min=0 max=128");
+	TwAddVarRW(tw_bar, "spot2 direction", TW_TYPE_DIR3F, &spotlight2_desc->spot_direction[0], "group=Spotlight2");
+	TwAddVarRW(tw_bar, "spot2 attenuation constant", TW_TYPE_FLOAT, &spotlight2_desc->attenuation[0], "group=Spotlight2 min=0 max=1 step=0.01");
+	TwAddVarRW(tw_bar, "spot2 attenuation linear", TW_TYPE_FLOAT, &spotlight2_desc->attenuation[1], "group=Spotlight2 min=0 max=1 step=0.0001");
+	TwAddVarRW(tw_bar, "spot2 attenuation quadratic", TW_TYPE_FLOAT, &spotlight2_desc->attenuation[2], "group=Spotlight2 min=0 max=1 step=0.00001");
+
+	TwAddButton(tw_bar, "toggle spotlight3", toggle_spotlight_three, nullptr, "group=Spotlight3");
+	TwAddVarRW(tw_bar, "spot3 diffuse", TW_TYPE_COLOR3F, &spotlight3_desc->diffuse_intensity.data, "group=Spotlight3");
+	TwAddVarRW(tw_bar, "spot3 specular", TW_TYPE_COLOR3F, &spotlight3_desc->specular_intensity.data, "group=Spotlight3");
+	TwAddVarRW(tw_bar, "spot3 cutoff", TW_TYPE_FLOAT, &spotlight3_desc->spot_cutoff, "group=Spotlight3 min=0 max=180");
+	TwAddVarRW(tw_bar, "spot3 exponent", TW_TYPE_FLOAT, &spotlight3_desc->spot_exponent, "group=Spotlight3 min=0 max=128");
+	TwAddVarRW(tw_bar, "spot3 direction", TW_TYPE_DIR3F, &spotlight3_desc->spot_direction[0], "group=Spotlight3");
+	TwAddVarRW(tw_bar, "spot3 attenuation constant", TW_TYPE_FLOAT, &spotlight3_desc->attenuation[0], "group=Spotlight3 min=0 max=1 step=0.01");
+	TwAddVarRW(tw_bar, "spot3 attenuation linear", TW_TYPE_FLOAT, &spotlight3_desc->attenuation[1], "group=Spotlight3 min=0 max=1 step=0.0001");
+	TwAddVarRW(tw_bar, "spot3 attenuation quadratic", TW_TYPE_FLOAT, &spotlight3_desc->attenuation[2], "group=Spotlight3 min=0 max=1 step=0.00001");
+
+	TwAddButton(tw_bar, "toggle shadows", toggle_shadows, nullptr, "group=Shadows");
+	TwDefine("TweakBar/Directional group=Lights");
+	TwDefine("TweakBar/Spotlight1 group=Lights");
+	TwDefine("TweakBar/Spotlight2 group=Lights");
+	TwDefine("TweakBar/Spotlight3 group=Lights");
+	TwDefine("TweakBar/Shadows group=Lights");
 
 	TwAddSeparator(tw_bar, "sep1", nullptr);
 
@@ -838,18 +894,21 @@ void MainScene::setup_d3d() noexcept
 	
 	TwAddSeparator(tw_bar, "sep2", nullptr);
 
-	TwAddButton(tw_bar, "Outer Camera", activate_outer_camera, nullptr, nullptr);
+	TwAddButton(tw_bar, "Outer Camera", activate_outer_camera, nullptr, "key=f1");
 	TwAddButton(tw_bar, "Inner Follow Camera", activate_inner_follow_camera, nullptr, nullptr);
 
 	TwAddSeparator(tw_bar, "sep3", nullptr);
 
-	TwAddVarRW(tw_bar, "Fresnel power", TW_TYPE_FLOAT, &fresnel_power, "min=1 max=10 step=0.1 keyincr=+ keydecr=-");
-	TwAddVarRW(tw_bar, "Fresnel bias", TW_TYPE_FLOAT, &fresnel_bias, "min=0 max=1 step=0.05 keyincr=+ keydecr=-");
+	TwAddVarRW(tw_bar, "Fresnel power", TW_TYPE_FLOAT, &fresnel_power, "min=1 max=10 step=0.1");
+	TwAddVarRW(tw_bar, "Fresnel bias", TW_TYPE_FLOAT, &fresnel_bias, "min=0 max=1 step=0.05");
 
 	TwAddSeparator(tw_bar, "sep4", nullptr);
 
-	TwAddVarRW(tw_bar, "Simulation Speed", TW_TYPE_FLOAT, &simulation_speed, "min=0 max=10 step=0.1 keyincr=+ keydecr=-");
+	TwAddVarRW(tw_bar, "Simulation Speed", TW_TYPE_FLOAT, &simulation_speed, "min=0 max=10 step=0.1 keyincr=t");
 	TwAddVarRO(tw_bar, "Milliseconds per frame", TW_TYPE_INT32, &dt_ms, nullptr);
+	TwAddSeparator(tw_bar, "sep5", nullptr);
+
+	TwAddButton(tw_bar, "Reset Scene", reset_scene, nullptr, "key=r");
 }
 
 void MainScene::initialize()

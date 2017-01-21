@@ -54,6 +54,16 @@ Texture2D depth_maps[4] : register(t5);
 SamplerState texture_sampler_linear_wrap : register(s0);
 SamplerComparisonState depth_comparison_sampler : register(s1);
 
+float get_light_attenuation(Light lgt, float dist)
+{
+	float attenuation_at_lpos_infty = 1.0;
+	return ((lgt.flags.x == 0)
+		? 1.0 / ((lgt.attenuation.x) +
+		(lgt.attenuation.y * dist) +
+			(lgt.attenuation.z * dist * dist))
+		: attenuation_at_lpos_infty);
+}
+
 float3 get_light_vector(Light light, float3 pos)
 {
 	if (light.flags.x == 0) { //not directional
@@ -81,9 +91,11 @@ void calculate_lighting(StructuredBuffer<Light> lights,
 
 	for (uint i = 0; i < buffer_size; i++) {
 		if (lights[i].flags.y == 1) { //is enabled
-			float3 light_vector = normalize(get_light_vector(lights[i], view_position));
+			float3 light_vector = get_light_vector(lights[i], view_position);
 			
-			float attenuation = 1.0;
+			float attenuation = get_light_attenuation(lights[i], length(light_vector));// 1.0;
+
+			light_vector = normalize(light_vector);
 
 			if (lights[i].flags.x == 0) { //not directional
 				
