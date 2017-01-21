@@ -5,7 +5,6 @@ struct VOut {
 	float3 view_direction : VIEW_DIRECTION;
 	float3 view_space_pos : VIEW_SPACE_POS;
 	float fog_factor : TEXCOORD2;
-	float fresnel_term : TEXCOORD3;
 	float4 texcoord : TEXCOORD0;
 	float3 tangent : TEXCOORD4;
 	float3 binormal : TEXCOORD5;
@@ -21,6 +20,10 @@ cbuffer uniforms {
 	float4x4 texture_matrix;
 	float4 diffuse;
 	float4 specular;
+	float fpower;
+	float fbias;
+	float pad;
+	float pad1;
 };
 
 struct Light {
@@ -201,12 +204,8 @@ float4 main(VOut input) : SV_TARGET
 	float4 final_color = diff_color + spec_color + amb_light;
 	//final_color = lerp(float4(0.0470588235294118f, 0.3019607843137255f, 0.4117647058823529f, 1.0), final_color, input.fog_factor);
 	
-	if (diffuse.a < 1.0) {
-		final_color.a = diffuse.a * input.fresnel_term;
-	}
-	else {
-		final_color.a = diffuse.a;
-	}
+	final_color.a = diffuse.a;
+
 
 	return final_color;
 }

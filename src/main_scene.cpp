@@ -12,10 +12,18 @@
 #include "camera_keyboard_input_component.h"
 #include "drebel_sub.h"
 #include "path_component.h"
+#include "AntTweakBar.h"
 
 using namespace Glacier;
 
 static bool wireframe{ false };
+static float simulation_speed{ 1.0f };
+static float fps{ 0.0f };
+static bool shadows{ true };
+static long dt_ms{ 0 };
+
+static float fresnel_power{ 2.1f };
+static float fresnel_bias{ 0.10f };
 
 struct ColorPassUniformBuffer {
 	Mat4f MVP;
@@ -27,6 +35,10 @@ struct ColorPassUniformBuffer {
 	Mat4f texture_matrix;
 	Vec4f diffuse;
 	Vec4f specular;
+	float fpower;
+	float fbias;
+	float pad;
+	float pad1;
 };
 
 struct DepthPassUniformBuffer {
@@ -43,82 +55,138 @@ struct SkyboxUniformBuffer {
 	Mat4f ITV;
 };
 
+static void TW_CALL toggle_spotlight_one(void* cient_data)
+{
+	EngineContext::get_light_system()->toggle_light("light2");
+}
+
+static void TW_CALL toggle_spotlight_two(void* client_data)
+{
+	EngineContext::get_light_system()->toggle_light("light3");
+}
+
+static void TW_CALL toggle_spotlight_three(void* client_data)
+{
+	EngineContext::get_light_system()->toggle_light("light4");
+}
+
+static void TW_CALL toggle_directional_light(void* client_data)
+{
+	EngineContext::get_light_system()->toggle_light("light1");
+}
+
+static void TW_CALL toggle_shadows(void* client_data)
+{
+	shadows = !shadows;
+}
+
+static void TW_CALL toggle_wireframe(void* client_data)
+{
+	wireframe = !wireframe;
+}
+
+static void TW_CALL activate_outer_camera(void* client_data)
+{
+	EngineContext::get_camera_system()->set_active_camera("camera1");
+}
+
+static void TW_CALL activate_inner_follow_camera(void* client_data)
+{
+	EngineContext::get_camera_system()->set_active_camera("camera2");
+}
+
+MainScene::~MainScene()
+{
+	TwTerminate();
+}
+
 void MainScene::depth_pass() const noexcept
 {
-	D3D11Context* GAPI_context{ EngineContext::get_GAPI_context() };
-	ComPtr<ID3D11DeviceContext> device_context{ GAPI_context->get_device_context() };
-
-	std::vector<RenderingComponent*> rendering_components;
-
-	for (auto object : m_objects) {
-		RenderingComponent* rc{ static_cast<RenderingComponent*>(object->get_component("co_rendering")) };
-
-		if (rc) {
-			rendering_components.push_back(rc);
-		}
-	}
-
 	auto lights{ EngineContext::get_light_system()->get_active_light_descriptions() };
 
-	float clear_color[4]{ 1.0f, 1.0f, 1.0f, 1.0f };
+	if (shadows) {
+		D3D11Context* GAPI_context{ EngineContext::get_GAPI_context() };
+		ComPtr<ID3D11DeviceContext> device_context{ GAPI_context->get_device_context() };
 
-	RenderStateManager::set(RenderStateType::RS_CULL_FRONT);
+		std::vector<RenderingComponent*> rendering_components;
 
-	for (int i = 0; i < lights.size(); ++i) {
-		m_depth_pass_rts[i].bind(RenderTargetBindType::DEPTH);
-		m_depth_pass_rts[i].clear(clear_color);
+		for (auto object : m_objects) {
+			RenderingComponent* rc{ static_cast<RenderingComponent*>(object->get_component("co_rendering")) };
 
-		if (lights[i].flags.y == true) {
-			ShaderProgramManager::get("depth_pass_sdrprog")->bind();
-
-			for (auto rendering_component : rendering_components) {
-
-				if (rendering_component->get_mesh() && rendering_component->should_draw() && rendering_component->casts_shadows()) {
-
-					Mat4f model{ rendering_component->get_xform() };
-					Mat4f light_view{ lights[i].light_view_matrix };
-					Mat4f light_projection{ lights[i].light_projection_matrix };
-
-					Mat4f MVP{ light_projection * light_view * model };
-
-					DepthPassUniformBuffer uniforms;
-					uniforms.MVP = MathUtils::transpose(MVP);
-
-					D3D11_MAPPED_SUBRESOURCE ms;
-					device_context->Map(m_depth_pass_uniform_buffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &ms);
-					memcpy(ms.pData, &uniforms, sizeof(DepthPassUniformBuffer));
-					device_context->Unmap(m_depth_pass_uniform_buffer.Get(), 0);
-
-					device_context->VSSetConstantBuffers(0, 1, m_depth_pass_uniform_buffer.GetAddressOf());
-
-					D3D11_VIEWPORT viewport;
-					viewport.TopLeftX = 0.0f;
-					viewport.TopLeftY = 0.0f;
-					viewport.Width = static_cast<float>(m_depth_pass_rts->get_size().x);
-					viewport.Height = static_cast<float>(m_depth_pass_rts->get_size().y);
-					viewport.MinDepth = 0.0f;
-					viewport.MaxDepth = 1.0f;
-
-					device_context->RSSetViewports(1, &viewport);
-
-					Mesh* mesh{ rendering_component->get_mesh() };
-
-					mesh->get_vbo()->bind();
-
-					if (mesh->get_index_count()) {
-						mesh->get_ibo()->bind();
-						mesh->get_ibo()->draw();
-					} else {
-						mesh->get_vbo()->draw();
-					}
-				}
+			if (rc) {
+				rendering_components.push_back(rc);
 			}
 		}
 
-		m_depth_pass_rts[i].unbind();
-	}
+		float clear_color[4]{ 1.0f, 1.0f, 1.0f, 1.0f };
 
-	RenderStateManager::set(RenderStateType::RS_CULL_BACK);
+		RenderStateManager::set(RenderStateType::RS_CULL_FRONT);
+
+		for (int i = 0; i < lights.size(); ++i) {
+			m_depth_pass_rts[i].bind(RenderTargetBindType::DEPTH);
+			m_depth_pass_rts[i].clear(clear_color);
+
+			if (lights[i].flags.y == true) {
+				ShaderProgramManager::get("depth_pass_sdrprog")->bind();
+
+				for (auto rendering_component : rendering_components) {
+
+					if (rendering_component->get_mesh() && rendering_component->should_draw() && rendering_component->casts_shadows()) {
+
+						Mat4f model{ rendering_component->get_xform() };
+						Mat4f light_view{ lights[i].light_view_matrix };
+						Mat4f light_projection{ lights[i].light_projection_matrix };
+
+						Mat4f MVP{ light_projection * light_view * model };
+
+						DepthPassUniformBuffer uniforms;
+						uniforms.MVP = MathUtils::transpose(MVP);
+
+						D3D11_MAPPED_SUBRESOURCE ms;
+						device_context->Map(m_depth_pass_uniform_buffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &ms);
+						memcpy(ms.pData, &uniforms, sizeof(DepthPassUniformBuffer));
+						device_context->Unmap(m_depth_pass_uniform_buffer.Get(), 0);
+
+						device_context->VSSetConstantBuffers(0, 1, m_depth_pass_uniform_buffer.GetAddressOf());
+
+						D3D11_VIEWPORT viewport;
+						viewport.TopLeftX = 0.0f;
+						viewport.TopLeftY = 0.0f;
+						viewport.Width = static_cast<float>(m_depth_pass_rts->get_size().x);
+						viewport.Height = static_cast<float>(m_depth_pass_rts->get_size().y);
+						viewport.MinDepth = 0.0f;
+						viewport.MaxDepth = 1.0f;
+
+						device_context->RSSetViewports(1, &viewport);
+
+						Mesh* mesh{ rendering_component->get_mesh() };
+
+						mesh->get_vbo()->bind();
+
+						if (mesh->get_index_count()) {
+							mesh->get_ibo()->bind();
+							mesh->get_ibo()->draw();
+						}
+						else {
+							mesh->get_vbo()->draw();
+						}
+					}
+				}
+			}
+
+			m_depth_pass_rts[i].unbind();
+		}
+
+		RenderStateManager::set(RenderStateType::RS_CULL_BACK);
+	} else {
+		float clear_color[4]{ 1.0f, 1.0f, 1.0f, 1.0f };
+
+		for (int i = 0; i < lights.size(); ++i) {
+			m_depth_pass_rts[i].bind(RenderTargetBindType::DEPTH);
+			m_depth_pass_rts[i].clear(clear_color);
+			m_depth_pass_rts[i].unbind();
+		}
+	}
 }
 
 void MainScene::color_pass() const noexcept
@@ -324,6 +392,8 @@ void MainScene::color_pass() const noexcept
 
 	render_globe();
 
+	TwDraw();
+
 	m_color_pass_rt.unbind();
 }
 
@@ -391,6 +461,8 @@ void MainScene::render_globe() const noexcept
 			uniforms.ITMV = MathUtils::transpose(ITMV);
 			uniforms.diffuse = material.diffuse;
 			uniforms.specular = material.specular;
+			uniforms.fpower = fresnel_power;
+			uniforms.fbias = fresnel_bias;
 
 			if (material.textures[TEX_DIFFUSE]) {
 				material.textures[TEX_DIFFUSE]->bind();
@@ -729,6 +801,41 @@ void MainScene::setup_d3d() noexcept
 	if (FAILED(res)) {
 		std::cerr << "Linear Texture Wrap sampler creation failed!" << std::endl;
 	}
+
+	if(!TwInit(TW_DIRECT3D11, device.Get())) {
+		std::cerr << "Failed to initialze AntTweakBar" << std::endl;
+	}
+
+	TwBar* tw_bar{ TwNewBar("TweakBar") };
+	TwDefine(" GLOBAL help = 'This example shows how to integrate AntTweakBar into a DirectX11 application.' ");
+
+	int bar_size[2]{ 224, 320 };
+	TwSetParam(tw_bar, nullptr, "size", TW_PARAM_INT32, 2, bar_size);
+
+	TwAddButton(tw_bar, "Toggle Directional Light", toggle_directional_light, nullptr, nullptr);
+	TwAddButton(tw_bar, "Toggle Spotlight1", toggle_spotlight_one, nullptr, nullptr);
+	TwAddButton(tw_bar, "Toggle Spotlight2", toggle_spotlight_two, nullptr, nullptr);
+	TwAddButton(tw_bar, "Toggle Spotlight3", toggle_spotlight_three, nullptr, nullptr);
+	TwAddButton(tw_bar, "Toggle Shadows", toggle_shadows, nullptr, nullptr);
+
+	TwAddSeparator(tw_bar, "sep1", nullptr);
+
+	TwAddButton(tw_bar, "Wireframe", toggle_wireframe, nullptr, nullptr);
+	
+	TwAddSeparator(tw_bar, "sep2", nullptr);
+
+	TwAddButton(tw_bar, "Outer Camera", activate_outer_camera, nullptr, nullptr);
+	TwAddButton(tw_bar, "Inner Follow Camera", activate_inner_follow_camera, nullptr, nullptr);
+
+	TwAddSeparator(tw_bar, "sep3", nullptr);
+
+	TwAddVarRW(tw_bar, "Fresnel power", TW_TYPE_FLOAT, &fresnel_power, "min=1 max=10 step=0.1 keyincr=+ keydecr=-");
+	TwAddVarRW(tw_bar, "Fresnel bias", TW_TYPE_FLOAT, &fresnel_bias, "min=0 max=1 step=0.05 keyincr=+ keydecr=-");
+
+	TwAddSeparator(tw_bar, "sep4", nullptr);
+
+	TwAddVarRW(tw_bar, "Simulation Speed", TW_TYPE_FLOAT, &simulation_speed, "min=0 max=10 step=0.1 keyincr=+ keydecr=-");
+	TwAddVarRO(tw_bar, "Milliseconds per frame", TW_TYPE_INT32, &dt_ms, nullptr);
 }
 
 void MainScene::initialize()
@@ -866,18 +973,6 @@ void MainScene::on_key_up(unsigned char key, int x, int y) noexcept
 	case '2':
 		EngineContext::get_camera_system()->set_active_camera("camera2");
 		break;
-	case 'Z':
-		EngineContext::get_light_system()->toggle_light("light1");
-		break;
-	case 'X':
-		EngineContext::get_light_system()->toggle_light("light2");
-		break;
-	case 'C':
-		EngineContext::get_light_system()->toggle_light("light3");
-		break;
-	case 'V':
-		EngineContext::get_light_system()->toggle_light("light4");
-		break;
 	case '0':
 		wireframe = !wireframe;
 		break;
@@ -889,9 +984,6 @@ void MainScene::on_key_up(unsigned char key, int x, int y) noexcept
 	Scene::on_message(msg);
 }
 
-static int prev_x, prev_y;
-static int bnstate[8];
-
 void MainScene::on_mouse_motion(int x, int y) noexcept
 {
 }
@@ -900,17 +992,19 @@ void MainScene::on_mouse_click(int button, bool state, int x, int y)
 {
 }
 
+
 void MainScene::update(float delta_time, long time) noexcept
 {
-	Scene::update(delta_time, time);
+	dt_ms = static_cast<long>(delta_time * 1000.0f);
+	Scene::update(delta_time * simulation_speed, time * simulation_speed);
 
 	CameraSystem* camera_system{ EngineContext::get_camera_system() };
 
-	camera_system->process(m_objects, delta_time);
+	camera_system->process(m_objects, delta_time * simulation_speed);
 
 	LightSystem* light_system{ EngineContext::get_light_system() };
 
-	light_system->process(m_objects, delta_time);
+	light_system->process(m_objects, delta_time * simulation_speed);
 
 	D3D11Context* GAPI_context{ EngineContext::get_GAPI_context() };
 	ComPtr<ID3D11DeviceContext> device_context{ GAPI_context->get_device_context() };

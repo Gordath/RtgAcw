@@ -21,6 +21,10 @@ cbuffer uniforms {
 	float4x4 texture_matrix;
 	float4 diffuse;
 	float4 specular;
+	float fpower;
+	float fbias;
+	float pad;
+	float pad1;
 };
 
 struct Light {
@@ -149,8 +153,6 @@ float4 main(VOut input) : SV_TARGET
 	
 	final_color = final_color + diff_texel;
 	final_color.a = diffuse.a * input.fresnel_term;
-
-	//diff_texel.a = diffuse.a * input.fresnel_term;
 
 	return final_color;
 }

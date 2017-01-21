@@ -16,6 +16,10 @@ cbuffer uniforms {
 	float4x4 texture_matrix;
 	float4 diffuse;
 	float4 specular;
+	float fpower;
+	float fbias;
+	float pad;
+	float pad1;
 };
 
 struct VOut {
@@ -48,13 +52,13 @@ VOut main(VIn input)
 
 	output.reflected_view_dir = reflect(output.view_direction, input.normal.xyz);
 
-	float fresnel_power = 3.0;
-	float fresnel_bias = 0.1;
+	float fresnel_power = fpower;
+	float fresnel_bias = fbias;
 	float fresnel_scale = 1.0 - fresnel_bias;
 
 	float3 i = normalize(output.view_space_pos);
 	float3 n = normalize(output.normal);
-	output.fresnel_term = fresnel_bias + fresnel_scale * pow(1.0 + dot(i, n), fresnel_power);
+	output.fresnel_term = fresnel_bias + fresnel_scale * pow(saturate(1.0 + dot(i, n)), fresnel_power);
 
 	return output;
 }
