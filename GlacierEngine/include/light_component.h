@@ -50,6 +50,11 @@ namespace Glacier
 			return m_light_desc;
 		}
 
+		LightDesc* get_light_description_ptr() noexcept
+		{
+			return &m_light_desc;
+		}
+
 		void set_ambient_intensity(const Vec4f& ambient_intensity) noexcept
 		{
 			m_light_desc.ambient_intensity = ambient_intensity;

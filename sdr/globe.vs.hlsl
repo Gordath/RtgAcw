@@ -50,7 +50,9 @@ VOut main(VIn input)
 	output.view_space_pos = vpos.xyz;
 	output.view_direction = -vpos.xyz;
 
-	output.reflected_view_dir = reflect(output.view_direction, input.normal.xyz);
+	float3x3 TV = transpose((float3x3)V);
+	output.reflected_view_dir = reflect(output.view_direction, normalize(output.normal));
+	output.reflected_view_dir = mul(output.reflected_view_dir, TV);
 
 	float fresnel_power = fpower;
 	float fresnel_bias = fbias;

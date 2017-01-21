@@ -25,6 +25,10 @@ static long dt_ms{ 0 };
 static float fresnel_power{ 2.1f };
 static float fresnel_bias{ 0.10f };
 
+LightDesc* directional_desc{ nullptr };
+LightDesc* spotlight1_desc{ nullptr };
+LightDesc* spotlight2_desc{ nullptr };
+
 struct ColorPassUniformBuffer {
 	Mat4f MVP;
 	Mat4f MV;
@@ -340,21 +344,23 @@ void MainScene::color_pass() const noexcept
 		for (auto particle : particles) {
 			Mat4f model;
 			model = MathUtils::translate(model, particle.position);
-			model = MathUtils::scale(model, Vec3f{ particle.size });
 
-			view[0][0] = 1.0f;
-			view[0][1] = 0.0f;
-			view[0][2] = 0.0f;
+			Mat4f MV{ view * model };
+			//model = MathUtils::scale(model, Vec3f{ particle.size });
 
-			view[1][0] = 0.0f;
-			view[1][1] = 1.0f;
-			view[1][2] = 0.0f;
+			MV[0][0] = 1.0f;
+			MV[0][1] = 0.0f;
+			MV[0][2] = 0.0f;
 
-			view[2][0] = 0.0f;
-			view[2][1] = 0.0f;
-			view[2][2] = 1.0f;
+			MV[1][0] = 0.0f;
+			MV[1][1] = 1.0f;
+			MV[1][2] = 0.0f;
 
-			Mat4f MVP{ projection * view * model };
+			MV[2][0] = 0.0f;
+			MV[2][1] = 0.0f;
+			MV[2][2] = 1.0f;
+
+			Mat4f MVP{ projection * MV };
 
 			ParticleUniformBuffer uniforms;
 			uniforms.MVP = MathUtils::transpose(MVP);
@@ -595,6 +601,7 @@ void MainScene::setup_lights() noexcept
 	light1->set_position(Vec3f{ 0.0f, 30.0, 0.0f });
 	light1->setup();
 	m_objects.push_back(light1);
+	directional_desc = lc1->get_light_description_ptr();
 
 	Object* light2{ new Object{ "light2" } };
 	LightComponent* lc2{ new LightComponent{ light2 } };
@@ -609,7 +616,7 @@ void MainScene::setup_lights() noexcept
 	light_desc2.spot_direction = Vec3f{ 0.09f, -0.1f, 0.09f };
 	light_desc2.light_projection_matrix = MathUtils::perspective_lh(MathUtils::to_radians(60.0), 2048, 2048, 5.0f, 50.0f);
 	lc2->set_light_description(light_desc2);
-	light2->set_position(Vec3f{ -10.0f, 10.0, -10.0f });
+	light2->set_position(Vec3f{ -30.0f, 30.0, -30.0f });
 	light2->setup();
 	m_objects.push_back(light2);
 
@@ -626,7 +633,7 @@ void MainScene::setup_lights() noexcept
 	light_desc3.spot_direction = Vec3f{ -0.09f, -0.1f, 0.09f };
 	light_desc3.light_projection_matrix = MathUtils::perspective_lh(MathUtils::to_radians(60.0), 2048, 2048, 5.0f, 50.0f);
 	lc3->set_light_description(light_desc3);
-	light3->set_position(Vec3f{ 10.0f, 10.0, -10.0f });
+	light3->set_position(Vec3f{ 30.0f, 30.0, -30.0f });
 	light3->setup();
 	m_objects.push_back(light3);
 
@@ -643,7 +650,7 @@ void MainScene::setup_lights() noexcept
 	light_desc4.spot_direction = Vec3f{ 0.0f, -0.1f, -0.1f };
 	light_desc4.light_projection_matrix = MathUtils::perspective_lh(MathUtils::to_radians(60.0), 2048, 2048, 2.0f, 50.0f);
 	lc4->set_light_description(light_desc4);
-	light4->set_position(Vec3f{ 0.0f, 10.0, 10.0f });
+	light4->set_position(Vec3f{ 0.0f, 30.0, 30.0f });
 	light4->setup();
 	m_objects.push_back(light4);
 }
@@ -658,7 +665,8 @@ void MainScene::setup_cameras() noexcept
 	CameraKeyboardInputComponent* input_comp{ new CameraKeyboardInputComponent{ cam } };
 	input_comp->set_movement_speed(30.0f);
 	input_comp->set_rotation_speed(180.0f);
-	cam->set_position(Vec3f(0.0f, 0.0f, -80.0f));
+	cam->set_position(Vec3f(-30.0f, 0.0f, -30.0f));
+	cam->set_euler_angles(Vec3f{ 0.0f, 45.0f, 0.0f });
 	cam->setup();
 	m_objects.push_back(cam);
 
@@ -810,9 +818,15 @@ void MainScene::setup_d3d() noexcept
 	TwDefine(" GLOBAL help = 'This example shows how to integrate AntTweakBar into a DirectX11 application.' ");
 
 	int bar_size[2]{ 224, 320 };
-	TwSetParam(tw_bar, nullptr, "size", TW_PARAM_INT32, 2, bar_size);
+	TwSetParam(tw_bar, "tw_bar", "size", TW_PARAM_INT32, 2, bar_size);
 
-	TwAddButton(tw_bar, "Toggle Directional Light", toggle_directional_light, nullptr, nullptr);
+	TwAddButton(tw_bar, "toggle", toggle_directional_light, nullptr, "group=Directional");
+	TwAddVarRW(tw_bar, "diffuse", TW_TYPE_COLOR3F, &directional_desc->diffuse_intensity.data, "group=Directional");
+	TwAddVarRW(tw_bar, "specular", TW_TYPE_COLOR3F, &directional_desc->specular_intensity.data, "group=Directional");
+	TwDefine("group=Lights");
+	TwDefine("TweakBar/Directional group=Lights");
+	TwAddSeparator(tw_bar, "directional light separator", nullptr);
+
 	TwAddButton(tw_bar, "Toggle Spotlight1", toggle_spotlight_one, nullptr, nullptr);
 	TwAddButton(tw_bar, "Toggle Spotlight2", toggle_spotlight_two, nullptr, nullptr);
 	TwAddButton(tw_bar, "Toggle Spotlight3", toggle_spotlight_three, nullptr, nullptr);
@@ -840,8 +854,6 @@ void MainScene::setup_d3d() noexcept
 
 void MainScene::initialize()
 {
-	setup_d3d();
-
 	Mesh* m{ MeshUtils::generate_uv_sphere(1.0f, 60, 60) };
 	ResourceManager::register_resource(m, L"sphere");
 
@@ -860,7 +872,7 @@ void MainScene::initialize()
 	ResourceManager::get<D3D11_texture>(TEXTURE_PATH + L"sky.dds")->set_texture_type(TEX_DIFFUSE);
 
 	Material mat;
-	mat.diffuse = Vec4f{ 0.0470588235294118f, 0.3019607843137255f, 0.4117647058823529f, 1.0f };
+	mat.diffuse = Vec4f{ 0.1f, 0.1f, 0.1f, 1.0f };
 	mat.specular = Vec4f{ 0.5f, 0.5f, 0.5f, 128.0f };
 	mat.blend_state = RenderStateType::BS_BLEND_ALPHA;
 	mat.textures[TEX_DIFFUSE] = ResourceManager::get<D3D11_texture>(TEXTURE_PATH + L"sky.dds");
@@ -934,7 +946,7 @@ void MainScene::initialize()
 	ec->set_spawn_rate(20.0);
 	ec->set_active(true);
 	ec->set_particle_size(0.3f);
-	ec->set_spawn_radius(13.0f);
+	ec->set_spawn_radius(0.5f);
 	ec->set_velocity(Vec3f{ 0.0f, 0.0f, 0.0f });
 	ec->set_velocity_range(0.05f);
 	ec->set_external_force(Vec3f{ 0.0f, 0.1f, 0.0f });
@@ -946,7 +958,7 @@ void MainScene::initialize()
 	p_mat.textures[TEX_DIFFUSE] = ResourceManager::get<D3D11_texture>(TEXTURE_PATH + L"bubble10.png");
 	p_mat.textures[TEX_DIFFUSE]->set_texture_type(TEX_DIFFUSE);
 	ec->set_material(p_mat);
-	//emitter->set_position(Vec3f{ 0.0f, -18.0f, 0.0f });
+	emitter->set_position(Vec3f{ -20.0f, 0.0f, 0.0f });
 	emitter->setup();
 	m_objects.push_back(emitter);
 
@@ -956,6 +968,8 @@ void MainScene::initialize()
 	for (int i = 0; i < 4; ++i) {
 		m_depth_pass_rts[i].create(Vec2f{ 2048, 2048 });
 	}
+
+	setup_d3d();
 }
 
 void MainScene::on_key_down(unsigned char key, int x, int y) noexcept

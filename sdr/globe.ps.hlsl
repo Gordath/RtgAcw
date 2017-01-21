@@ -106,7 +106,7 @@ void calculate_lighting(StructuredBuffer<Light> lights,
 
 			ambient_light += attenuation * lights[i].ambient_intensity * lit_result.x;
 			diffuse_light += attenuation * lights[i].diffuse_intensity * lit_result.y;
-			specular_light += attenuation * lights[i].specular_intensity * lit_result.z;
+			specular_light += attenuation * lights[i].specular_intensity * 7.0f * lit_result.z;
 		}
 	}
 
@@ -143,15 +143,13 @@ float4 main(VOut input) : SV_TARGET
 		spec_light); 
 
 	float3 refl_view_dir = normalize(input.reflected_view_dir);
-	float4 diff_texel = diffuse_tex.Sample(texture_sampler_linear_wrap, refl_view_dir);
-	float4 spec_texel = specular_tex.Sample(texture_sampler_linear_wrap, input.texcoord.xy);
+	float4 cube_texel = diffuse_tex.Sample(texture_sampler_linear_wrap, refl_view_dir);
 
 	float4 diff_color = diffuse * diff_light;
-	float4 spec_color = spec_texel * specular * spec_light;
+	float4 spec_color = specular * (spec_light + cube_texel);
 
 	float4 final_color = diff_color + spec_color + amb_light;
 	
-	final_color = final_color + diff_texel;
 	final_color.a = diffuse.a * input.fresnel_term;
 
 	return final_color;

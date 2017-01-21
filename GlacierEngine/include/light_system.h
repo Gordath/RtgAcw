@@ -31,6 +31,11 @@ namespace Glacier
 			return ldescs;
 		}
 
+		Object* get_light_object(const std::string& name) const noexcept
+		{
+			return m_lights[name];
+		}
+
 		void toggle_light(const std::string& light_name) const
 		{
 			Object* obj{ m_lights[light_name] };
