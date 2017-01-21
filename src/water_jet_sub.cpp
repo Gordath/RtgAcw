@@ -130,7 +130,7 @@ void WaterJetSubmarine::setup() noexcept
 	p_mat.textures[TEX_DIFFUSE] = ResourceManager::get<D3D11_texture>(TEXTURE_PATH + L"water.png");
 	p_mat.textures[TEX_DIFFUSE]->set_texture_type(TEX_DIFFUSE);
 	ec->set_material(p_mat);
-	emitter->set_position(Vec3f{ 0.0f, 0.0f, -2.0f });
+	emitter->set_position(Vec3f{ 0.0f, 0.0f, -4.0f });
 	emitter->set_parent(body);
 	emitter->setup();
 	m_scene->add_object(emitter);

@@ -365,9 +365,7 @@ void MainScene::color_pass() const noexcept
 		for (auto particle : particles) {
 			Mat4f model;
 			model = MathUtils::translate(model, particle.position);
-
 			Mat4f MV{ view * model };
-			model = MathUtils::scale(model, Vec3f{ particle.size });
 
 			MV[0][0] = 1.0f;
 			MV[0][1] = 0.0f;
@@ -380,6 +378,8 @@ void MainScene::color_pass() const noexcept
 			MV[2][0] = 0.0f;
 			MV[2][1] = 0.0f;
 			MV[2][2] = 1.0f;
+
+			MV = MathUtils::scale(MV, Vec3f{ particle.size });
 
 			Mat4f MVP{ projection * MV };
 
@@ -895,7 +895,7 @@ void MainScene::setup_d3d() noexcept
 	TwAddSeparator(tw_bar, "sep2", nullptr);
 
 	TwAddButton(tw_bar, "Outer Camera", activate_outer_camera, nullptr, "key=f1");
-	TwAddButton(tw_bar, "Inner Follow Camera", activate_inner_follow_camera, nullptr, nullptr);
+	TwAddButton(tw_bar, "Inner Follow Camera", activate_inner_follow_camera, nullptr, "key=f3");
 
 	TwAddSeparator(tw_bar, "sep3", nullptr);
 
@@ -1005,7 +1005,7 @@ void MainScene::initialize()
 	ec->set_spawn_rate(20.0);
 	ec->set_active(true);
 	ec->set_particle_size(0.3f);
-	ec->set_spawn_radius(0.5f);
+	ec->set_spawn_radius(13.0f);
 	ec->set_velocity(Vec3f{ 0.0f, 0.0f, 0.0f });
 	ec->set_velocity_range(0.05f);
 	ec->set_external_force(Vec3f{ 0.0f, 0.1f, 0.0f });
@@ -1017,7 +1017,6 @@ void MainScene::initialize()
 	p_mat.textures[TEX_DIFFUSE] = ResourceManager::get<D3D11_texture>(TEXTURE_PATH + L"bubble10.png");
 	p_mat.textures[TEX_DIFFUSE]->set_texture_type(TEX_DIFFUSE);
 	ec->set_material(p_mat);
-	emitter->set_position(Vec3f{ -20.0f, 0.0f, 0.0f });
 	emitter->setup();
 	m_objects.push_back(emitter);
 
