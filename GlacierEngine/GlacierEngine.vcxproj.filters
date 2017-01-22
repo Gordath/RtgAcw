@@ -161,15 +161,6 @@
     <ClCompile Include="src\keyboard_input_component.cpp">
       <Filter>Source Files\Components</Filter>
     </ClCompile>
-    <ClCompile Include="src\ncf.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ncf_util.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\cfg.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\path_component.cpp">
       <Filter>Source Files\Components</Filter>
     </ClCompile>
@@ -345,15 +336,6 @@
     </ClInclude>
     <ClInclude Include="include\keypress_message.h">
       <Filter>Header Files\Messages</Filter>
-    </ClInclude>
-    <ClInclude Include="include\ncf.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\ncf_util.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\cfg.h">
-      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\path_component.h">
       <Filter>Header Files\Components</Filter>

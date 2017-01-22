@@ -9,9 +9,10 @@ namespace Glacier
 	{
 		unsigned int device_flags{ 0 };
 
-#if defined(DEBUG) || defined(_DEBUG)
+/*#if defined(DEBUG) || defined(_DEBUG)
 		device_flags |= D3D11_CREATE_DEVICE_DEBUG;
 #endif
+*/
 
 		std::array<D3D_FEATURE_LEVEL, 3> feature_levels = {
 			{ D3D_FEATURE_LEVEL_11_0,
@@ -44,13 +45,13 @@ namespace Glacier
 				return false;
 			}
 
-#if defined(DEBUG) || defined(_DEBUG)
+/*#if defined(DEBUG) || defined(_DEBUG)
 			h_result = m_device.As(&m_debug_interface);
 			if (FAILED(h_result)) {
 				std::cerr << "Failed to acquire ID3D11Debug interface!" << std::endl;
 				return false;
 			}
-#endif
+#endif*/
 		}
 
 		return true;
