@@ -14,7 +14,7 @@ namespace Glacier
 
 		std::string m_name;
 
-		bool m_alive{ true };
+		bool m_alive;
 
 		Vec3f m_position;
 		Vec3f m_euler_angles;
@@ -22,19 +22,22 @@ namespace Glacier
 
 		Mat4f m_xform;
 
-		Object* m_parent{ nullptr };
+		Object* m_parent;
 
 	public:
-		Object(const std::string& name) : m_name{ name }
+		explicit Object(const std::string& name) : m_name{ name }, m_parent{nullptr}, m_alive{true}
 		{
 		}
 
 		~Object()
 		{
-			for (auto component : m_components) {
-				delete component;
+			try{
+				for (Component* component : m_components) {
+					delete component;
+				}
 			}
-
+			catch(...)
+			{ }
 			m_components.clear();
 		}
 

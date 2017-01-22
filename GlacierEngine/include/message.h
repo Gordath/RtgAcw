@@ -9,7 +9,7 @@ namespace Glacier
 		std::string m_type;
 
 	public:
-		Message(const std::string& type) : m_type{ type }
+		explicit Message(const std::string& type) : m_type{ type }
 		{
 		}
 

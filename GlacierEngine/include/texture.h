@@ -20,7 +20,7 @@ namespace Glacier
 	public:
 		Texture() = default;
 
-		Texture(TextureType texture_type) : m_texture_type{ texture_type }
+		explicit Texture(TextureType texture_type) : m_texture_type{ texture_type }
 		{
 		}
 

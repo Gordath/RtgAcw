@@ -9,16 +9,20 @@ namespace Glacier
 {
 	class RenderingComponent : public Component {
 	private:
-		Mesh* m_mesh{ nullptr };
+		Mesh* m_mesh;
 		
 		Material m_material;
 
-		bool m_should_draw{ true };
+		bool m_should_draw;
 
-		bool m_casts_shadows{ true };
+		bool m_casts_shadows;
 
 	public:
-		RenderingComponent(Object* parent) : Component{ "co_rendering", parent }
+		explicit RenderingComponent(Object* parent) 
+		: Component{ "co_rendering", parent },
+		m_mesh{nullptr},
+		m_should_draw{true},
+		m_casts_shadows{true}
 		{	
 		}
 

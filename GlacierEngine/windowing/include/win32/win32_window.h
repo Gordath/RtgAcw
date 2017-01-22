@@ -25,12 +25,12 @@ namespace Glacier
 		static LRESULT CALLBACK _win_proc_def(HWND handle, UINT msg, WPARAM wparam, LPARAM lparam);
 
 	protected:
-		HWND m_handle{ nullptr };
-		HWND m_parent{ nullptr };
-		HMENU m_menu{ nullptr };
+		HWND m_handle;
+		HWND m_parent;
+		HMENU m_menu;
 
-		unsigned int _flags{ 0 };
-		unsigned int _flags_ex{ 0 };
+		unsigned int m_flags{ 0 };
+		unsigned int m_flags_ex{ 0 };
 
 	public:
 		Win32Window(const std::wstring& title,

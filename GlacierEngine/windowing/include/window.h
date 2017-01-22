@@ -7,22 +7,23 @@
 
 namespace Glacier
 {
-	class Window {
+	class Window
+	{
 	protected:
 		std::wstring m_title;
 		Vec2i m_size;
 		Vec2i m_position;
-		unsigned int m_win_id{ 0 };
+		unsigned int m_win_id{0};
 
 		Vec2i m_mouse_pos;
 
-		bool m_focused{ true };
-		bool m_minimized{ false };
-		bool m_resizeable{ true };
-		bool m_show_cursor{ true };
+		bool m_focused{true};
+		bool m_minimized{false};
+		bool m_resizeable{true};
+		bool m_show_cursor{true};
 
-		bool m_changed_size{ false };
-		bool m_redisplay{ true };
+		bool m_changed_size{false};
+		bool m_redisplay{true};
 
 		WindowFunctionCallbacks m_callbacks;
 
@@ -35,15 +36,17 @@ namespace Glacier
 		       const bool minimized,
 		       const bool resizeable,
 		       const bool show_cursor,
-		       const WindowFunctionCallbacks& callbacks) : m_title{ title },
-		                                                   m_size{ size },
-		                                                   m_position{ position },
-		                                                   m_win_id{ window_id },
-		                                                   m_focused{ focused },
-		                                                   m_minimized{ minimized },
-		                                                   m_resizeable{ resizeable },
-		                                                   m_show_cursor{ show_cursor },
-		                                                   m_callbacks{ callbacks }
+		       const WindowFunctionCallbacks& callbacks) : m_title{title},
+		                                                   m_size{size},
+		                                                   m_position{position},
+		                                                   m_win_id{window_id},
+		                                                   m_focused{focused},
+		                                                   m_minimized{minimized},
+		                                                   m_resizeable{resizeable},
+		                                                   m_show_cursor{show_cursor},
+		                                                   m_callbacks{callbacks},
+		                                                   m_changed_size{false},
+		                                                   m_redisplay{true}
 		{
 		}
 

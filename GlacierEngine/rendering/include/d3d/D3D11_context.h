@@ -20,6 +20,7 @@ namespace Glacier
 		ComPtr<ID3D11DepthStencilView> m_default_dsv;
 
 	public:
+		D3D11Context() = default;
 		~D3D11Context()
 		{
 		}

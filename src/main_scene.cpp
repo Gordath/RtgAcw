@@ -413,7 +413,7 @@ void MainScene::color_pass() const noexcept
 	RenderStateManager::set(RenderStateType::DSS_DEPTH_MASK_1);
 	//-------------------------------------------------------------------------------------------------------------
 
-	std::vector<ID3D11ShaderResourceView*> null_srvs{ nullptr, nullptr, nullptr, nullptr };
+	std::vector<ID3D11ShaderResourceView*> null_srvs{ nullptr, nullptr, nullptr, nullptr }; // parasoft-suppress  PB-23 "It's just a vector construction using an initializer list."
 
 	device_context->PSSetShaderResources(5, 4, null_srvs.data());
 

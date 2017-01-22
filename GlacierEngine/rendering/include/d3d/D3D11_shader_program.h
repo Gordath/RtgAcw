@@ -16,6 +16,8 @@ namespace Glacier
 		ComPtr<ID3D11PixelShader> m_pixel_shader;
 
 	public:
+		D3D11ShaderProgram() = default;
+
 		bool create(unsigned int input_layout_mask,
 		            const std::wstring& vs,
 		            const std::wstring& fs,

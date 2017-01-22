@@ -151,7 +151,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\camera_keyboard_input_component.cpp" />
-    <ClCompile Include="src\color_pass.cpp" />
     <ClCompile Include="src\drebel_sub.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\main_scene.cpp" />
@@ -161,7 +160,6 @@
   <ItemGroup>
     <ClInclude Include="deep_sea_fish.h" />
     <ClInclude Include="include\camera_keyboard_input_component.h" />
-    <ClInclude Include="include\color_pass.h" />
     <ClInclude Include="include\drebel_sub.h" />
     <ClInclude Include="include\main_scene.h" />
     <ClInclude Include="include\rtg_application.h" />

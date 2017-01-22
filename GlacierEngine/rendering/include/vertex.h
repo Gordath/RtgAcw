@@ -14,15 +14,15 @@ namespace Glacier
 
 		Vertex() = default;
 
-		Vertex(const Vec4f& position,
-		       const Vec4f& normal,
-		       const Vec4f& tangent,
-		       const Vec4f& texcoord,
-		       const Vec4f& color) : position{ position },
-		                             normal{ normal },
-		                             tangent{ tangent },
-		                             texcoord{ texcoord },
-		                             color{ color }
+		Vertex(const Vec4f& p,
+		       const Vec4f& n,
+		       const Vec4f& tan,
+		       const Vec4f& tcoord,
+		       const Vec4f& col) : position{ p },
+		                             normal{ n },
+		                             tangent{ tan },
+		                             texcoord{ tcoord },
+		                             color{ col }
 		{
 		}
 	};

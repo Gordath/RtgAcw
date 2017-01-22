@@ -27,9 +27,12 @@ namespace Glacier
 
 		~ResourceManager()
 		{
-			for (auto resource : m_resources_by_name) {
-				delete resource.second;
+			try {
+				for (auto resource : m_resources_by_name) {
+					delete resource.second;
+				}
 			}
+			catch(...){}
 
 			m_resources_by_name.clear();
 

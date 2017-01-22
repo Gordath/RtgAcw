@@ -19,10 +19,10 @@ namespace Glacier
 
 		HighResolutionTimePoint m_prev;
 
-		bool m_running{ false };
+		bool m_running;
 
 	public:
-		Timer() : m_prev{ HighResolutionClock::now() }
+		Timer() : m_prev{ HighResolutionClock::now() }, m_running{false}
 		{
 		}
 

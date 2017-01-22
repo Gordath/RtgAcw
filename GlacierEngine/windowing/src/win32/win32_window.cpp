@@ -67,7 +67,11 @@ namespace Glacier
 	                                                                            minimized,
 	                                                                            resizeable,
 	                                                                            show_cursor,
-	                                                                            callbacks)
+	                                                                            callbacks),
+																			m_handle{nullptr},
+																			m_parent{ nullptr },
+																			m_menu{nullptr}
+																			
 	{
 		RECT wr = { 0, 0, size.x, size.y };
 
@@ -84,13 +88,13 @@ namespace Glacier
 		const unsigned int window_flags_ex_enable{ WS_EX_CLIENTEDGE };
 		const unsigned int window_flags_ex_disable{ 0 };
 
-		_flags = window_flags_enable & ~window_flags_disable;
-		_flags_ex = window_flags_ex_enable & ~window_flags_ex_disable;
+		m_flags = window_flags_enable & ~window_flags_disable;
+		m_flags_ex = window_flags_ex_enable & ~window_flags_ex_disable;
 
-		m_handle = ::CreateWindowEx(_flags_ex,
+		m_handle = ::CreateWindowEx(m_flags_ex,
 		                            WindowClass::m_win_class_name.c_str(),
 		                            title.c_str(),
-		                            _flags,
+		                            m_flags,
 		                            position.x,
 		                            position.y,
 		                            size.x,

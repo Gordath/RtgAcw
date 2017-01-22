@@ -5,6 +5,7 @@ namespace Glacier
 {
 	class GAPIContext {
 	public:
+		GAPIContext() = default;
 		virtual ~GAPIContext() = default;
 		virtual bool create() = 0;
 	};

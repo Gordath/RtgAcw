@@ -12,14 +12,17 @@ namespace Glacier
 	private:
 		std::vector<Keyframe> m_keyframes;
 
-		bool m_loop{ false };
+		bool m_loop;
 		
-		bool m_align_to_path{ false };
+		bool m_align_to_path;
 
 		const Keyframe& get_keyframe(int idx) const noexcept;
 
 	public:
-		PathComponent(Object* parent) : Component{ "co_path", parent }
+		explicit PathComponent(Object* parent) 
+		: Component{ "co_path", parent },
+		m_loop{false},
+		m_align_to_path{false}
 		{
 		}
 

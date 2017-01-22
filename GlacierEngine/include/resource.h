@@ -9,9 +9,11 @@ namespace Glacier
 		unsigned int m_id;
 
 	public:
-		Resource() = default;
+		Resource() : m_id{ 0 }
+		{			
+		}
 
-		Resource(unsigned int id) : m_id(id)
+		explicit Resource(unsigned int id) : m_id{ id }
 		{
 		}
 

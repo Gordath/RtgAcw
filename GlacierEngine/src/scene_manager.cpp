@@ -6,9 +6,14 @@ namespace Glacier
 
 	SceneManager::~SceneManager()
 	{
-		for (auto scene : m_scenes) {
-			delete scene;
+		try {
+			for (auto scene : m_scenes) {
+				delete scene;
+			}
 		}
+		catch(...){}
+
+		m_scenes.clear();
 	}
 
 	void SceneManager::push_scene(Scene* scene) noexcept

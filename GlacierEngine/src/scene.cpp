@@ -5,9 +5,12 @@ namespace Glacier
 {
 	Scene::~Scene()
 	{
-		for (const auto object : m_objects) {
-			delete object;
+		try {
+			for (const auto object : m_objects) {
+				delete object;
+			}
 		}
+		catch(...){}
 
 		m_objects.clear();
 	}

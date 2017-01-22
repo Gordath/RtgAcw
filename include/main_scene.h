@@ -3,6 +3,7 @@
 #include "scene.h"
 #include "../GlacierEngine/rendering/include/d3d/D3D11_render_target.h"
 #include "water_jet_sub.h"
+#include <array>
 
 class DrebelSubmarine;
 
@@ -15,7 +16,7 @@ private:
 	Glacier::ComPtr<ID3D11Buffer> m_particle_uniform_buffer;
 	Glacier::ComPtr<ID3D11Buffer> m_skybox_uniform_buffer;
 
-	Glacier::D3D11RenderTarget m_depth_pass_rts[4];
+	std::array<Glacier::D3D11RenderTarget, 4> m_depth_pass_rts;
 
 	Glacier::ComPtr<ID3D11Buffer> m_light_structured_buffer;
 	Glacier::ComPtr<ID3D11ShaderResourceView> m_light_srv;
@@ -23,11 +24,11 @@ private:
 	Glacier::ComPtr<ID3D11SamplerState> m_sampler_linear_wrap;
 	Glacier::ComPtr<ID3D11SamplerState> m_sampler_shadow_comparison;
 
-	Glacier::Object* m_skybox{nullptr};
-	Glacier::Object* m_globe;
+	Glacier::Object* m_skybox; /* parasoft-suppress  MRM-33 "The memory of all objects added to the Scene is freed by the Scene base class in it's destructor." */
+	Glacier::Object* m_globe; /* parasoft-suppress  MRM-33 "The memory of all objects added to the Scene is freed by the Scene base class in it's destructor." */
 
-	DrebelSubmarine* m_drebel;
-	WaterJetSubmarine* m_water_jet_sub;
+	DrebelSubmarine* m_drebel; /* parasoft-suppress  MRM-33 "The memory of all objects added to the Scene is freed by the Scene base class in it's destructor." */
+	WaterJetSubmarine* m_water_jet_sub; /* parasoft-suppress  MRM-33 "The memory of all objects added to the Scene is freed by the Scene base class in it's destructor." */
 
 	void depth_pass() const noexcept;
 	void color_pass() const noexcept;
@@ -42,15 +43,15 @@ private:
 
 public:
 	MainScene() :
-		m_drebel{nullptr},
-		m_globe{nullptr},
-		m_skybox{nullptr},
+		m_skybox{ nullptr },
+		m_globe{ nullptr },
+		m_drebel{ nullptr },
 		m_water_jet_sub{nullptr}
 	{
 	}
 
 	MainScene(const MainScene& other) = delete;
-	MainScene(MainScene&& other) noexcept = delete;
+	explicit MainScene(MainScene&& other) noexcept = delete;
 	MainScene& operator=(const MainScene& other) = delete;
 	MainScene& operator=(MainScene&& other) noexcept = delete;
 

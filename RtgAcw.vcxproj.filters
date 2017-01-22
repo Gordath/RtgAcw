@@ -33,9 +33,6 @@
     <ClCompile Include="src\main_scene.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\color_pass.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\camera_keyboard_input_component.cpp">
       <Filter>Source Files\Components</Filter>
     </ClCompile>
@@ -51,9 +48,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\main_scene.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\color_pass.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\camera_keyboard_input_component.h">

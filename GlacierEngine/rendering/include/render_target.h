@@ -16,7 +16,7 @@ namespace Glacier
 	public:
 		RenderTarget() = default;
 
-		RenderTarget(const Vec2i& size) : m_size{ size }
+		explicit RenderTarget(const Vec2i& size) : m_size{ size }
 		{
 		}
 

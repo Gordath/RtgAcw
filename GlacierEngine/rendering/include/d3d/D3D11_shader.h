@@ -11,6 +11,8 @@ namespace Glacier
 		ComPtr<ID3DBlob> m_shader_blob;
 
 	public:
+		D3D11Shader() = default;
+
 		ID3DBlob* get_blob() const noexcept
 		{
 			return m_shader_blob.Get();
