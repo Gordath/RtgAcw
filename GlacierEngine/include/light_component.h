@@ -25,14 +25,14 @@ namespace Glacier
 		LightDesc m_light_desc;
 
 	public:
-		LightComponent(Object* parent) : Component{ "co_light", parent }
+		explicit LightComponent(Object* parent) : Component{ "co_light", parent }
 		{
 		}
 
-		operator LightDesc() const
-		{
-			return m_light_desc;
-		}
+//		operator LightDesc() const
+//		{
+//			return m_light_desc;
+//		}
 
 		void setup() noexcept override;
 		

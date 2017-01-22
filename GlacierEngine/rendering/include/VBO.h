@@ -17,6 +17,8 @@ namespace Glacier
 		PrimitiveTopology m_primitive_topology{ PrimitiveTopology::TRIANGLE_LIST };
 
 	public:
+		VBO() = default;
+
 		virtual ~VBO() = default;
 
 		virtual bool create(const std::vector<Vertex> &vertices, PrimitiveTopology primitive_topology) noexcept = 0;

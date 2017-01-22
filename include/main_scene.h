@@ -6,7 +6,8 @@
 
 class DrebelSubmarine;
 
-class MainScene : public Glacier::Scene {
+class MainScene : public Glacier::Scene
+{
 private:
 	Glacier::D3D11RenderTarget m_color_pass_rt;
 	Glacier::ComPtr<ID3D11Buffer> m_color_pass_uniform_buffer;
@@ -22,11 +23,11 @@ private:
 	Glacier::ComPtr<ID3D11SamplerState> m_sampler_linear_wrap;
 	Glacier::ComPtr<ID3D11SamplerState> m_sampler_shadow_comparison;
 
-	Glacier::Object* m_skybox{ nullptr };
-	Glacier::Object* m_globe{ nullptr };
+	Glacier::Object* m_skybox{nullptr};
+	Glacier::Object* m_globe;
 
-	DrebelSubmarine* m_drebel{ nullptr };
-	WaterJetSubmarine* m_water_jet_sub{ nullptr };
+	DrebelSubmarine* m_drebel;
+	WaterJetSubmarine* m_water_jet_sub;
 
 	void depth_pass() const noexcept;
 	void color_pass() const noexcept;
@@ -40,6 +41,19 @@ private:
 	void setup_d3d() noexcept;
 
 public:
+	MainScene() :
+		m_drebel{nullptr},
+		m_globe{nullptr},
+		m_skybox{nullptr},
+		m_water_jet_sub{nullptr}
+	{
+	}
+
+	MainScene(const MainScene& other) = delete;
+	MainScene(MainScene&& other) noexcept = delete;
+	MainScene& operator=(const MainScene& other) = delete;
+	MainScene& operator=(MainScene&& other) noexcept = delete;
+
 	~MainScene();
 
 	void initialize() override;

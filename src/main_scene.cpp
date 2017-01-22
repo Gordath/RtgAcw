@@ -177,8 +177,8 @@ void MainScene::depth_pass() const noexcept
 						D3D11_VIEWPORT viewport;
 						viewport.TopLeftX = 0.0f;
 						viewport.TopLeftY = 0.0f;
-						viewport.Width = static_cast<float>(m_depth_pass_rts->get_size().x);
-						viewport.Height = static_cast<float>(m_depth_pass_rts->get_size().y);
+						viewport.Width = static_cast<float>(m_depth_pass_rts[i].get_size().x);
+						viewport.Height = static_cast<float>(m_depth_pass_rts[i].get_size().y);
 						viewport.MinDepth = 0.0f;
 						viewport.MaxDepth = 1.0f;
 
@@ -226,8 +226,8 @@ void MainScene::color_pass() const noexcept
 		RenderStateManager::set(RenderStateType::RS_DRAW_WIRE);
 	}
 
-	D3D11Context* GAPI_context{ EngineContext::get_GAPI_context() };
-	ComPtr<ID3D11DeviceContext> device_context{ GAPI_context->get_device_context() };
+	const D3D11Context* GAPI_context{ EngineContext::get_GAPI_context() };
+	const ComPtr<ID3D11DeviceContext> device_context{ GAPI_context->get_device_context() };
 
 	D3D11_VIEWPORT viewport;
 	viewport.TopLeftX = 0.0f;

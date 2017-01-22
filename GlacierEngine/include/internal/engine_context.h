@@ -11,7 +11,10 @@ namespace Glacier
 {
 	class EngineContext {
 	private:
-		static GAPIContext* m_GAPI_context;
+#if defined(GLACIERENGINE_BUILD_D3D)
+		static D3D11Context* m_GAPI_context;
+#else
+#endif
 		static std::unique_ptr<RenderSystem> m_render_system;
 		static std::unique_ptr<CameraSystem> m_camera_system;
 		static std::unique_ptr<LightSystem> m_light_system;
@@ -28,7 +31,7 @@ namespace Glacier
 #if defined(GLACIERENGINE_BUILD_D3D)
 		static D3D11Context* get_GAPI_context() noexcept
 		{
-			return static_cast<D3D11Context*>(m_GAPI_context);
+			return m_GAPI_context;
 		}
 #endif
 

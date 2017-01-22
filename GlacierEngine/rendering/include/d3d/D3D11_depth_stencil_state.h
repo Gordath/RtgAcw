@@ -12,7 +12,7 @@ namespace Glacier
 		ComPtr<ID3D11DepthStencilState> m_depth_stencil_state;
 
 	public:
-		D3D11DepthStencilState(RenderStateType render_state_type);
+		explicit D3D11DepthStencilState(RenderStateType render_state_type);
 
 		void set() const noexcept override;
 	};

@@ -22,12 +22,6 @@ namespace Glacier
 	public:
 		~D3D11Context()
 		{
-			m_device.Reset();
-			m_device_context.Reset();
-			m_debug_interface.Reset();
-
-			m_default_rtv.Reset();
-			m_default_dsv.Reset();
 		}
 
 		bool create() override;

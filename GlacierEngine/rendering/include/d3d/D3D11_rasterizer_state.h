@@ -11,7 +11,7 @@ namespace Glacier
 		ComPtr<ID3D11RasterizerState> m_rasterizer_state;
 
 	public:
-		D3D11RasterizerState(RenderStateType render_state_type);
+		explicit D3D11RasterizerState(RenderStateType render_state_type);
 
 		void set() const noexcept override;
 	};

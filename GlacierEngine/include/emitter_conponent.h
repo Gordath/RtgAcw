@@ -7,7 +7,8 @@
 
 namespace Glacier
 {
-	struct Particle {
+	struct Particle
+	{
 		Vec3f position;
 		Vec4f color;
 		float size;
@@ -19,35 +20,46 @@ namespace Glacier
 		double spawn_time;
 	};
 
-	class EmitterComponent : public Component {
+	class EmitterComponent : public Component
+	{
 	private:
 		std::vector<Particle> m_particles;
 
-		float m_spawn_rate{ 1.0f };
-		float m_lifespan{ 1.0f };
-		int m_max_particles{ 1 };
-		float m_spawn_radius{ 0.0f };
+		float m_spawn_rate;
+		float m_lifespan;
+		int m_max_particles;
+		float m_spawn_radius;
 
-		float m_particle_size{ 1.0f };
+		float m_particle_size;
 
 		Vec4f m_start_color;
 		Vec4f m_end_color;
 
-		float m_particles_to_spawn{ 0.0f };
+		float m_particles_to_spawn;
 
-		bool m_active{ true };
+		bool m_active;
 
 		//Physics
 		Vec3f m_velocity;
-		float m_velocity_range{ 0.0f };
+		float m_velocity_range;
 		Vec3f m_external_force;
 
 		//Drawing info
-		Mesh* m_mesh{ nullptr };
+		Mesh* m_mesh;
 		Material m_material;
 
 	public:
-		EmitterComponent(Object* parent) : Component{ "co_emitter", parent }
+		explicit EmitterComponent(Object* parent) :
+			Component{"co_emitter", parent},
+			m_active{true},
+			m_lifespan{1.0f},
+			m_max_particles{1},
+			m_mesh{nullptr},
+			m_particle_size{1.0f},
+			m_particles_to_spawn{0.0f},
+			m_spawn_radius{0.0f},
+			m_spawn_rate{1.0f},
+			m_velocity_range{0.0f}
 		{
 		}
 

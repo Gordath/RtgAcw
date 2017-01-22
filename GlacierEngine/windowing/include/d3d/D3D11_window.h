@@ -45,7 +45,8 @@ namespace Glacier
 			                                                        show_cursor,
 			                                                        callbacks },
 		                                                        m_enable_MSAA{ enable_MSAA },
-		                                                        m_sample_count{ MSAA_sample_count }
+		                                                        m_sample_count{ MSAA_sample_count },
+																m_MSAA_quality{ 0 }
 		{
 			initialize();
 		}

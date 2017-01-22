@@ -14,15 +14,15 @@ namespace Glacier
 	                                const std::wstring& ds,
 	                                const std::wstring& gs) noexcept
 	{
-		D3D11Context* GAPI_context{ EngineContext::get_GAPI_context() };
+		const D3D11Context* GAPI_context{ EngineContext::get_GAPI_context() };
 
-		ComPtr<ID3D11Device> device{ GAPI_context->get_device() };
+		const ComPtr<ID3D11Device> device{ GAPI_context->get_device() };
 
 		if (!vs.empty()) {
 			m_shaders[VERTEX_SHADER] = ResourceManager::get<D3D11Shader>(SHADER_PATH + vs);
 
-			D3D11Shader* shader{ static_cast<D3D11Shader*>(m_shaders[VERTEX_SHADER]) };
-			ComPtr<ID3DBlob> blob{ shader->get_blob() };
+			D3D11Shader* shader{ m_shaders[VERTEX_SHADER] };
+			const ComPtr<ID3DBlob> blob{ shader->get_blob() };
 
 			HRESULT res{ 0 };
 			res = device->CreateVertexShader(blob->GetBufferPointer(), blob->GetBufferSize(), nullptr, m_vertex_shader.ReleaseAndGetAddressOf());

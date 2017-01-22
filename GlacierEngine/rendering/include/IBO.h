@@ -9,6 +9,8 @@ namespace Glacier
 		unsigned int m_index_count{ 0 };
 
 	public:
+		IBO() = default;
+
 		virtual ~IBO() = default;
 
 		virtual bool create(const std::vector<unsigned int>& indices) noexcept = 0;

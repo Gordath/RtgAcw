@@ -13,6 +13,8 @@ namespace Glacier
 		mutable Object* m_active_camera{ nullptr };
 
 	public:
+		CameraSystem() = default;
+
 		bool initialize() noexcept override;
 
 		void process(const std::vector<Object*>& objects, float delta_time) const noexcept override;

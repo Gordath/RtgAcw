@@ -22,7 +22,7 @@ private:
 	float yaw{ 0.0f };
 
 public:
-	CameraKeyboardInputComponent(Glacier::Object* parent)
+	explicit CameraKeyboardInputComponent(Glacier::Object* parent)
 		: KeyboardInputComponent{ parent }
 	{
 	}

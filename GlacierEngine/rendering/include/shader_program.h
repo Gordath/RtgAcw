@@ -1,6 +1,7 @@
 #ifndef GLACIER_SHADER_PROGRAM_H_
 #define GLACIER_SHADER_PROGRAM_H_
 #include "shader.h"
+#include "../rendering/include/d3d/D3D11_shader.h"
 
 namespace Glacier
 {
@@ -16,9 +17,18 @@ namespace Glacier
 
 	class ShaderProgram {
 	protected:
-		Shader* m_shaders[SHADER_COUNT];
-
+#if defined(GLACIERENGINE_BUILD_D3D)
+		D3D11Shader* m_shaders[SHADER_COUNT];
+#else
+#endif
 	public:
+		ShaderProgram()
+		{
+			for (int i = 0; i < SHADER_COUNT; ++i) {
+				m_shaders[i] = nullptr;
+			}
+		}
+
 		virtual ~ShaderProgram() = default;
 
 		virtual bool create(unsigned int input_layout_mask,
