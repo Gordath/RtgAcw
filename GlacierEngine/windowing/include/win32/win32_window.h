@@ -10,7 +10,7 @@ namespace Glacier
 	private:
 		class WindowClass {
 		private:
-			friend class Win32Window;
+			//friend class Win32Window;
 
 			static const std::wstring m_win_class_name;
 			static int m_count;
@@ -18,6 +18,15 @@ namespace Glacier
 		public:
 			WindowClass();
 			~WindowClass();
+
+			WindowClass(const WindowClass&) = delete;
+
+			WindowClass& operator=(const WindowClass&) = delete;
+
+			static const std::wstring& get_win_class_name()
+			{
+				return m_win_class_name;
+			}
 		};
 
 		const WindowClass m_window_class;
@@ -44,6 +53,9 @@ namespace Glacier
 
 		virtual LRESULT CALLBACK win_proc(HWND handle, UINT msg, WPARAM wparam, LPARAM lparam);
 
+		Win32Window(const Win32Window&) = delete;
+
+		Win32Window& operator=(const Win32Window&) = delete;
 
 		HWND get_handle() const
 		{

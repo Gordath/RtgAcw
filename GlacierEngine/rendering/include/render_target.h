@@ -20,7 +20,7 @@ namespace Glacier
 		{
 		}
 
-		virtual ~RenderTarget() = default;
+		virtual ~RenderTarget();
 
 		virtual bool create(const Vec2i& size) = 0;
 

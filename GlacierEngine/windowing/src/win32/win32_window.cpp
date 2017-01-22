@@ -92,7 +92,7 @@ namespace Glacier
 		m_flags_ex = window_flags_ex_enable & ~window_flags_ex_disable;
 
 		m_handle = ::CreateWindowEx(m_flags_ex,
-		                            WindowClass::m_win_class_name.c_str(),
+		                            WindowClass::get_win_class_name().c_str(),
 		                            title.c_str(),
 		                            m_flags,
 		                            position.x,
@@ -104,12 +104,12 @@ namespace Glacier
 		                            ::GetModuleHandle(nullptr),
 		                            this); //Carry the window class pointer.
 
-		if (!m_handle) {
-			char buff[256];
-			snprintf(buff, 256, "Error creating window with name: '%s'", title);
-
-			throw std::runtime_error(buff);
-		}
+//		if (!m_handle) {
+//			char buff[256];
+//			snprintf(buff, 256, "Error creating window with name: '%s'", title);
+//
+//			throw std::runtime_error(buff);
+//		}
 
 		ShowWindow(m_handle, SW_SHOWDEFAULT);
 		UpdateWindow(m_handle);

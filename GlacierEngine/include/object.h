@@ -131,16 +131,7 @@ namespace Glacier
 			}
 		}
 
-		Component* get_component(const std::string& type) const noexcept
-		{
-			for (const auto component : m_components) {
-				if (component->get_type() == type) {
-					return component;
-				}
-			}
-
-			return nullptr;
-		}
+		Component* get_component(const std::string& type) const noexcept;
 
 		void add_component(Component* component) noexcept
 		{
@@ -152,28 +143,11 @@ namespace Glacier
 			return m_alive;
 		}
 
-		virtual void update(float dt, long time = 0) noexcept
-		{
-			calculate_xform();
+		virtual void update(float dt, long time = 0) noexcept;
 
-			for (auto component : m_components) {
-				component->update(dt, time);
-			}
-		}
+		virtual void setup() noexcept;
 
-		virtual void setup() noexcept
-		{
-			for (auto component : m_components) {
-				component->setup();
-			}
-		}
-
-		virtual void teardown() noexcept
-		{
-			for (auto component : m_components) {
-				component->teardown();
-			}
-		}
+		virtual void teardown() noexcept;
 	};
 }
 

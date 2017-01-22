@@ -17,7 +17,7 @@ namespace Glacier
 		{
 		}
 
-		virtual ~Resource() = default;
+		virtual ~Resource();
 
 		unsigned int get_id() const noexcept
 		{

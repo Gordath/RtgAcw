@@ -36,7 +36,7 @@ namespace Glacier
 		}
 	}
 
-	void Scene::on_message(MessageContainer msg) const noexcept
+	void Scene::on_message(const MessageContainer& msg) const noexcept
 	{
 		for (auto object : m_objects) {
 			object->broadcast_message(msg);

@@ -10,7 +10,7 @@ namespace Glacier
 	public:
 		System() = default;
 
-		virtual ~System() = default;
+		virtual ~System();
 
 		virtual bool initialize() noexcept = 0;
 

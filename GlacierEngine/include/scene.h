@@ -16,6 +16,10 @@ namespace Glacier
 
 		virtual ~Scene();
 
+
+		Scene(const Scene& other) = default;
+		Scene& operator=(const Scene& other) = default;
+
 		virtual void initialize() = 0;
 
 		void add_object(Object* object) noexcept;
@@ -37,7 +41,7 @@ namespace Glacier
 
 		virtual void draw() const noexcept = 0;
 
-		virtual void on_message(MessageContainer msg) const noexcept;
+		virtual void on_message(const MessageContainer& msg) const noexcept;
 	};
 }
 

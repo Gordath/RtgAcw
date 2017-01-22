@@ -163,8 +163,12 @@
     <ClCompile Include="rendering\src\IBO.cpp" />
     <ClCompile Include="rendering\src\material.cpp" />
     <ClCompile Include="rendering\src\mesh.cpp" />
+    <ClCompile Include="rendering\src\renderer.cpp" />
+    <ClCompile Include="rendering\src\render_state.cpp" />
     <ClCompile Include="rendering\src\render_state_manager.cpp" />
     <ClCompile Include="rendering\src\render_system.cpp" />
+    <ClCompile Include="rendering\src\render_target.cpp" />
+    <ClCompile Include="rendering\src\shader_program.cpp" />
     <ClCompile Include="rendering\src\VBO.cpp" />
     <ClCompile Include="src\application.cpp" />
     <ClCompile Include="src\camera_component.cpp" />
@@ -178,15 +182,19 @@
     <ClCompile Include="src\mesh_utils.cpp" />
     <ClCompile Include="src\message.cpp" />
     <ClCompile Include="src\object.cpp" />
+    <ClCompile Include="src\observer.cpp" />
     <ClCompile Include="src\observer_subject.cpp" />
     <ClCompile Include="src\path_component.cpp" />
     <ClCompile Include="src\rendering_component.cpp" />
+    <ClCompile Include="src\resource.cpp" />
     <ClCompile Include="src\resource_manager.cpp" />
     <ClCompile Include="src\scene.cpp" />
     <ClCompile Include="src\scene_manager.cpp" />
     <ClCompile Include="src\shader_program_manager.cpp" />
+    <ClCompile Include="src\system.cpp" />
     <ClCompile Include="windowing\src\d3d\D3D11_window.cpp" />
     <ClCompile Include="windowing\src\win32\win32_window.cpp" />
+    <ClCompile Include="windowing\src\window.cpp" />
     <ClCompile Include="windowing\src\windowing_service.cpp" />
   </ItemGroup>
   <ItemGroup>

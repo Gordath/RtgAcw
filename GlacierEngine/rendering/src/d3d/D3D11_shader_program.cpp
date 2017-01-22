@@ -21,7 +21,7 @@ namespace Glacier
 		if (!vs.empty()) {
 			set_shader(ResourceManager::get<D3D11Shader>(SHADER_PATH + vs), VERTEX_SHADER);
 
-			D3D11Shader* shader{ get_shader(VERTEX_SHADER) };
+			const D3D11Shader* shader{ get_shader(VERTEX_SHADER) };
 			const ComPtr<ID3DBlob> blob{ shader->get_blob() };
 
 			HRESULT res{ 0 };
@@ -67,7 +67,7 @@ namespace Glacier
 		if (!hs.empty()) {
 			set_shader(ResourceManager::get<D3D11Shader>(SHADER_PATH + hs), HULL_SHADER);
 
-			D3D11Shader* shader{ static_cast<D3D11Shader*>(get_shader(DOMAIN_SHADER)) };
+			const D3D11Shader* shader{ static_cast<const D3D11Shader*>(get_shader(DOMAIN_SHADER)) };
 
 			ComPtr<ID3DBlob> blob{ shader->get_blob() };
 
@@ -82,7 +82,7 @@ namespace Glacier
 		if (!ds.empty()) {
 			set_shader(ResourceManager::get<D3D11Shader>(SHADER_PATH + ds), DOMAIN_SHADER);
 			
-			D3D11Shader* shader{ static_cast<D3D11Shader*>(get_shader(DOMAIN_SHADER)) };
+			const D3D11Shader* shader{ static_cast<const D3D11Shader*>(get_shader(DOMAIN_SHADER)) };
 
 			ComPtr<ID3DBlob> blob{ shader->get_blob() };
 
@@ -97,7 +97,7 @@ namespace Glacier
 		if (!gs.empty()) {
 			set_shader(ResourceManager::get<D3D11Shader>(SHADER_PATH + gs), GEOMETRY_SHADER);
 			
-			D3D11Shader* shader{ static_cast<D3D11Shader*>(get_shader(GEOMETRY_SHADER)) };
+			const D3D11Shader* shader{ static_cast<const D3D11Shader*>(get_shader(GEOMETRY_SHADER)) };
 
 			ComPtr<ID3DBlob> blob{ shader->get_blob() };
 
@@ -112,7 +112,7 @@ namespace Glacier
 		if (!fs.empty()) {
 			set_shader(ResourceManager::get<D3D11Shader>(SHADER_PATH + fs), FRAGMENT_SHADER);
 			
-			D3D11Shader* shader{ static_cast<D3D11Shader*>(get_shader(FRAGMENT_SHADER)) };
+			const D3D11Shader* shader{ static_cast<const D3D11Shader*>(get_shader(FRAGMENT_SHADER)) };
 			
 			ComPtr<ID3DBlob> blob{ shader->get_blob() };
 

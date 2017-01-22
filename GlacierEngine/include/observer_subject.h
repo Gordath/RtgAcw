@@ -16,7 +16,7 @@ namespace Glacier
 	public:
 		ObserverSubject() = default;
 
-		virtual ~ObserverSubject() = default;
+		virtual ~ObserverSubject();
 
 		// Register an observer for a particular type of message
 		void register_observer(const std::string& msg, Observer* o) noexcept;
@@ -25,7 +25,7 @@ namespace Glacier
 		void unregister_observer(const std::string& msg, Observer* o) noexcept;
 
 		// Broadcast a message to any listeners
-		void broadcast_message(MessageContainer msg) const noexcept;
+		void broadcast_message(const MessageContainer& msg) const noexcept;
 	};
 }
 

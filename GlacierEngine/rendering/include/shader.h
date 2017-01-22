@@ -4,7 +4,7 @@
 
 namespace Glacier
 {
-	enum ShaderType {
+	enum ShaderType { /* parasoft-suppress  CODSTA-MCPP-03 "This is not a scoped enum deliberatly. It is used as a most descriptive way to access specific indices in the array of shaders." */
 		VERTEX_SHADER,
 		HULL_SHADER,
 		DOMAIN_SHADER,

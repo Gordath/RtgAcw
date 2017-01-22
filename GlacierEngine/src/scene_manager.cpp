@@ -59,7 +59,7 @@ namespace Glacier
 		}
 	}
 
-	void SceneManager::on_message(MessageContainer msg) noexcept
+	void SceneManager::on_message(const MessageContainer& msg) noexcept
 	{
 		if (m_scenes.back()) {
 			m_scenes.back()->on_message(msg);

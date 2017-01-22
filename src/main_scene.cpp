@@ -231,10 +231,10 @@ void MainScene::depth_pass() const noexcept
 void MainScene::color_pass() const noexcept
 {
 	//	float clear_color[4]{ 0.0470588235294118f, 0.3019607843137255f, 0.4117647058823529f, 1.0f };
-	float clear_color[4]{0.0f, 0.0f, 0.0f, 1.0f};
+	Vec4f clear_color{0.0f, 0.0f, 0.0f, 1.0f};
 
 	m_color_pass_rt.bind(RenderTargetBindType::COLOR_AND_DEPTH);
-	m_color_pass_rt.clear(clear_color);
+	m_color_pass_rt.clear(&clear_color[0]);
 
 	if (wireframe)
 	{

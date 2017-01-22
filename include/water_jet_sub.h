@@ -13,6 +13,9 @@ public:
 	{
 	}
 
+	WaterJetSubmarine(const WaterJetSubmarine& other) = default;
+	WaterJetSubmarine& operator=(const WaterJetSubmarine& other) = default;
+
 	void update(float dt, long time) noexcept override;
 
 	void setup() noexcept override;

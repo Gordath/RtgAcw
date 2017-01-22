@@ -4,7 +4,7 @@
 
 namespace Glacier
 {
-	enum TextureType {
+	enum TextureType { /* parasoft-suppress  CODSTA-MCPP-03 "This enum is not scoped because it is used as a more readable and descriptive way to access specific texture array indices." */
 		TEX_DIFFUSE,
 		TEX_SPECULAR,
 		TEX_NORMAL,

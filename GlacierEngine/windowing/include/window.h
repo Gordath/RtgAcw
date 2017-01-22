@@ -43,8 +43,8 @@ namespace Glacier
 		                                                   m_focused{focused},
 		                                                   m_minimized{minimized},
 		                                                   m_resizeable{resizeable},
+															m_callbacks{ callbacks },
 		                                                   m_show_cursor{show_cursor},
-		                                                   m_callbacks{callbacks},
 		                                                   m_changed_size{false},
 		                                                   m_redisplay{true}
 		{
@@ -54,7 +54,7 @@ namespace Glacier
 
 		Window& operator=(const Window& win) = delete;
 
-		virtual ~Window() = default;
+		virtual ~Window();
 
 		const std::wstring& get_title() const noexcept
 		{

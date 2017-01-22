@@ -2,10 +2,11 @@
 #define GLACIER_SHADER_PROGRAM_H_
 #include "shader.h"
 #include "../rendering/include/d3d/D3D11_shader.h"
+#include <array>
 
 namespace Glacier
 {
-	enum InputLayoutMask {
+	enum InputLayoutMask { /* parasoft-suppress  CODSTA-MCPP-03 "This enum is not scoped because it is used for bitwise OR operations for bitmasks." */
 		IL_POSITION = 0x02,
 		IL_NORMAL = 0x04,
 		IL_TANGENT = 0x08,
@@ -18,21 +19,20 @@ namespace Glacier
 	class ShaderProgram {
 	private:
 #if defined(GLACIERENGINE_BUILD_D3D)
-		D3D11Shader* m_shaders[SHADER_COUNT];
+		std::array<D3D11Shader*, SHADER_COUNT> m_shaders;
 #else
 #endif
 	public:
-		ShaderProgram()
-		{
-			for (int i = 0; i < SHADER_COUNT; ++i) {
-				m_shaders[i] = nullptr;
-			}
-		}
+		ShaderProgram();
 
-		virtual ~ShaderProgram() = default;
+		virtual ~ShaderProgram();
+
+		ShaderProgram(const ShaderProgram&) = default;
+
+		ShaderProgram& operator=(const ShaderProgram&) = default;
 
 #if defined(GLACIERENGINE_BUILD_D3D)
-		D3D11Shader* get_shader(ShaderType shader_type)
+		const D3D11Shader* get_shader(ShaderType shader_type)
 		{
 			return m_shaders[shader_type];
 		}

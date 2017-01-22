@@ -21,6 +21,10 @@ namespace Glacier
 	}
 
 
+	RenderStateManager::RenderStateManager()
+	{
+	}
+
 	void RenderStateManager::initialize() noexcept
 	{
 #if defined(GLACIERENGINE_BUILD_D3D)

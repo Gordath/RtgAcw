@@ -27,9 +27,7 @@ namespace Glacier
 		}
 
 		RenderingComponent(const RenderingComponent& other) = default;
-		explicit RenderingComponent(RenderingComponent&& other) noexcept = default;
 		RenderingComponent& operator=(const RenderingComponent& other) = default;
-		RenderingComponent& operator=(RenderingComponent&& other) noexcept = default;
 
 		void setup() noexcept override;
 

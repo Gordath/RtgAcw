@@ -14,6 +14,10 @@ namespace Glacier
 
 		~SceneManager();
 
+		SceneManager(const SceneManager&) = delete;
+
+		SceneManager& operator=(const SceneManager&) = delete;
+
 		static void push_scene(Scene* scene) noexcept;
 
 		static Scene* pop_scene() noexcept;
@@ -27,7 +31,7 @@ namespace Glacier
 		static void on_mouse_click(int button, bool state, int x, int y) noexcept;
 
 		// Respond to messages
-		static void on_message(MessageContainer msg) noexcept;
+		static void on_message(const MessageContainer& msg) noexcept;
 
 		static void update(float delta_time, long time) noexcept;
 

@@ -17,7 +17,7 @@ namespace Glacier
 
 			ComPtr<ID3D11Device> device{ GAPI_context->get_device() };
 
-			HRESULT res = device->CreateBlendState(&blend_desc, m_blend_state.ReleaseAndGetAddressOf());
+			device->CreateBlendState(&blend_desc, m_blend_state.ReleaseAndGetAddressOf());
 		}
 			break;
 		case RenderStateType::BS_BLEND_ADDITIVE: {
@@ -36,7 +36,7 @@ namespace Glacier
 
 			ComPtr<ID3D11Device> device{ GAPI_context->get_device() };
 
-			HRESULT res = device->CreateBlendState(&blend_desc, m_blend_state.ReleaseAndGetAddressOf());
+			device->CreateBlendState(&blend_desc, m_blend_state.ReleaseAndGetAddressOf());
 		}
 			break;
 		case RenderStateType::BS_BLEND_ALPHA: {
@@ -55,7 +55,7 @@ namespace Glacier
 
 			ComPtr<ID3D11Device> device{ GAPI_context->get_device() };
 
-			HRESULT res = device->CreateBlendState(&blend_desc, m_blend_state.ReleaseAndGetAddressOf());
+			device->CreateBlendState(&blend_desc, m_blend_state.ReleaseAndGetAddressOf());
 		}
 			break;
 		default:
