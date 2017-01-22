@@ -17,7 +17,7 @@ namespace Glacier
 		HighResolutionTimePoint m_start;
 		HighResolutionTimePoint m_pause;
 
-		HighResolutionTimePoint m_prev;
+		mutable HighResolutionTimePoint m_prev;
 
 		bool m_running;
 
@@ -78,7 +78,7 @@ namespace Glacier
 			return duration<double>{ HighResolutionClock::now() - m_start }.count();
 		}
 
-		double get_delta() noexcept
+		double get_delta() const noexcept
 		{
 			using namespace std::chrono;
 

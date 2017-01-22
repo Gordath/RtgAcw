@@ -108,7 +108,7 @@ bool RtgApplication::initialize(int* argc, char* argv[])
 
 void RtgApplication::update() noexcept
 {
-	SceneManager::update(m_timer.get_delta(), m_timer.get_msec());
+	SceneManager::update(get_delta(), get_msec());
 }
 
 void RtgApplication::draw() const noexcept
@@ -122,7 +122,7 @@ int RtgApplication::run() noexcept
 {
 	MSG msg;
 
-	while (!m_terminate) {
+	while (!should_terminate()) {
 
 		if (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE)) {
 			TranslateMessage(&msg);

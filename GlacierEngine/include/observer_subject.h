@@ -9,7 +9,7 @@
 namespace Glacier
 {
 	class ObserverSubject {
-	protected:
+	private:
 		// Listener registration
 		std::map<std::string, std::vector<Observer*>> m_message_listeners;
 

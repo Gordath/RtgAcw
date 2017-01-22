@@ -13,7 +13,7 @@ namespace Glacier
 
 		void setup() noexcept override;
 
-		void update(const float dt, const long time) noexcept override {};
+		void update(float dt, long time) noexcept override {};
 
 		void teardown() noexcept override {};
 	};

@@ -6,7 +6,7 @@
 namespace Glacier
 {
 	class Application {
-	protected:
+	private:
 		bool m_terminate{ false };
 
 		static EngineContext m_engine_context;
@@ -19,6 +19,31 @@ namespace Glacier
 		Application& operator=(const Application& application) = delete;
 
 		virtual ~Application() = default;
+
+		void set_termination(bool state) noexcept
+		{
+			m_terminate = state;
+		}
+
+		bool should_terminate() const noexcept
+		{
+			return m_terminate;
+		}
+
+		double get_delta() const noexcept
+		{
+			return m_timer.get_delta();
+		}
+
+		long get_msec() const noexcept
+		{
+			return m_timer.get_msec();
+		}
+
+		double get_sec() const noexcept
+		{
+			return m_timer.get_sec();
+		}
 
 		virtual bool initialize(int* argc, char* argv[]);
 

@@ -5,7 +5,7 @@
 namespace Glacier
 {
 	class Message {
-	protected:
+	private:
 		std::string m_type;
 
 	public:
