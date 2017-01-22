@@ -9,7 +9,7 @@ namespace Glacier
 		parent->add_component(this);
 	}
 
-	void Component::on_message(MessageContainer msg)
+	void Component::on_message(const MessageContainer& msg)
 	{
 		SceneManager::on_message(msg);
 	}

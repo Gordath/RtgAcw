@@ -39,7 +39,7 @@ namespace Glacier
 
 		virtual void teardown() noexcept = 0;
 
-		void on_message(MessageContainer msg) override;
+		void on_message(const MessageContainer& msg) override;
 	};
 }
 

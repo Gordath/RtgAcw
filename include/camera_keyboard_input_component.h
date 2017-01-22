@@ -40,7 +40,7 @@ public:
 
 	void update(float dt, long time) noexcept override;
 
-	void on_message(Glacier::MessageContainer msg) override;
+	void on_message(const Glacier::MessageContainer& msg) override;
 
 	void set_movement_speed(float movement_speed) noexcept
 	{

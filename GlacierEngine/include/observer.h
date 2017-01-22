@@ -11,7 +11,7 @@ namespace Glacier
 		virtual ~Observer() = default;
 
 		/// Receive a message (called when notified of a message by the subject)
-		virtual void on_message(MessageContainer msg) = 0;
+		virtual void on_message(const MessageContainer& msg) = 0;
 	};
 }
 

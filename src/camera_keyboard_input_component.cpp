@@ -81,7 +81,7 @@ void CameraKeyboardInputComponent::update(float dt, long time) noexcept
 	get_parent()->set_euler_angles(angles);
 }
 
-void CameraKeyboardInputComponent::on_message(MessageContainer msg)
+void CameraKeyboardInputComponent::on_message(const MessageContainer& msg)
 {
 	Message* m{ msg.get() };
 	if (m->get_message_type() == "msg_keypress") {
