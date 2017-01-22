@@ -85,7 +85,7 @@ namespace Glacier
 				float rand_vel_z = static_cast<float>(rand()) / static_cast<float>(RAND_MAX) * m_velocity_range * 2.0f - m_velocity_range;
 				
 				Particle p;
-				p.position = (m_parent->get_xform() * Vec4f{0.0f, 0.0f, 0.0f, 1.0f}).xyz + Vec3f{ rand_pos_x, rand_pos_y, rand_pos_z };
+				p.position = (get_parent()->get_xform() * Vec4f{0.0f, 0.0f, 0.0f, 1.0f}).xyz + Vec3f{ rand_pos_x, rand_pos_y, rand_pos_z };
 				p.velocity = m_velocity + Vec3f{ rand_vel_x, rand_vel_y, rand_vel_z };
 				p.life = m_lifespan;
 				p.color = m_start_color;

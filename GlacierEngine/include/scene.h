@@ -8,7 +8,7 @@ namespace Glacier
 	class Object;
 
 	class Scene {
-	protected:
+	private:
 		std::vector<Object*> m_objects;
 
 	public:
@@ -19,6 +19,11 @@ namespace Glacier
 		virtual void initialize() = 0;
 
 		void add_object(Object* object) noexcept;
+
+		const std::vector<Object*>& get_objects() const noexcept
+		{
+			return m_objects;
+		}
 
 		virtual void on_key_down(unsigned char key, int x, int y) noexcept = 0;
 

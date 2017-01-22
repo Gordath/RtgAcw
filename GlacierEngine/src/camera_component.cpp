@@ -17,7 +17,7 @@ namespace Glacier
 
 	Mat4f CameraComponent::get_view_matrix() const noexcept
 	{
-		return MathUtils::inverse(m_parent->get_xform());
+		return MathUtils::inverse(get_parent()->get_xform());
 	}
 
 	Mat4f CameraComponent::get_projection_matrix() const noexcept

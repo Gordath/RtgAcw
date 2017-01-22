@@ -135,7 +135,7 @@ void MainScene::depth_pass() const noexcept
 
 		std::vector<RenderingComponent*> rendering_components;
 
-		for (auto object : m_objects) {
+		for (auto object : get_objects()) {
 			RenderingComponent* rc{ static_cast<RenderingComponent*>(object->get_component("co_rendering")) }; // parasoft-suppress  OOP-35 "The whole compoment based architecture is based on casting from the base class Component to the appopriate component depending on the system that is processing it. The type of the component is already known based on a type comparison with the internal type member variable."
 
 			if (rc) {
@@ -244,7 +244,7 @@ void MainScene::color_pass() const noexcept
 	std::vector<RenderingComponent*> rendering_components;
 	std::vector<EmitterComponent*> emitter_components;
 
-	for (auto object : m_objects) {
+	for (auto object : get_objects()) {
 		RenderingComponent* rc{ static_cast<RenderingComponent*>(object->get_component("co_rendering")) }; // parasoft-suppress  OOP-35 "The whole compoment based architecture is based on casting from the base class Component to the appopriate component depending on the system that is processing it. The type of the component is already known based on a type comparison with the internal type member variable."
 		EmitterComponent* ec{ static_cast<EmitterComponent*>(object->get_component("co_emitter")) }; // parasoft-suppress  OOP-35 "The whole compoment based architecture is based on casting from the base class Component to the appopriate component depending on the system that is processing it. The type of the component is already known based on a type comparison with the internal type member variable."
 
@@ -621,7 +621,7 @@ void MainScene::setup_lights() noexcept
 	lc1->set_light_description(light_desc);
 	light1->set_position(Vec3f{ 0.0f, 30.0, 0.0f });
 	light1->setup();
-	m_objects.push_back(light1);
+	add_object(light1);
 	directional_desc = lc1->get_light_description_ptr();
 	default_directional = light_desc;
 
@@ -640,7 +640,7 @@ void MainScene::setup_lights() noexcept
 	lc2->set_light_description(light_desc2);
 	light2->set_position(Vec3f{ -30.0f, 30.0, -30.0f });
 	light2->setup();
-	m_objects.push_back(light2);
+	add_object(light2);
 	spotlight1_desc = lc2->get_light_description_ptr();
 	default_spotlight1 = light_desc2;
 
@@ -659,7 +659,7 @@ void MainScene::setup_lights() noexcept
 	lc3->set_light_description(light_desc3);
 	light3->set_position(Vec3f{ 30.0f, 30.0, -30.0f });
 	light3->setup();
-	m_objects.push_back(light3);
+	add_object(light3);
 	spotlight2_desc = lc3->get_light_description_ptr();
 	default_spotlight2 = light_desc3;
 
@@ -678,7 +678,7 @@ void MainScene::setup_lights() noexcept
 	lc4->set_light_description(light_desc4);
 	light4->set_position(Vec3f{ 0.0f, 30.0, 30.0f });
 	light4->setup();
-	m_objects.push_back(light4);
+	add_object(light4);
 	spotlight3_desc = lc4->get_light_description_ptr();
 	default_spotlight3 = light_desc4;
 }
@@ -696,7 +696,7 @@ void MainScene::setup_cameras() noexcept
 	cam->set_position(Vec3f(-30.0f, 0.0f, -30.0f));
 	cam->set_euler_angles(Vec3f{ 0.0f, 45.0f, 0.0f });
 	cam->setup();
-	m_objects.push_back(cam);
+	add_object(cam);
 
 	Object* cam2{ new Object{ "camera2" } };
 	CameraComponent* cc2{ new CameraComponent{ cam2, MathUtils::to_radians(60.0f), win_x, win_y, 0.1f, 1000.0f } };
@@ -705,7 +705,7 @@ void MainScene::setup_cameras() noexcept
 	cam2->set_parent(m_drebel);
 	cam2->set_position(Vec3f(0.0f, 0.0f, -1.0f));
 	cam2->setup();
-	m_objects.push_back(cam2);
+	add_object(cam2);
 }
 
 void MainScene::setup_d3d() noexcept
@@ -971,7 +971,7 @@ void MainScene::initialize()
 	obj->set_position(Vec3f{ 0.0f, -10.0, 0.0f });
 	obj->set_scale(Vec3f{ 2000.0f, 0.1f, 2000.0f });
 	obj->setup();
-	m_objects.push_back(obj);
+	add_object(obj);
 
 	// Submarine 1 creation -------------------------------------------------------------------------------------------
 	m_drebel = new DrebelSubmarine{ "drebel_sub", this };
@@ -1028,7 +1028,7 @@ void MainScene::initialize()
 	p_mat.textures[TEX_DIFFUSE]->set_texture_type(TEX_DIFFUSE);
 	ec->set_material(p_mat);
 	emitter->setup();
-	m_objects.push_back(emitter);
+	add_object(emitter);
 
 	Window* win{ WindowingService::get_window(0) };
 	m_color_pass_rt.create(win->get_size());
@@ -1082,11 +1082,11 @@ void MainScene::update(float delta_time, long time) noexcept
 
 	CameraSystem* camera_system{ EngineContext::get_camera_system() };
 
-	camera_system->process(m_objects, delta_time * simulation_speed);
+	camera_system->process(get_objects(), delta_time * simulation_speed);
 
 	LightSystem* light_system{ EngineContext::get_light_system() };
 
-	light_system->process(m_objects, delta_time * simulation_speed);
+	light_system->process(get_objects(), delta_time * simulation_speed);
 
 	D3D11Context* GAPI_context{ EngineContext::get_GAPI_context() };
 	ComPtr<ID3D11DeviceContext> device_context{ GAPI_context->get_device_context() };

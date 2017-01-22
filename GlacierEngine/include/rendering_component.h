@@ -26,6 +26,11 @@ namespace Glacier
 		{	
 		}
 
+		RenderingComponent(const RenderingComponent& other) = default;
+		RenderingComponent(RenderingComponent&& other) noexcept = default;
+		RenderingComponent& operator=(const RenderingComponent& other) = default;
+		RenderingComponent& operator=(RenderingComponent&& other) noexcept = default;
+
 		void setup() noexcept override;
 
 		void update(float dt, long time) noexcept override;
@@ -59,22 +64,22 @@ namespace Glacier
 
 		const Vec3f& get_position() const noexcept
 		{
-			return m_parent->get_position();
+			return get_parent()->get_position();
 		}
 
 		const Vec3f& get_euler_angles() const noexcept
 		{
-			return m_parent->get_euler_angles();
+			return get_parent()->get_euler_angles();
 		}
 
 		const Vec3f& get_scale() const noexcept
 		{
-			return m_parent->get_scale();
+			return get_parent()->get_scale();
 		}
 
 		const Mat4f& get_xform() const noexcept
 		{
-			return m_parent->get_xform();
+			return get_parent()->get_xform();
 		}
 
 		void set_casts_shadows(bool state) noexcept

@@ -37,11 +37,11 @@ namespace Glacier
 		}
 
 		if (time < std::get<long>(first_keyframe)) {
-			m_parent->set_position(std::get<Vec3f>(first_keyframe));
+			get_parent()->set_position(std::get<Vec3f>(first_keyframe));
 		}
 
 		if (time > std::get<long>(last_keyframe)) {
-			m_parent->set_position(std::get<Vec3f>(last_keyframe));
+			get_parent()->set_position(std::get<Vec3f>(last_keyframe));
 		}
 
 		long interval{ 0 };
@@ -69,7 +69,7 @@ namespace Glacier
 				Vec3f pos{ MathUtils::catmull_rom(prev_pos, current_pos, next_pos, n_next_pos, t) };
 				Vec3f pos2{ MathUtils::catmull_rom(prev_pos, current_pos, next_pos, n_next_pos, t + 0.05f) };
 
-				m_parent->set_position(pos);
+				get_parent()->set_position(pos);
 
 				if (m_align_to_path) {
 					Vec3f dir_to_align{ MathUtils::normalize(pos2 - pos) };
@@ -80,11 +80,11 @@ namespace Glacier
 					float rot_y_deg{ MathUtils::to_degrees(rot_y) };
 					float rot_x_deg{ MathUtils::to_degrees(rot_x) };
 
-					Vec3f angles{ m_parent->get_euler_angles() };
+					Vec3f angles{ get_parent()->get_euler_angles() };
 					angles.x = -rot_x_deg;
 					angles.y = rot_y_deg;
 
-					m_parent->set_euler_angles(angles);
+					get_parent()->set_euler_angles(angles);
 				}
 			}
 		}

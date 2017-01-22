@@ -5,6 +5,6 @@ namespace Glacier
 {
 	void KeyboardInputComponent::setup() noexcept
 	{
-		m_parent->register_observer("msg_keypress", this);
+		get_parent()->register_observer("msg_keypress", this);
 	}
 }

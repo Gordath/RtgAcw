@@ -8,7 +8,7 @@ namespace Glacier
 	class Object;
 
 	class Component : public Observer {
-	protected:
+	private:
 		const std::string m_type;
 
 		Object* m_parent{ nullptr };
@@ -16,11 +16,21 @@ namespace Glacier
 	public:
 		Component(const std::string& type, Object* parent);
 
+		Component(const Component& other) = default;
+		Component(Component&& other) noexcept = default;
+		Component& operator=(const Component& other) = default;
+		Component& operator=(Component&& other) noexcept = default;
+
 		virtual ~Component() = default;
 
 		const std::string& get_type() const noexcept
 		{
 			return m_type;
+		}
+
+		Object* get_parent() const noexcept
+		{
+			return m_parent;
 		}
 
 		virtual void setup() noexcept = 0;

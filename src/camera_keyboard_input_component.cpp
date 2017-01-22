@@ -7,8 +7,8 @@ using namespace Glacier;
 
 void CameraKeyboardInputComponent::update(float dt, long time) noexcept
 {
-	Vec3f angles{ m_parent->get_euler_angles() };
-	Vec3f pos{ m_parent->get_position() };
+	Vec3f angles{ get_parent()->get_euler_angles() };
+	Vec3f pos{ get_parent()->get_position() };
 
 	float distance{ m_movement_speed * dt };
 	float rot = m_rotation_speed * dt;
@@ -77,8 +77,8 @@ void CameraKeyboardInputComponent::update(float dt, long time) noexcept
 	}
 	//---------------------
 
-	m_parent->set_position(pos);
-	m_parent->set_euler_angles(angles);
+	get_parent()->set_position(pos);
+	get_parent()->set_euler_angles(angles);
 }
 
 void CameraKeyboardInputComponent::on_message(MessageContainer msg)
