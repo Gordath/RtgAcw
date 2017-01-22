@@ -7,7 +7,7 @@ namespace Glacier
 		m_active_light_descriptions.clear();
 
 		for (auto entry : m_lights) {
-			LightComponent* light_component{ static_cast<LightComponent*>(entry.second->get_component("co_light")) };
+			LightComponent* light_component{ static_cast<LightComponent*>(entry.second->get_component("co_light")) }; // parasoft-suppress  OOP-49 "The whole compoment based architecture is based on casting from the base class Component to the appopriate component depending on the system that is processing it. The type of the component is already known based on a type comparison with the internal type member variable." // parasoft-suppress  OOP-29 "The whole compoment based architecture is based on casting from the base class Component to the appopriate component depending on the system that is processing it. The type of the component is already known based on a type comparison with the internal type member variable."
 			m_active_light_descriptions.push_back(light_component->get_light_description());
 		}
 	}
@@ -22,7 +22,7 @@ namespace Glacier
 		static bool lights_added{ false };
 
 		for (auto object : objects) {
-			LightComponent* light_component{ static_cast<LightComponent*>(object->get_component("co_light")) };
+			LightComponent* light_component{ static_cast<LightComponent*>(object->get_component("co_light")) }; // parasoft-suppress  OOP-49 "The whole compoment based architecture is based on casting from the base class Component to the appopriate component depending on the system that is processing it. The type of the component is already known based on a type comparison with the internal type member variable." // parasoft-suppress  OOP-29 "The whole compoment based architecture is based on casting from the base class Component to the appopriate component depending on the system that is processing it. The type of the component is already known based on a type comparison with the internal type member variable."
 
 			if (light_component) {
 				Object* light{ m_lights[object->get_name()] };

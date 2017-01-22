@@ -453,7 +453,7 @@ void MainScene::display_to_screen() const noexcept
 
 void MainScene::render_globe() const noexcept
 {
-	RenderingComponent* rc{ dynamic_cast<RenderingComponent*>(m_globe->get_component("co_rendering")) };
+	RenderingComponent* rc{ dynamic_cast<RenderingComponent*>(m_globe->get_component("co_rendering")) }; // parasoft-suppress  OOP-29 "The whole compoment based architecture is based on casting from the base class Component to the appopriate component depending on the system that is processing it. The type of the component is already known based on a type comparison with the internal type member variable." // parasoft-suppress  OOP-49 "The whole compoment based architecture is based on casting from the base class Component to the appopriate component depending on the system that is processing it. The type of the component is already known based on a type comparison with the internal type member variable."
 
 	if (rc) {
 
@@ -538,7 +538,7 @@ void MainScene::render_globe() const noexcept
 
 void MainScene::render_skybox() const noexcept
 {
-	RenderingComponent* rc{ dynamic_cast<RenderingComponent*>(m_skybox->get_component("co_rendering")) };
+	RenderingComponent* rc{ dynamic_cast<RenderingComponent*>(m_skybox->get_component("co_rendering")) }; // parasoft-suppress  OOP-49 "The whole compoment based architecture is based on casting from the base class Component to the appopriate component depending on the system that is processing it. The type of the component is already known based on a type comparison with the internal type member variable." // parasoft-suppress  OOP-29 "The whole compoment based architecture is based on casting from the base class Component to the appopriate component depending on the system that is processing it. The type of the component is already known based on a type comparison with the internal type member variable."
 
 	if (rc) {
 		if (rc->get_mesh() && rc->should_draw()) {

@@ -14,7 +14,8 @@ namespace Glacier
 	};
 
 	class Shader : public Resource {
-
+	public:
+		Shader() = default;
 	};
 }
 

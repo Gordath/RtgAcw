@@ -10,6 +10,8 @@ namespace Glacier
 		static std::vector<Scene*> m_scenes;
 
 	public:
+		SceneManager() = default;
+
 		~SceneManager();
 
 		static void push_scene(Scene* scene) noexcept;

@@ -14,6 +14,8 @@ namespace Glacier
 		std::map<std::string, std::vector<Observer*>> m_message_listeners;
 
 	public:
+		ObserverSubject() = default;
+
 		virtual ~ObserverSubject() = default;
 
 		// Register an observer for a particular type of message

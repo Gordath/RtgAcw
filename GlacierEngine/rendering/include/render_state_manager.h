@@ -10,6 +10,8 @@ namespace Glacier
 		static std::map<RenderStateType, RenderState*> m_render_states;
 
 	public:
+		RenderStateManager() = default;
+
 		~RenderStateManager();
 
 		static void initialize() noexcept;

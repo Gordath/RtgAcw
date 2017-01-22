@@ -8,7 +8,7 @@ class DrebelSubmarine : public Glacier::Object {
 private:
 	Glacier::Scene* m_scene{ nullptr };
 
-	Object* m_oar_controller;
+	Object* m_oar_controller; /* parasoft-suppress  MRM-33 "This pointer is just a handle. It is added to the scene in the setup method of the class and the Scene manages the memory." */
 
 public:
 	DrebelSubmarine(const std::string& name, Glacier::Scene* scene)

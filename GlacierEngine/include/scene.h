@@ -12,6 +12,8 @@ namespace Glacier
 		std::vector<Object*> m_objects;
 
 	public:
+		Scene() = default;
+
 		virtual ~Scene();
 
 		virtual void initialize() = 0;

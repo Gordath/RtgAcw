@@ -19,6 +19,8 @@ namespace Glacier
 
 	class RenderState {
 	public:
+		RenderState() = default;
+
 		virtual ~RenderState() = default;
 
 		virtual void set() const noexcept = 0;

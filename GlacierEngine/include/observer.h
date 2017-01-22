@@ -7,6 +7,7 @@ namespace Glacier
 {
 	class Observer {
 	public:
+		Observer() = default;
 		virtual ~Observer() = default;
 
 		/// Receive a message (called when notified of a message by the subject)

@@ -10,6 +10,8 @@ namespace Glacier
 		virtual void draw(Mesh* mesh, const Material& material, const Mat4f& model) noexcept = 0;
 
 	public:
+		Renderer() = default;
+
 		virtual ~Renderer() = default;
 
 		virtual bool initialize() noexcept = 0;

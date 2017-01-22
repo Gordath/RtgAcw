@@ -11,7 +11,6 @@ namespace Glacier
 	private:
 		bool create_D3D11_device_and_context();
 
-	protected:
 		ComPtr<ID3D11Device> m_device;
 		ComPtr<ID3D11DeviceContext> m_device_context;
 		ComPtr<ID3D11Debug> m_debug_interface;
