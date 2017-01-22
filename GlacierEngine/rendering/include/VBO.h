@@ -19,7 +19,7 @@ namespace Glacier
 	public:
 		VBO() = default;
 
-		virtual ~VBO() = default;
+		virtual ~VBO();
 
 		void set_vertex_count(const unsigned int vertex_count) noexcept
 		{

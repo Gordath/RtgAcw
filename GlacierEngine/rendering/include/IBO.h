@@ -11,7 +11,7 @@ namespace Glacier
 	public:
 		IBO() = default;
 
-		virtual ~IBO() = default;
+		virtual ~IBO();
 
 		void set_index_count(unsigned int idx_count) noexcept
 		{

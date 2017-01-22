@@ -13,6 +13,12 @@ namespace Glacier
 	std::unique_ptr<CameraSystem> EngineContext::m_camera_system{ std::make_unique<CameraSystem>() };
 	std::unique_ptr<LightSystem> EngineContext::m_light_system{ std::make_unique<LightSystem>() };
 
+
+	EngineContext::~EngineContext()
+	{
+		delete m_GAPI_context;
+	}
+
 	bool EngineContext::initialize()
 	{
 #if defined(GLACIERENGINE_BUILD_D3D)

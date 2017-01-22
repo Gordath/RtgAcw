@@ -32,7 +32,7 @@ namespace Glacier
 
 		swap_chain_desc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
 		swap_chain_desc.BufferCount = 1; //1 back buffer == Double buffering
-		swap_chain_desc.OutputWindow = m_handle;
+		swap_chain_desc.OutputWindow = get_handle();
 		swap_chain_desc.Windowed = true; //TODO: Ckeck if this is the fullscreen switch.
 		swap_chain_desc.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
 		swap_chain_desc.Flags = 0;
@@ -55,7 +55,7 @@ namespace Glacier
 		h_result = dxgi_factory->CreateSwapChain(device.Get(), &swap_chain_desc, m_swap_chain.ReleaseAndGetAddressOf());
 
 		if (FAILED(h_result)) {
-			MessageBox(m_handle, L"DXGISwapChain creation failed.", nullptr, 0);
+			MessageBox(get_handle(), L"DXGISwapChain creation failed.", nullptr, 0);
 			return false;
 		}
 
@@ -149,6 +149,11 @@ namespace Glacier
 		context->RSSetViewports(1, &viewport);
 
 		return true;
+	}
+
+	void D3D11Window::swap_buffers() const noexcept
+	{
+		m_swap_chain->Present(0, 0);
 	}
 
 	// --------------------------------------------------------------------------------------------------------------------------------------------

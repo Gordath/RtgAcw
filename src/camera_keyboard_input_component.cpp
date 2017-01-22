@@ -85,9 +85,8 @@ void CameraKeyboardInputComponent::on_message(MessageContainer msg)
 {
 	Message* m{ msg.get() };
 	if (m->get_message_type() == "msg_keypress") {
-		KeypressMessage* kpm{ dynamic_cast<KeypressMessage*>(m) }; // parasoft-suppress  OOP-49 "This is a part of how the messaging system works. We cannot pass the concrete implementations of a message everywhere but the type is identifiable using the string type data member of the message. So casting it is safe." // parasoft-suppress  OOP-35 "This is a part of how the messaging system works. We cannot pass the concrete implementations of a message everywhere but the type is identifiable using the string type data member of the message. So casting it is safe."
+		KeypressMessage* kpm{ static_cast<KeypressMessage*>(m) }; // parasoft-suppress  OOP-49 "This is a part of how the messaging system works. We cannot pass the concrete implementations of a message everywhere but the type is identifiable using the string type data member of the message. So casting it is safe." // parasoft-suppress  OOP-35 "This is a part of how the messaging system works. We cannot pass the concrete implementations of a message everywhere but the type is identifiable using the string type data member of the message. So casting it is safe."
 
-		if (kpm) {
 			if (kpm->is_pressed()) {
 				switch (kpm->get_key()) {
 				case 'A':
@@ -175,7 +174,5 @@ void CameraKeyboardInputComponent::on_message(MessageContainer msg)
 					break;
 				}
 			}
-			
-		}
 	}
 }

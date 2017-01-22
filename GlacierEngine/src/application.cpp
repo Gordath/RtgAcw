@@ -5,6 +5,11 @@ namespace Glacier
 {
 	EngineContext Application::m_engine_context;
 
+	Application::~Application()
+	{
+		
+	}
+
 
 	bool Application::initialize(int* argc, char* argv[])
 	{

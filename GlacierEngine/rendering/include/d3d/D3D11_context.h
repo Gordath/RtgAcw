@@ -20,9 +20,6 @@ namespace Glacier
 
 	public:
 		D3D11Context() = default;
-		~D3D11Context()
-		{
-		}
 
 		bool create() override;
 

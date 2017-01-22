@@ -71,10 +71,7 @@ namespace Glacier
 			return m_MSAA_quality;
 		}
 
-		void swap_buffers() const noexcept override
-		{
-			m_swap_chain->Present(0, 0);
-		}
+		void swap_buffers() const noexcept override;
 	};
 }
 

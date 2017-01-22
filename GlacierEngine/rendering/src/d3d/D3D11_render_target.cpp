@@ -151,8 +151,8 @@ namespace Glacier
 
 		ComPtr<ID3D11DeviceContext> context{ ctx->get_device_context() };
 		ID3D11DepthStencilView* null_dsv{ nullptr };
-		ID3D11RenderTargetView* null_rtvs[1]{ nullptr };
-		context->OMSetRenderTargets(1, null_rtvs, null_dsv);
+		ID3D11RenderTargetView* null_rtvs{ nullptr };
+		context->OMSetRenderTargets(1, &null_rtvs, null_dsv);
 
 		return true;
 	}

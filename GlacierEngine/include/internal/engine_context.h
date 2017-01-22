@@ -21,6 +21,7 @@ namespace Glacier
 
 	public:
 		EngineContext() = default;
+		~EngineContext();
 
 		EngineContext(const EngineContext& context) = delete;
 

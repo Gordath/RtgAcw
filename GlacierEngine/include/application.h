@@ -18,7 +18,7 @@ namespace Glacier
 		Application(const Application& application) = delete;
 		Application& operator=(const Application& application) = delete;
 
-		virtual ~Application() = default;
+		virtual ~Application();
 
 		void set_termination(bool state) noexcept
 		{

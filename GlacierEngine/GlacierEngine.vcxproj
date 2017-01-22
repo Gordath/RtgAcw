@@ -159,9 +159,12 @@
     <ClCompile Include="rendering\src\d3d\D3D11_shader_program.cpp" />
     <ClCompile Include="rendering\src\d3d\D3D11_texture.cpp" />
     <ClCompile Include="rendering\src\d3d\D3D11_VBO.cpp" />
+    <ClCompile Include="rendering\src\GAPI_context.cpp" />
+    <ClCompile Include="rendering\src\IBO.cpp" />
     <ClCompile Include="rendering\src\mesh.cpp" />
     <ClCompile Include="rendering\src\render_state_manager.cpp" />
     <ClCompile Include="rendering\src\render_system.cpp" />
+    <ClCompile Include="rendering\src\VBO.cpp" />
     <ClCompile Include="src\application.cpp" />
     <ClCompile Include="src\camera_component.cpp" />
     <ClCompile Include="src\camera_system.cpp" />

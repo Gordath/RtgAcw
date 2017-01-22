@@ -24,7 +24,6 @@ namespace Glacier
 
 		static LRESULT CALLBACK _win_proc_def(HWND handle, UINT msg, WPARAM wparam, LPARAM lparam);
 
-	protected:
 		HWND m_handle;
 		HWND m_parent;
 		HMENU m_menu;
@@ -44,6 +43,57 @@ namespace Glacier
 		            const WindowFunctionCallbacks& callbacks);
 
 		virtual LRESULT CALLBACK win_proc(HWND handle, UINT msg, WPARAM wparam, LPARAM lparam);
+
+
+		HWND get_handle() const
+		{
+			return m_handle;
+		}
+
+		void set_handle(HWND hwnd)
+		{
+			m_handle = hwnd;
+		}
+
+		HWND get_parent() const
+		{
+			return m_parent;
+		}
+
+		void set_parent(HWND hwnd)
+		{
+			m_parent = hwnd;
+		}
+
+		HMENU get_menu() const
+		{
+			return m_menu;
+		}
+
+		void set_menu(HMENU hmenu)
+		{
+			m_menu = hmenu;
+		}
+
+		unsigned int get_flags() const
+		{
+			return m_flags;
+		}
+
+		void set_flags(unsigned int flags)
+		{
+			m_flags = flags;
+		}
+
+		unsigned int get_flags_ex() const
+		{
+			return m_flags_ex;
+		}
+
+		void set_flags_ex(unsigned int flags_ex)
+		{
+			m_flags_ex = flags_ex;
+		}
 	};
 }
 #endif //GLACIER_WIN32_WINDOW_H_
