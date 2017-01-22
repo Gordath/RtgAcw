@@ -617,7 +617,7 @@ void MainScene::setup_lights() noexcept
 	light_desc.specular_intensity = Vec4f{ 1.0f, 1.0f, 1.0f, 1.0f };
 	light_desc.flags = Vec4ui{ 1, 1, 0, 0 };
 	light_desc.attenuation = Vec3f{ 1.0f, 0.0f, 0.0f };
-	light_desc.light_projection_matrix = MathUtils::perspective_lh(MathUtils::to_radians(60.0), 2048, 2048, 5.0f, 46.0f);
+	light_desc.light_projection_matrix = MathUtils::perspective_lh(MathUtils::to_radians(60.0), 2048, 2048, 10.0f, 60.0f);
 	lc1->set_light_description(light_desc);
 	light1->set_position(Vec3f{ 0.0f, 30.0, 0.0f });
 	light1->setup();
@@ -636,7 +636,7 @@ void MainScene::setup_lights() noexcept
 	light_desc2.spot_cutoff = 20.0f;
 	light_desc2.spot_exponent = 90.0f;
 	light_desc2.spot_direction = Vec3f{ 0.09f, -0.1f, 0.09f };
-	light_desc2.light_projection_matrix = MathUtils::perspective_lh(MathUtils::to_radians(60.0), 2048, 2048, 5.0f, 50.0f);
+	light_desc2.light_projection_matrix = MathUtils::perspective_lh(MathUtils::to_radians(60.0), 2048, 2048, 10.0f, 60.0f);
 	lc2->set_light_description(light_desc2);
 	light2->set_position(Vec3f{ -30.0f, 30.0, -30.0f });
 	light2->setup();
@@ -655,7 +655,7 @@ void MainScene::setup_lights() noexcept
 	light_desc3.spot_cutoff = 20.0f;
 	light_desc3.spot_exponent = 90.0f;
 	light_desc3.spot_direction = Vec3f{ -0.09f, -0.1f, 0.09f };
-	light_desc3.light_projection_matrix = MathUtils::perspective_lh(MathUtils::to_radians(60.0), 2048, 2048, 5.0f, 50.0f);
+	light_desc3.light_projection_matrix = MathUtils::perspective_lh(MathUtils::to_radians(60.0), 2048, 2048, 10.0f, 60.0f);
 	lc3->set_light_description(light_desc3);
 	light3->set_position(Vec3f{ 30.0f, 30.0, -30.0f });
 	light3->setup();
@@ -674,7 +674,7 @@ void MainScene::setup_lights() noexcept
 	light_desc4.spot_cutoff = 20.0f;
 	light_desc4.spot_exponent = 90.0f;
 	light_desc4.spot_direction = Vec3f{ 0.0f, -0.1f, -0.1f };
-	light_desc4.light_projection_matrix = MathUtils::perspective_lh(MathUtils::to_radians(60.0), 2048, 2048, 2.0f, 50.0f);
+	light_desc4.light_projection_matrix = MathUtils::perspective_lh(MathUtils::to_radians(60.0), 2048, 2048, 10.0f, 60.0f);
 	lc4->set_light_description(light_desc4);
 	light4->set_position(Vec3f{ 0.0f, 30.0, 30.0f });
 	light4->setup();
@@ -977,20 +977,30 @@ void MainScene::initialize()
 	m_drebel = new DrebelSubmarine{ "drebel_sub", this };
 	m_drebel->set_scale(Vec3f{ 5.0f, 5.0f, 5.0f });
 	PathComponent* pc{ new PathComponent{ m_drebel } };
-	pc->add_keyframe(Vec3f{ 10, 0, 0 }, 0);
-	pc->add_keyframe(Vec3f{ 8, 0, 2 }, 2000);
-	pc->add_keyframe(Vec3f{ 5, 2, 4 }, 4000);
-	pc->add_keyframe(Vec3f{ 2, 4, 8 }, 6000);
-	pc->add_keyframe(Vec3f{ -5, 2, 4 }, 8000);
-	pc->add_keyframe(Vec3f{ -2, 0, 0 }, 10000);
-	pc->add_keyframe(Vec3f{ 5, 0, 0 }, 12000);
-	pc->add_keyframe(Vec3f{ 10, 0, 0 }, 14000);
+	pc->add_keyframe(Vec3f{ 10, 0, -10 }, 0);
+	pc->add_keyframe(Vec3f{ 6, 2, -6 }, 2000);
+	pc->add_keyframe(Vec3f{ 2, 6, -2 }, 4000);
+	pc->add_keyframe(Vec3f{ -4, 6, 6 }, 6000);
+	pc->add_keyframe(Vec3f{ -4, 4, -10 }, 8000);
+	pc->add_keyframe(Vec3f{ -6, 2, -10 }, 8000);
+	pc->add_keyframe(Vec3f{ -10, 0, -10 }, 8000);
 	pc->set_looping(true);
 	pc->set_align_to_path(true);
 	m_drebel->setup();
 
 	m_water_jet_sub = new WaterJetSubmarine{ "water_jet_sub", this };
 	m_water_jet_sub->set_scale(Vec3f{ 5.0f, 5.0f, 5.0f });
+	pc = new PathComponent{ m_water_jet_sub };
+	pc->add_keyframe(Vec3f{ -10, 10, 10 }, 0);
+	pc->add_keyframe(Vec3f{ -6, 8, 8 }, 2000);
+	pc->add_keyframe(Vec3f{ -4, 6, 6}, 4000);
+	pc->add_keyframe(Vec3f{ -2, 4, 4 }, 6000);
+	pc->add_keyframe(Vec3f{ 2, 4, -2 }, 8000);
+	pc->add_keyframe(Vec3f{ 4, -4, 0 }, 10000);
+//	pc->add_keyframe(Vec3f{ -8, 0, 2 }, 12000);
+//	pc->add_keyframe(Vec3f{ -10, 0, 0 }, 14000);
+	pc->set_looping(true);
+	pc->set_align_to_path(true);
 	m_water_jet_sub->setup();
 	// -----------------------------------------------------------------------------------------------------------------
 
