@@ -16,7 +16,7 @@ namespace Glacier
 	static const std::wstring SHADER_PATH{ L"sdr\\" };
 
 	class ShaderProgram {
-	protected:
+	private:
 #if defined(GLACIERENGINE_BUILD_D3D)
 		D3D11Shader* m_shaders[SHADER_COUNT];
 #else
@@ -30,6 +30,19 @@ namespace Glacier
 		}
 
 		virtual ~ShaderProgram() = default;
+
+#if defined(GLACIERENGINE_BUILD_D3D)
+		D3D11Shader* get_shader(ShaderType shader_type)
+		{
+			return m_shaders[shader_type];
+		}
+
+		void set_shader(D3D11Shader* shader, ShaderType shader_type) noexcept
+		{
+			m_shaders[shader_type] = shader;
+		}
+#else
+#endif
 
 		virtual bool create(unsigned int input_layout_mask,
 		                    const std::wstring& vs,

@@ -33,6 +33,6 @@ namespace Glacier
 
 		ComPtr<ID3D11DeviceContext> device_context{ GAPI_context->get_device_context() };
 
-		device_context->PSSetShaderResources(m_texture_type, 1, m_shader_resource_view.GetAddressOf());
+		device_context->PSSetShaderResources(get_texture_type(), 1, m_shader_resource_view.GetAddressOf());
 	}
 }

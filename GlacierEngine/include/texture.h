@@ -14,7 +14,7 @@ namespace Glacier
 	};
 
 	class Texture : public Resource {
-	protected:
+	private:
 		TextureType m_texture_type;
 
 	public:
@@ -29,6 +29,11 @@ namespace Glacier
 		void set_texture_type(TextureType texture_type) noexcept
 		{
 			m_texture_type = texture_type;
+		}
+
+		TextureType get_texture_type() const noexcept
+		{
+			return m_texture_type;
 		}
 	};
 }

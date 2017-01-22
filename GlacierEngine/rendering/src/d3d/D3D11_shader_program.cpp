@@ -19,9 +19,9 @@ namespace Glacier
 		const ComPtr<ID3D11Device> device{ GAPI_context->get_device() };
 
 		if (!vs.empty()) {
-			m_shaders[VERTEX_SHADER] = ResourceManager::get<D3D11Shader>(SHADER_PATH + vs);
+			set_shader(ResourceManager::get<D3D11Shader>(SHADER_PATH + vs), VERTEX_SHADER);
 
-			D3D11Shader* shader{ m_shaders[VERTEX_SHADER] };
+			D3D11Shader* shader{ get_shader(VERTEX_SHADER) };
 			const ComPtr<ID3DBlob> blob{ shader->get_blob() };
 
 			HRESULT res{ 0 };
@@ -65,9 +65,9 @@ namespace Glacier
 		}
 
 		if (!hs.empty()) {
-			m_shaders[HULL_SHADER] = ResourceManager::get<D3D11Shader>(SHADER_PATH + hs);
+			set_shader(ResourceManager::get<D3D11Shader>(SHADER_PATH + hs), HULL_SHADER);
 
-			D3D11Shader* shader{ static_cast<D3D11Shader*>(m_shaders[DOMAIN_SHADER]) };
+			D3D11Shader* shader{ static_cast<D3D11Shader*>(get_shader(DOMAIN_SHADER)) };
 
 			ComPtr<ID3DBlob> blob{ shader->get_blob() };
 
@@ -80,9 +80,9 @@ namespace Glacier
 		}
 
 		if (!ds.empty()) {
-			m_shaders[DOMAIN_SHADER] = ResourceManager::get<D3D11Shader>(SHADER_PATH + ds);
+			set_shader(ResourceManager::get<D3D11Shader>(SHADER_PATH + ds), DOMAIN_SHADER);
 			
-			D3D11Shader* shader{ static_cast<D3D11Shader*>(m_shaders[DOMAIN_SHADER]) };
+			D3D11Shader* shader{ static_cast<D3D11Shader*>(get_shader(DOMAIN_SHADER)) };
 
 			ComPtr<ID3DBlob> blob{ shader->get_blob() };
 
@@ -95,9 +95,9 @@ namespace Glacier
 		}
 
 		if (!gs.empty()) {
-			m_shaders[GEOMETRY_SHADER] = ResourceManager::get<D3D11Shader>(SHADER_PATH + gs);
-
-			D3D11Shader* shader{ static_cast<D3D11Shader*>(m_shaders[GEOMETRY_SHADER]) };
+			set_shader(ResourceManager::get<D3D11Shader>(SHADER_PATH + gs), GEOMETRY_SHADER);
+			
+			D3D11Shader* shader{ static_cast<D3D11Shader*>(get_shader(GEOMETRY_SHADER)) };
 
 			ComPtr<ID3DBlob> blob{ shader->get_blob() };
 
@@ -110,9 +110,9 @@ namespace Glacier
 		}
 
 		if (!fs.empty()) {
-			m_shaders[FRAGMENT_SHADER] = ResourceManager::get<D3D11Shader>(SHADER_PATH + fs);
+			set_shader(ResourceManager::get<D3D11Shader>(SHADER_PATH + fs), FRAGMENT_SHADER);
 			
-			D3D11Shader* shader{ static_cast<D3D11Shader*>(m_shaders[FRAGMENT_SHADER]) };
+			D3D11Shader* shader{ static_cast<D3D11Shader*>(get_shader(FRAGMENT_SHADER)) };
 			
 			ComPtr<ID3DBlob> blob{ shader->get_blob() };
 

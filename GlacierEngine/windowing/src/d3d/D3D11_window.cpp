@@ -13,8 +13,8 @@ namespace Glacier
 	{
 		//Describe the swapchain
 		DXGI_SWAP_CHAIN_DESC swap_chain_desc;
-		swap_chain_desc.BufferDesc.Width = m_size.x;
-		swap_chain_desc.BufferDesc.Height = m_size.y;
+		swap_chain_desc.BufferDesc.Width = get_size().x;
+		swap_chain_desc.BufferDesc.Height = get_size().y;
 		swap_chain_desc.BufferDesc.RefreshRate.Numerator = 60;
 		swap_chain_desc.BufferDesc.RefreshRate.Denominator = 1;
 		swap_chain_desc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
@@ -89,8 +89,8 @@ namespace Glacier
 	{
 		D3D11_TEXTURE2D_DESC depth_attachment_desc;
 		ZeroMemory(&depth_attachment_desc, sizeof(depth_attachment_desc));
-		depth_attachment_desc.Width = m_size.x;
-		depth_attachment_desc.Height = m_size.y;
+		depth_attachment_desc.Width = get_size().x;
+		depth_attachment_desc.Height = get_size().y;
 		depth_attachment_desc.MipLevels = 1;
 		depth_attachment_desc.ArraySize = 1;
 		depth_attachment_desc.Format = DXGI_FORMAT_D32_FLOAT;
@@ -140,8 +140,8 @@ namespace Glacier
 		D3D11_VIEWPORT viewport;
 		viewport.TopLeftX = 0.0f;
 		viewport.TopLeftY = 0.0f;
-		viewport.Width = static_cast<float>(m_size.x);
-		viewport.Height = static_cast<float>(m_size.y);
+		viewport.Width = static_cast<float>(get_size().x);
+		viewport.Height = static_cast<float>(get_size().y);
 		viewport.MinDepth = 0.0f;
 		viewport.MaxDepth = 1.0f;
 

@@ -9,7 +9,7 @@ namespace Glacier
 {
 	class Window
 	{
-	protected:
+	private:
 		std::wstring m_title;
 		Vec2i m_size;
 		Vec2i m_position;
@@ -131,9 +131,14 @@ namespace Glacier
 			m_redisplay = redisplay;
 		}
 
-		void show_cursor(bool show) noexcept
+		void set_show_cursor(bool show) noexcept
 		{
 			m_show_cursor = show;
+		}
+
+		bool show_cursor() const noexcept
+		{
+			return m_show_cursor;
 		}
 
 		void set_window_callbacks(const WindowFunctionCallbacks& callbacks) noexcept
