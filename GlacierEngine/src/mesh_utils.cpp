@@ -359,7 +359,7 @@ namespace Glacier
 			return m;
 		}
 
-		void flip_normals(Mesh* m) noexcept
+		void flip_normals(const Mesh* m) noexcept
 		{
 			Vertex* varr{ m->get_vertex_data() };
 

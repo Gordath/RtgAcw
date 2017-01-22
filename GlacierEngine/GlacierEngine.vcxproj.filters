@@ -173,6 +173,15 @@
     <ClCompile Include="rendering\src\IBO.cpp">
       <Filter>Rendering\Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="rendering\src\material.cpp">
+      <Filter>Rendering\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\message.cpp">
+      <Filter>Source Files\Messages</Filter>
+    </ClCompile>
+    <ClCompile Include="src\object.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\application.h">

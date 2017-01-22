@@ -51,17 +51,23 @@ namespace Glacier
 	public:
 		explicit EmitterComponent(Object* parent) :
 			Component{"co_emitter", parent},
-			m_active{true},
-			m_lifespan{1.0f},
-			m_max_particles{1},
-			m_mesh{nullptr},
-			m_particle_size{1.0f},
-			m_particles_to_spawn{0.0f},
-			m_spawn_radius{0.0f},
-			m_spawn_rate{1.0f},
-			m_velocity_range{0.0f}
+			m_spawn_rate{ 1.0f },
+			m_lifespan{ 1.0f },
+			m_max_particles{ 1 },
+			m_spawn_radius{ 0.0f },
+			m_particle_size{ 1.0f },
+			m_particles_to_spawn{ 0.0f },
+			m_active{true},		
+			m_velocity_range{0.0f},
+			m_mesh{ nullptr }
 		{
 		}
+
+
+		EmitterComponent(const EmitterComponent& other) = default;
+
+		EmitterComponent& operator=(const EmitterComponent& other) = default;
+
 
 		const std::vector<Particle>& get_particles() const noexcept
 		{

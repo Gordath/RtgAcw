@@ -25,20 +25,40 @@ namespace Glacier
 		Object* m_parent;
 
 	public:
-		explicit Object(const std::string& name) : m_name{ name }, m_parent{nullptr}, m_alive{true}
+		explicit Object(const std::string& name) : m_name{ name }, m_alive{true}, m_parent{ nullptr }
 		{
 		}
 
-		~Object()
+		~Object();
+
+
+		Object(const Object& other)
+			: ObserverSubject{other},
+			  m_components{other.m_components},
+			  m_name{other.m_name},
+			  m_alive{other.m_alive},
+			  m_position{other.m_position},
+			  m_euler_angles{other.m_euler_angles},
+			  m_scale{other.m_scale},
+			  m_xform{other.m_xform},
+			  m_parent{other.m_parent}
 		{
-			try{
-				for (Component* component : m_components) {
-					delete component;
-				}
-			}
-			catch(...)
-			{ }
-			m_components.clear();
+		}
+
+		Object& operator=(const Object& other)
+		{
+			if (this == &other)
+				return *this;
+			ObserverSubject::operator =(other);
+			m_components = other.m_components;
+			m_name = other.m_name;
+			m_alive = other.m_alive;
+			m_position = other.m_position;
+			m_euler_angles = other.m_euler_angles;
+			m_scale = other.m_scale;
+			m_xform = other.m_xform;
+			m_parent = other.m_parent;
+			return *this;
 		}
 
 		const std::string& get_name() const noexcept

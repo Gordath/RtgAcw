@@ -52,7 +52,7 @@ namespace Glacier
 
 		LightDesc* get_light_description_ptr() noexcept
 		{
-			return &m_light_desc;
+			return &m_light_desc; /* parasoft-suppress  OOP-36 "Returning a non cost pointer because the lights have to be tweaked directly using AntTweakBar as well as to be reasigned default values when the scene is reset istead of destroying and reallocating the whole scene again." */ /* parasoft-suppress  MISRA2008-9_3_2_b "Returning a non cost pointer because the lights have to be tweaked directly using AntTweakBar as well as to be reasigned default values when the scene is reset istead of destroying and reallocating the whole scene again." */
 		}
 
 		void set_ambient_intensity(const Vec4f& ambient_intensity) noexcept

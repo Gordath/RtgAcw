@@ -7,4 +7,13 @@ namespace Glacier
 	{
 		get_parent()->register_observer("msg_keypress", this);
 	}
+
+
+	void KeyboardInputComponent::update(float dt, long time) noexcept
+	{
+	}
+
+	void KeyboardInputComponent::teardown() noexcept
+	{
+	}
 }

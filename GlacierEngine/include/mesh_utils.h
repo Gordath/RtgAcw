@@ -12,7 +12,7 @@ namespace Glacier
 
 		Mesh* generate_plane_xy(float size) noexcept;
 
-		void flip_normals(Mesh* m) noexcept;
+		void flip_normals(const Mesh* m) noexcept;
 	}
 }
 

@@ -15,11 +15,16 @@ namespace Glacier
 	public:
 		CameraSystem() = default;
 
+
+		CameraSystem(const CameraSystem& other) = delete;
+		explicit CameraSystem(CameraSystem&& other) noexcept = delete;
+		CameraSystem& operator=(const CameraSystem& other) = delete;
+		CameraSystem& operator=(CameraSystem&& other) noexcept = delete;
 		bool initialize() noexcept override;
 
 		void process(const std::vector<Object*>& objects, float delta_time) const noexcept override;
 
-		void set_active_camera(const std::string name) const noexcept;
+		void set_active_camera(const std::string& name) const noexcept;
 
 		Object* get_active_camera() const noexcept;
 

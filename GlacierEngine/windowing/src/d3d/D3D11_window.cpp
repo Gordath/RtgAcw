@@ -9,7 +9,7 @@
 namespace Glacier
 {
 	// Private Methods -----------------------------------------------------------------------------------------------------------------------------
-	bool D3D11Window::create_swap_chain(D3D11Context* ctx)
+	bool D3D11Window::create_swap_chain(const D3D11Context* ctx)
 	{
 		//Describe the swapchain
 		DXGI_SWAP_CHAIN_DESC swap_chain_desc;

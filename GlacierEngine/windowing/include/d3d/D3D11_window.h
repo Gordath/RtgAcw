@@ -16,7 +16,7 @@ namespace Glacier
 		int m_sample_count{ 4 };
 		unsigned int m_MSAA_quality;
 
-		bool create_swap_chain(D3D11Context* ctx);
+		bool create_swap_chain(const D3D11Context* ctx);
 
 		bool create_render_target_view(D3D11Context* ctx) const noexcept;
 

@@ -17,11 +17,10 @@ namespace Glacier
 		Component(const std::string& type, Object* parent);
 
 		Component(const Component& other) = default;
-		explicit Component(Component&& other) noexcept = default;
 		Component& operator=(const Component& other) = default;
 		Component& operator=(Component&& other) noexcept = default;
 
-		virtual ~Component() = default;
+		virtual ~Component();
 
 		const std::string& get_type() const noexcept
 		{

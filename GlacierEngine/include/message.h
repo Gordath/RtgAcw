@@ -13,9 +13,9 @@ namespace Glacier
 		{
 		}
 
-		virtual ~Message() = default;
+		virtual ~Message();
 
-		std::string get_message_type() const noexcept 
+		const std::string& get_message_type() const noexcept 
 		{ 
 			return m_type; 
 		}

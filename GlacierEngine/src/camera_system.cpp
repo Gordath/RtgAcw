@@ -27,7 +27,7 @@ namespace Glacier
 		}
 	}
 
-	void CameraSystem::set_active_camera(const std::string name) const noexcept
+	void CameraSystem::set_active_camera(const std::string& name) const noexcept
 	{
 		m_active_camera = m_cameras[name];
 	}
