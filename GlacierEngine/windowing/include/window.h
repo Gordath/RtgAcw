@@ -43,10 +43,10 @@ namespace Glacier
 		                                                   m_focused{focused},
 		                                                   m_minimized{minimized},
 		                                                   m_resizeable{resizeable},
-															m_callbacks{ callbacks },
 		                                                   m_show_cursor{show_cursor},
 		                                                   m_changed_size{false},
-		                                                   m_redisplay{true}
+		                                                   m_redisplay{true},
+		                                                   m_callbacks{callbacks}
 		{
 		}
 
