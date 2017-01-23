@@ -2,6 +2,7 @@
 #include <sstream>
 #include <iostream>
 #include "win32_utils.h"
+#include <AntTweakBar.h>
 
 namespace Glacier
 {
@@ -66,7 +67,11 @@ namespace Glacier
 	                                                                            minimized,
 	                                                                            resizeable,
 	                                                                            show_cursor,
-	                                                                            callbacks)
+	                                                                            callbacks),
+																			m_handle{nullptr},
+																			m_parent{ nullptr },
+																			m_menu{nullptr}
+																			
 	{
 		RECT wr = { 0, 0, size.x, size.y };
 
@@ -83,13 +88,13 @@ namespace Glacier
 		const unsigned int window_flags_ex_enable{ WS_EX_CLIENTEDGE };
 		const unsigned int window_flags_ex_disable{ 0 };
 
-		_flags = window_flags_enable & ~window_flags_disable;
-		_flags_ex = window_flags_ex_enable & ~window_flags_ex_disable;
+		m_flags = window_flags_enable & ~window_flags_disable;
+		m_flags_ex = window_flags_ex_enable & ~window_flags_ex_disable;
 
-		m_handle = ::CreateWindowEx(_flags_ex,
-		                            WindowClass::m_win_class_name.c_str(),
+		m_handle = ::CreateWindowEx(m_flags_ex,
+		                            WindowClass::get_win_class_name().c_str(),
 		                            title.c_str(),
-		                            _flags,
+		                            m_flags,
 		                            position.x,
 		                            position.y,
 		                            size.x,
@@ -99,21 +104,27 @@ namespace Glacier
 		                            ::GetModuleHandle(nullptr),
 		                            this); //Carry the window class pointer.
 
-		if (!m_handle) {
-			char buff[256];
-			snprintf(buff, 256, "Error creating window with name: '%s'", title);
-
-			throw std::runtime_error(buff);
-		}
+//		if (!m_handle) {
+//			char buff[256];
+//			snprintf(buff, 256, "Error creating window with name: '%s'", title);
+//
+//			throw std::runtime_error(buff);
+//		}
 
 		ShowWindow(m_handle, SW_SHOWDEFAULT);
 		UpdateWindow(m_handle);
-		ShowCursor(m_show_cursor);
+		ShowCursor(Window::show_cursor());
 	}
 
 	LRESULT CALLBACK Win32Window::win_proc(HWND handle, UINT msg, WPARAM wparam, LPARAM lparam)
 	{
+
+		if (TwEventWin(handle, msg, wparam, lparam))
+			return 0; // Event has been handled by AntTweakBar
+
+		auto callbacks{ get_callbacks() };
 		switch (msg) {
+			
 		case WM_PAINT:
 			ValidateRect(handle, nullptr);
 			break;
@@ -121,72 +132,72 @@ namespace Glacier
 			break;
 		case WM_SIZE:
 			set_size(Vec2i{ LOWORD(lparam), HIWORD(lparam) });
-			if (m_callbacks.reshape_func) {
-				m_callbacks.reshape_func(m_size.x, m_size.y);
+			if (callbacks.reshape_func) {
+				callbacks.reshape_func(get_size().x, get_size().y);
 			}
 			break;
 		case WM_KEYDOWN:
 			if (wparam < 256) {
-				if (m_callbacks.keyboard_func) {
-					m_callbacks.keyboard_func(wparam, m_mouse_pos.x, m_mouse_pos.y);
+				if (callbacks.keyboard_func) {
+					callbacks.keyboard_func(wparam, get_mouse_position().x, get_mouse_position().y);
 				}
 			} else {
-				if (m_callbacks.special_func) {
-					m_callbacks.special_func(wparam, m_mouse_pos.x, m_mouse_pos.y);
+				if (callbacks.special_func) {
+					callbacks.special_func(wparam, get_mouse_position().x, get_mouse_position().y);
 				}
 			}
 			break;
 		case WM_KEYUP:
 			if (wparam < 256) {
-				if (m_callbacks.keyboard_up_func) {
-					m_callbacks.keyboard_up_func(wparam, m_mouse_pos.x, m_mouse_pos.y);
+				if (callbacks.keyboard_up_func) {
+					callbacks.keyboard_up_func(wparam, get_mouse_position().x, get_mouse_position().y);
 				}
 			} else {
-				if (m_callbacks.special_up_func) {
-					m_callbacks.special_up_func(wparam, m_mouse_pos.x, m_mouse_pos.y);
+				if (callbacks.special_up_func) {
+					callbacks.special_up_func(wparam, get_mouse_position().x, get_mouse_position().y);
 				}
 			}
 			break;
 		case WM_MOUSEMOVE:
 			set_mouse_position(Vec2i{ LOWORD(lparam), HIWORD(lparam) });
 			if (wparam & (MK_LBUTTON | MK_MBUTTON | MK_RBUTTON)) {
-				if (m_callbacks.motion_func) {
-					m_callbacks.motion_func(m_mouse_pos.x, m_mouse_pos.y);
+				if (callbacks.motion_func) {
+					callbacks.motion_func(get_mouse_position().x, get_mouse_position().y);
 				}
 			} else {
-				if (m_callbacks.passive_motion_func) {
-					m_callbacks.passive_motion_func(m_mouse_pos.x, m_mouse_pos.y);
+				if (callbacks.passive_motion_func) {
+					callbacks.passive_motion_func(get_mouse_position().x, get_mouse_position().y);
 				}
 			}
 			break;
 		case WM_LBUTTONDOWN:
-			if (m_callbacks.mouse_func) {
-				m_callbacks.mouse_func(0, true, LOWORD(lparam), HIWORD(lparam));
+			if (callbacks.mouse_func) {
+				callbacks.mouse_func(0, true, LOWORD(lparam), HIWORD(lparam));
 			}
 			break;
 		case WM_RBUTTONDOWN:
-			if (m_callbacks.mouse_func) {
-				m_callbacks.mouse_func(2, true, LOWORD(lparam), HIWORD(lparam));
+			if (callbacks.mouse_func) {
+				callbacks.mouse_func(2, true, LOWORD(lparam), HIWORD(lparam));
 			}
 			break;
 		case WM_MBUTTONDOWN:
-			if (m_callbacks.mouse_func) {
-				m_callbacks.mouse_func(1, true, LOWORD(lparam), HIWORD(lparam));
+			if (callbacks.mouse_func) {
+				callbacks.mouse_func(1, true, LOWORD(lparam), HIWORD(lparam));
 			}
 			break;
 		case WM_LBUTTONUP:
-			if (m_callbacks.mouse_func) {
-				m_callbacks.mouse_func(0, false, LOWORD(lparam), HIWORD(lparam));
+			if (callbacks.mouse_func) {
+				callbacks.mouse_func(0, false, LOWORD(lparam), HIWORD(lparam));
 			}
 			break;
 		case WM_RBUTTONUP:
-			if (m_callbacks.mouse_func) {
-				m_callbacks.mouse_func(2, false, LOWORD(lparam), HIWORD(lparam));
+			if (callbacks.mouse_func) {
+				callbacks.mouse_func(2, false, LOWORD(lparam), HIWORD(lparam));
 			}
 			break;
 		case WM_MBUTTONUP:
-			if (m_callbacks.mouse_func) {
-				m_callbacks.mouse_func(1, false, LOWORD(lparam), HIWORD(lparam));
+			if (callbacks.mouse_func) {
+				callbacks.mouse_func(1, false, LOWORD(lparam), HIWORD(lparam));
 			}
 			break;
 		case WM_MOUSEWHEEL:

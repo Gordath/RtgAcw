@@ -5,10 +5,19 @@
 
 namespace Glacier
 {
-	GAPIContext* EngineContext::m_GAPI_context{ nullptr };
+#if defined(GLACIERENGINE_BUILD_D3D)
+	D3D11Context* EngineContext::m_GAPI_context{ nullptr };
+#else
+#endif
 	std::unique_ptr<RenderSystem> EngineContext::m_render_system{ std::make_unique<RenderSystem>() };
 	std::unique_ptr<CameraSystem> EngineContext::m_camera_system{ std::make_unique<CameraSystem>() };
 	std::unique_ptr<LightSystem> EngineContext::m_light_system{ std::make_unique<LightSystem>() };
+
+
+	EngineContext::~EngineContext()
+	{
+		delete m_GAPI_context;
+	}
 
 	bool EngineContext::initialize()
 	{

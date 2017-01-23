@@ -11,7 +11,7 @@ namespace Glacier
 		ComPtr<ID3D11BlendState> m_blend_state;
 
 	public:
-		D3D11BlendState(RenderStateType render_state_type);
+		explicit D3D11BlendState(RenderStateType render_state_type);
 
 		void set() const noexcept override;
 	};

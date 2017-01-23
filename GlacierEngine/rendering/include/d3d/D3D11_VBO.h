@@ -11,6 +11,8 @@ namespace Glacier
 		ComPtr<ID3D11Buffer> m_vertex_buffer;
 
 	public:
+		D3D11VBO() = default;
+
 		bool create(const std::vector<Vertex>& vertices, PrimitiveTopology primitive_topology) noexcept override;
 
 		void bind() const noexcept override;

@@ -3,23 +3,22 @@
 #include "texture.h"
 #include "internal/types.h"
 #include "render_state.h"
+#include <array>
 
 namespace Glacier
 {
 	struct Material {
-		Texture* textures[SUPPORTED_TEX_COUNT];
+		std::array<Texture*, SUPPORTED_TEX_COUNT> textures;
 		Vec4f diffuse;
 		Vec4f specular;
 		Mat4f texture_matrix;
 		std::string shader_program_name{ "sdrprog_default" };
-		RenderStateType blend_state{ RenderStateType::BS_BLEND_DISSABLED };
+		RenderStateType blend_state;
 
-		Material()
-		{
-			for (int i = 0; i < SUPPORTED_TEX_COUNT; ++i) {
-				textures[i] = nullptr;
-			}
-		}
+		Material();
+
+		Material(const Material& other) = default;
+		Material& operator=(const Material& other) = default;
 	};
 }
 

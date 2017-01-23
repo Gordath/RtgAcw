@@ -6,16 +6,16 @@ namespace Glacier
 {
 	class KeyboardInputComponent : public Component {
 	public:
-		KeyboardInputComponent(Object* parent)
+		explicit KeyboardInputComponent(Object* parent)
 			: Component{ "co_keyboard_input", parent }
 		{
 		}
 
 		void setup() noexcept override;
 
-		void update(float dt, long time) noexcept override {};
+		void update(float dt, long time) noexcept override;
 
-		void teardown() noexcept override {};
+		void teardown() noexcept override;
 	};
 }
 

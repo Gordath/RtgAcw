@@ -43,7 +43,7 @@ namespace Glacier
 		int m_reference_count{ 0 };
 
 	public:
-		RefCountedContainer(T* item)
+		explicit RefCountedContainer(T* item)
 		{
 			m_data = item;
 			add_reference();
@@ -66,7 +66,7 @@ namespace Glacier
 			add_reference();
 		}
 
-		RefCountedContainer(RefCountedContainer&& other) noexcept = delete;
+		explicit RefCountedContainer(RefCountedContainer&& other) noexcept = delete;
 
 		RefCountedContainer& operator=(const RefCountedContainer& other)
 		{

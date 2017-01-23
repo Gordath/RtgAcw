@@ -1,14 +1,23 @@
 #include "scene.h"
+#include "object.h"
 
 namespace Glacier
 {
 	Scene::~Scene()
 	{
-		for (const auto object : m_objects) {
-			delete object;
+		try {
+			for (const auto object : m_objects) {
+				delete object;
+			}
 		}
+		catch(...){}
 
 		m_objects.clear();
+	}
+
+	void Scene::add_object(Object* object) noexcept
+	{
+		m_objects.push_back(object);
 	}
 
 	void Scene::update(float delta_time, long time) noexcept
@@ -27,7 +36,7 @@ namespace Glacier
 		}
 	}
 
-	void Scene::on_message(MessageContainer msg) const noexcept
+	void Scene::on_message(const MessageContainer& msg) const noexcept
 	{
 		for (auto object : m_objects) {
 			object->broadcast_message(msg);

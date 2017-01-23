@@ -3,33 +3,44 @@
 #include "keyboard_input_component.h"
 #include "internal/math_utils.h"
 
-class CameraKeyboardInputComponent : public Glacier::KeyboardInputComponent {
+class CameraKeyboardInputComponent : public Glacier::KeyboardInputComponent
+{
 private:
-	bool m_move_forwards{ false };
-	bool m_move_backwards{ false };
-	bool m_move_left{ false };
-	bool m_move_right{ false };
-	bool m_move_up{ false };
-	bool m_move_down{ false };
-	bool m_rotate_left{ false };
-	bool m_rotate_right{ false };
-	bool m_rotate_donwards{ false };
-	bool m_rotate_upwards{ false };
+	bool m_move_forwards;
+	bool m_move_backwards;
+	bool m_move_left;
+	bool m_move_right;
+	bool m_move_up;
+	bool m_move_down;
+	bool m_rotate_left;
+	bool m_rotate_right;
+	bool m_rotate_donwards;
+	bool m_rotate_upwards;
 
-	float m_movement_speed{ 0.0f };
-	float m_rotation_speed{ 0.0f };
-
-	float yaw{ 0.0f };
+	float m_movement_speed;
+	float m_rotation_speed;
 
 public:
-	CameraKeyboardInputComponent(Glacier::Object* parent)
-		: KeyboardInputComponent{ parent }
+	explicit CameraKeyboardInputComponent(Glacier::Object* parent)
+		: KeyboardInputComponent{parent},
+		  m_move_forwards{false},
+		  m_move_backwards{false},
+		  m_move_left{false},
+		  m_move_right{false},
+		  m_move_up{false},
+		  m_move_down{false},
+		  m_rotate_left{false},
+		  m_rotate_right{false},
+		  m_rotate_donwards{false},
+		  m_rotate_upwards{false},
+		  m_movement_speed{0.0f},
+		  m_rotation_speed{0.0f}
 	{
 	}
 
 	void update(float dt, long time) noexcept override;
 
-	void on_message(Glacier::MessageContainer msg) override;
+	void on_message(const Glacier::MessageContainer& msg) override;
 
 	void set_movement_speed(float movement_speed) noexcept
 	{

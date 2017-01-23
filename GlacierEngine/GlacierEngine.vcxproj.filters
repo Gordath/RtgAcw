@@ -161,14 +161,50 @@
     <ClCompile Include="src\keyboard_input_component.cpp">
       <Filter>Source Files\Components</Filter>
     </ClCompile>
-    <ClCompile Include="src\ncf.cpp">
+    <ClCompile Include="src\path_component.cpp">
+      <Filter>Source Files\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="rendering\src\VBO.cpp">
+      <Filter>Rendering\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="rendering\src\GAPI_context.cpp">
+      <Filter>Rendering\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="rendering\src\IBO.cpp">
+      <Filter>Rendering\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="rendering\src\material.cpp">
+      <Filter>Rendering\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\message.cpp">
+      <Filter>Source Files\Messages</Filter>
+    </ClCompile>
+    <ClCompile Include="src\object.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\ncf_util.cpp">
+    <ClCompile Include="src\observer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\cfg.cpp">
+    <ClCompile Include="rendering\src\render_state.cpp">
+      <Filter>Rendering\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="rendering\src\render_target.cpp">
+      <Filter>Rendering\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="rendering\src\renderer.cpp">
+      <Filter>Rendering\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\resource.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="rendering\src\shader_program.cpp">
+      <Filter>Rendering\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\system.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="windowing\src\window.cpp">
+      <Filter>Windowing\Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -343,14 +379,8 @@
     <ClInclude Include="include\keypress_message.h">
       <Filter>Header Files\Messages</Filter>
     </ClInclude>
-    <ClInclude Include="include\ncf.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\ncf_util.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\cfg.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="include\path_component.h">
+      <Filter>Header Files\Components</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

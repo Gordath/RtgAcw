@@ -6,9 +6,14 @@ namespace Glacier
 
 	SceneManager::~SceneManager()
 	{
-		for (auto scene : m_scenes) {
-			delete scene;
+		try {
+			for (auto scene : m_scenes) {
+				delete scene;
+			}
 		}
+		catch(...){}
+
+		m_scenes.clear();
 	}
 
 	void SceneManager::push_scene(Scene* scene) noexcept
@@ -54,7 +59,7 @@ namespace Glacier
 		}
 	}
 
-	void SceneManager::on_message(MessageContainer msg) noexcept
+	void SceneManager::on_message(const MessageContainer& msg) noexcept
 	{
 		if (m_scenes.back()) {
 			m_scenes.back()->on_message(msg);

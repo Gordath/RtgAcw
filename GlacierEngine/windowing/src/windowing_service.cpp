@@ -51,9 +51,10 @@ namespace Glacier
 
 	void WindowingService::destroy_window(unsigned int win_id)
 	{
+		unsigned int id = win_id;
 		auto it{ std::find_if(m_windows.begin(), m_windows.end(),
-		                      [win_id](Window* win) -> bool {
-			                      return win_id == win->get_id();
+		                      [id](Window* win) -> bool {
+			                      return id == win->get_id();
 		                      }) };
 		delete *it;
 		m_windows.erase(it);

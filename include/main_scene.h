@@ -2,16 +2,23 @@
 #define MAIN_SCENE_H_
 #include "scene.h"
 #include "../GlacierEngine/rendering/include/d3d/D3D11_render_target.h"
-#include "../GlacierEngine/rendering/include/mesh.h"
+#include "water_jet_sub.h"
+#include <array>
+#include "deep_sea_fish.h"
+#include <vector>
 
-class MainScene : public Glacier::Scene {
+class DrebelSubmarine;
+
+class MainScene : public Glacier::Scene
+{
 private:
 	Glacier::D3D11RenderTarget m_color_pass_rt;
 	Glacier::ComPtr<ID3D11Buffer> m_color_pass_uniform_buffer;
 	Glacier::ComPtr<ID3D11Buffer> m_depth_pass_uniform_buffer;
 	Glacier::ComPtr<ID3D11Buffer> m_particle_uniform_buffer;
+	Glacier::ComPtr<ID3D11Buffer> m_skybox_uniform_buffer;
 
-	Glacier::D3D11RenderTarget m_depth_pass_rts[4];
+	std::array<Glacier::D3D11RenderTarget, 4> m_depth_pass_rts;
 
 	Glacier::ComPtr<ID3D11Buffer> m_light_structured_buffer;
 	Glacier::ComPtr<ID3D11ShaderResourceView> m_light_srv;
@@ -19,8 +26,13 @@ private:
 	Glacier::ComPtr<ID3D11SamplerState> m_sampler_linear_wrap;
 	Glacier::ComPtr<ID3D11SamplerState> m_sampler_shadow_comparison;
 
-	Glacier::Object* m_skybox{ nullptr };
-	Glacier::Object* m_globe{ nullptr };
+	Glacier::Object* m_skybox; /* parasoft-suppress  MRM-33 "The memory of all objects added to the Scene is freed by the Scene base class in it's destructor." */
+	Glacier::Object* m_globe; /* parasoft-suppress  MRM-33 "The memory of all objects added to the Scene is freed by the Scene base class in it's destructor." */
+
+	std::vector<Glacier::Object*> m_followable_objects;
+//	DrebelSubmarine* m_drebel; /* parasoft-suppress  MRM-33 "The memory of all objects added to the Scene is freed by the Scene base class in it's destructor." */
+//	WaterJetSubmarine* m_water_jet_sub; /* parasoft-suppress  MRM-33 "The memory of all objects added to the Scene is freed by the Scene base class in it's destructor." */
+//	DeepSeaFish* m_deep_sea_fish1;
 
 	void depth_pass() const noexcept;
 	void color_pass() const noexcept;
@@ -29,7 +41,25 @@ private:
 	void render_globe() const noexcept;
 	void render_skybox() const noexcept;
 
+	void setup_lights() noexcept;
+	void setup_cameras() noexcept;
+	void setup_d3d() noexcept;
+
+	void cycle_camera_follower() noexcept;
+
 public:
+	MainScene() :
+		m_skybox{ nullptr },
+		m_globe{ nullptr }
+	{
+	}
+
+	MainScene(const MainScene& other) = delete;
+	explicit MainScene(MainScene&& other) noexcept = delete;
+	MainScene& operator=(const MainScene& other) = delete;
+	MainScene& operator=(MainScene&& other) noexcept = delete;
+
+	~MainScene();
 
 	void initialize() override;
 

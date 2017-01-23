@@ -1,26 +1,33 @@
 #ifndef GLACIER_RENDERING_COMPONENT_H_
 #define GLACIER_RENDERING_COMPONENT_H_
 #include "component.h"
-#include "mesh.h"
+#include "../rendering/include/mesh.h"
 #include "object.h"
-#include "material.h"
+#include "../rendering/include/material.h"
 
 namespace Glacier
 {
 	class RenderingComponent : public Component {
 	private:
-		Mesh* m_mesh{ nullptr };
+		Mesh* m_mesh;
 		
 		Material m_material;
 
-		bool m_should_draw{ true };
+		bool m_should_draw;
 
-		bool m_casts_shadows{ true };
+		bool m_casts_shadows;
 
 	public:
-		RenderingComponent(Object* parent) : Component{ "co_rendering", parent }
+		explicit RenderingComponent(Object* parent) 
+		: Component{ "co_rendering", parent },
+		m_mesh{nullptr},
+		m_should_draw{true},
+		m_casts_shadows{true}
 		{	
 		}
+
+		RenderingComponent(const RenderingComponent& other) = default;
+		RenderingComponent& operator=(const RenderingComponent& other) = default;
 
 		void setup() noexcept override;
 
@@ -55,22 +62,22 @@ namespace Glacier
 
 		const Vec3f& get_position() const noexcept
 		{
-			return m_parent->get_position();
+			return get_parent()->get_position();
 		}
 
 		const Vec3f& get_euler_angles() const noexcept
 		{
-			return m_parent->get_euler_angles();
+			return get_parent()->get_euler_angles();
 		}
 
 		const Vec3f& get_scale() const noexcept
 		{
-			return m_parent->get_scale();
+			return get_parent()->get_scale();
 		}
 
 		const Mat4f& get_xform() const noexcept
 		{
-			return m_parent->get_xform();
+			return get_parent()->get_xform();
 		}
 
 		void set_casts_shadows(bool state) noexcept

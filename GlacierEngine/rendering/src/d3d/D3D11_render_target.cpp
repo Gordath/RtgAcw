@@ -7,7 +7,7 @@ namespace Glacier
 {
 	bool D3D11RenderTarget::create(const Vec2i& size)
 	{
-		m_size = size;
+		set_size(size);
 
 		D3D11Context* ctx{ EngineContext::get_GAPI_context() };
 
@@ -16,8 +16,8 @@ namespace Glacier
 		HRESULT res{ 0 };
 
 		D3D11_TEXTURE2D_DESC color_attachment_desc;
-		color_attachment_desc.Width = m_size.x;
-		color_attachment_desc.Height = m_size.y;
+		color_attachment_desc.Width = get_size().x;
+		color_attachment_desc.Height = get_size().y;
 		color_attachment_desc.MipLevels = 1;
 		color_attachment_desc.ArraySize = 1;
 		color_attachment_desc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
@@ -68,8 +68,8 @@ namespace Glacier
 		}
 
 		D3D11_TEXTURE2D_DESC depth_attachment_desc;
-		depth_attachment_desc.Width = m_size.x;
-		depth_attachment_desc.Height = m_size.y;
+		depth_attachment_desc.Width = get_size().x;
+		depth_attachment_desc.Height = get_size().y;
 		depth_attachment_desc.MipLevels = 1;
 		depth_attachment_desc.ArraySize = 1;
 		depth_attachment_desc.Format = DXGI_FORMAT_R24G8_TYPELESS;
@@ -151,8 +151,8 @@ namespace Glacier
 
 		ComPtr<ID3D11DeviceContext> context{ ctx->get_device_context() };
 		ID3D11DepthStencilView* null_dsv{ nullptr };
-		ID3D11RenderTargetView* null_rtvs[1]{ nullptr };
-		context->OMSetRenderTargets(1, null_rtvs, null_dsv);
+		ID3D11RenderTargetView* null_rtvs{ nullptr };
+		context->OMSetRenderTargets(1, &null_rtvs, null_dsv);
 
 		return true;
 	}

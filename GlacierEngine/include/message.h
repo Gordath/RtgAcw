@@ -5,17 +5,17 @@
 namespace Glacier
 {
 	class Message {
-	protected:
+	private:
 		std::string m_type;
 
 	public:
-		Message(const std::string& type) : m_type{ type }
+		explicit Message(const std::string& type) : m_type{ type }
 		{
 		}
 
-		virtual ~Message() = default;
+		virtual ~Message();
 
-		std::string get_message_type() const noexcept 
+		const std::string& get_message_type() const noexcept 
 		{ 
 			return m_type; 
 		}

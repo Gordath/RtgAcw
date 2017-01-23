@@ -6,6 +6,7 @@
 #include "timer.h"
 #include <iostream>
 #include "scene_manager.h"
+#include "../GlacierEngine/windowing/include/windowing_service.h"
 
 using namespace Glacier;
 
@@ -19,6 +20,11 @@ void RtgApplication::reshape(int x, int y)
 
 void RtgApplication::key_down(unsigned char key, int x, int y)
 {
+	if (key == 27)
+	{
+		exit(0);
+	}
+
 	SceneManager::on_key_down(key, x, y);
 }
 
@@ -63,10 +69,11 @@ bool RtgApplication::initialize(int* argc, char* argv[])
 	callbacks.keyboard_up_func = key_up;
 	callbacks.mouse_func = mouse_click;
 
+	std::srand(time(nullptr));
 
 	WindowingService::create(L"RtgAcw",
-	                          Vec2i{ 1280, 800 },
-	                          Vec2i{ 250, 250 },
+	                          Vec2i{ 1600, 900 },
+	                          Vec2i{},
 	                          true,
 	                          false,
 	                          true,
@@ -91,6 +98,14 @@ bool RtgApplication::initialize(int* argc, char* argv[])
 		return false;
 	}
 
+	if (!ShaderProgramManager::create("skybox_sdrprog", IL_POSITION | IL_NORMAL, L"skybox.vs.hlsl", L"skybox.ps.hlsl")) {
+		return false;
+	}
+
+	if (!ShaderProgramManager::create("globe_sdrprog", IL_POSITION | IL_NORMAL | IL_TANGENT | IL_TEXCOORD | IL_COLOR, L"globe.vs.hlsl", L"globe.ps.hlsl")) {
+		return false;
+	}
+
 	scene = new MainScene;
 	SceneManager::push_scene(scene);
 
@@ -99,7 +114,7 @@ bool RtgApplication::initialize(int* argc, char* argv[])
 
 void RtgApplication::update() noexcept
 {
-	SceneManager::update(m_timer.get_delta(), m_timer.get_msec());
+	SceneManager::update(get_delta(), get_msec());
 }
 
 void RtgApplication::draw() const noexcept
@@ -113,7 +128,7 @@ int RtgApplication::run() noexcept
 {
 	MSG msg;
 
-	while (!m_terminate) {
+	while (!should_terminate()) {
 
 		if (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE)) {
 			TranslateMessage(&msg);

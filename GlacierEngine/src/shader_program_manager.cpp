@@ -8,9 +8,12 @@ namespace Glacier
 
 	ShaderProgramManager::~ShaderProgramManager()
 	{
-		for (auto it : shader_program_by_name) {
-			delete it.second;
+		try {
+			for (auto it : shader_program_by_name) {
+				delete it.second;
+			}
 		}
+		catch(...){}
 
 		shader_program_by_name.clear();
 	}

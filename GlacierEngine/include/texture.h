@@ -4,7 +4,7 @@
 
 namespace Glacier
 {
-	enum TextureType {
+	enum TextureType { /* parasoft-suppress  CODSTA-MCPP-03 "This enum is not scoped because it is used as a more readable and descriptive way to access specific texture array indices." */
 		TEX_DIFFUSE,
 		TEX_SPECULAR,
 		TEX_NORMAL,
@@ -14,13 +14,13 @@ namespace Glacier
 	};
 
 	class Texture : public Resource {
-	protected:
+	private:
 		TextureType m_texture_type;
 
 	public:
 		Texture() = default;
 
-		Texture(TextureType texture_type) : m_texture_type{ texture_type }
+		explicit Texture(TextureType texture_type) : m_texture_type{ texture_type }
 		{
 		}
 
@@ -29,6 +29,11 @@ namespace Glacier
 		void set_texture_type(TextureType texture_type) noexcept
 		{
 			m_texture_type = texture_type;
+		}
+
+		TextureType get_texture_type() const noexcept
+		{
+			return m_texture_type;
 		}
 	};
 }

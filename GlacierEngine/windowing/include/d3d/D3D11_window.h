@@ -16,7 +16,7 @@ namespace Glacier
 		int m_sample_count{ 4 };
 		unsigned int m_MSAA_quality;
 
-		bool create_swap_chain(D3D11Context* ctx);
+		bool create_swap_chain(const D3D11Context* ctx);
 
 		bool create_render_target_view(D3D11Context* ctx) const noexcept;
 
@@ -45,7 +45,8 @@ namespace Glacier
 			                                                        show_cursor,
 			                                                        callbacks },
 		                                                        m_enable_MSAA{ enable_MSAA },
-		                                                        m_sample_count{ MSAA_sample_count }
+		                                                        m_sample_count{ MSAA_sample_count },
+																m_MSAA_quality{ 0 }
 		{
 			initialize();
 		}
@@ -70,10 +71,7 @@ namespace Glacier
 			return m_MSAA_quality;
 		}
 
-		void swap_buffers() const noexcept override
-		{
-			m_swap_chain->Present(0, 0);
-		}
+		void swap_buffers() const noexcept override;
 	};
 }
 

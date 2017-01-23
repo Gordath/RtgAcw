@@ -5,11 +5,23 @@
 namespace Glacier
 {
 	class IBO {
-	protected:
+	private:
 		unsigned int m_index_count{ 0 };
 
 	public:
-		virtual ~IBO() = default;
+		IBO() = default;
+
+		virtual ~IBO();
+
+		void set_index_count(unsigned int idx_count) noexcept
+		{
+			m_index_count = idx_count;
+		}
+
+		unsigned int get_index_count() const noexcept
+		{
+			return m_index_count;
+		}
 
 		virtual bool create(const std::vector<unsigned int>& indices) noexcept = 0;
 

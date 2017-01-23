@@ -17,6 +17,8 @@ private:
 	static void passive_mouse_motion(int x, int y);
 
 public:
+	RtgApplication() = default;
+
 	~RtgApplication();
 
 	bool initialize(int* argc, char* argv[]) override;

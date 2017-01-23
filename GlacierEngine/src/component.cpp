@@ -4,12 +4,17 @@
 
 namespace Glacier
 {
+	Component::~Component()
+	{
+		
+	}
+
 	Component::Component(const std::string& type, Object* parent) : m_type{ type }, m_parent{ parent }
 	{
 		parent->add_component(this);
 	}
 
-	void Component::on_message(MessageContainer msg)
+	void Component::on_message(const MessageContainer& msg)
 	{
 		SceneManager::on_message(msg);
 	}

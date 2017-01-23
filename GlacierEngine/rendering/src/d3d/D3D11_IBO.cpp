@@ -34,7 +34,7 @@ namespace Glacier
 		memcpy(index_data.pData, indices.data(), sizeof(unsigned int) * indices.size());
 		device_context->Unmap(m_index_buffer.Get(), 0);
 
-		m_index_count = indices.size();
+		set_index_count(indices.size());
 
 		return true;
 	}
@@ -54,6 +54,6 @@ namespace Glacier
 
 		ComPtr<ID3D11DeviceContext> device_context{ ctx->get_device_context() };
 
-		device_context->DrawIndexed(m_index_count, 0, 0);
+		device_context->DrawIndexed(get_index_count(), 0, 0);
 	}
 }

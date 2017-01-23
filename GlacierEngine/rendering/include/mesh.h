@@ -28,6 +28,11 @@ namespace Glacier
 	public:
 		Mesh();
 
+
+		Mesh(const Mesh& other) = default;
+
+		Mesh& operator=(const Mesh& other) = default;
+
 		VBO* get_vbo() const noexcept
 		{
 			return m_vbo.get();

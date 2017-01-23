@@ -2,6 +2,10 @@
 
 namespace Glacier
 {
+	ObserverSubject::~ObserverSubject()
+	{
+	}
+
 	void ObserverSubject::register_observer(const std::string& msg, Observer* o) noexcept
 	{
 		auto it{ m_message_listeners.find(msg) };
@@ -28,7 +32,7 @@ namespace Glacier
 		}
 	}
 
-	void ObserverSubject::broadcast_message(MessageContainer msg) const noexcept
+	void ObserverSubject::broadcast_message(const MessageContainer& msg) const noexcept
 	{
 		// Dispatch message to all registered listeners
 		auto map_it{ m_message_listeners.find(msg.get()->get_message_type()) };

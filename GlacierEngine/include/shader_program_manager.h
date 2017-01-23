@@ -13,7 +13,13 @@ namespace Glacier
 		static ShaderProgramMap shader_program_by_name;
 
 	public:
+		ShaderProgramManager() = default;
+
 		~ShaderProgramManager();
+
+		ShaderProgramManager(const ShaderProgramManager&) = delete;
+
+		ShaderProgramManager& operator=(const ShaderProgramManager&) = delete;
 
 		static bool create(const std::string& prog_name,
 		                   unsigned int input_layout_mask,

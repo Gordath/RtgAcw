@@ -11,6 +11,8 @@ namespace Glacier
 		Mesh* generate_uv_sphere(float radius, int slices, int stacks, float urange = 1.0f, float vrange = 1.0f) noexcept;
 
 		Mesh* generate_plane_xy(float size) noexcept;
+
+		void flip_normals(const Mesh* m) noexcept;
 	}
 }
 

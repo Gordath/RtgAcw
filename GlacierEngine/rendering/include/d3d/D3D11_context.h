@@ -11,7 +11,6 @@ namespace Glacier
 	private:
 		bool create_D3D11_device_and_context();
 
-	protected:
 		ComPtr<ID3D11Device> m_device;
 		ComPtr<ID3D11DeviceContext> m_device_context;
 		ComPtr<ID3D11Debug> m_debug_interface;
@@ -20,15 +19,7 @@ namespace Glacier
 		ComPtr<ID3D11DepthStencilView> m_default_dsv;
 
 	public:
-		~D3D11Context()
-		{
-			m_device.Reset();
-			m_device_context.Reset();
-			m_debug_interface.Reset();
-
-			m_default_rtv.Reset();
-			m_default_dsv.Reset();
-		}
+		D3D11Context() = default;
 
 		bool create() override;
 

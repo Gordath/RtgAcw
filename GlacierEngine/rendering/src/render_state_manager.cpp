@@ -9,13 +9,21 @@ namespace Glacier
 
 	RenderStateManager::~RenderStateManager()
 	{
-		for (auto render_state : m_render_states) {
-			delete render_state.second;
+		try {
+			for (auto render_state : m_render_states) {
+				delete render_state.second;
+			}
+		}
+		catch(...){
 		}
 
 		m_render_states.clear();
 	}
 
+
+	RenderStateManager::RenderStateManager()
+	{
+	}
 
 	void RenderStateManager::initialize() noexcept
 	{

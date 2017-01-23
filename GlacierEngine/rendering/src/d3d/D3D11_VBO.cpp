@@ -33,9 +33,9 @@ namespace Glacier
 		memcpy(ms.pData, vertices.data(), sizeof(Vertex) * vertices.size());
 		device_context->Unmap(m_vertex_buffer.Get(), 0);
 
-		m_vertex_count = vertices.size();
+		set_vertex_count(vertices.size());
 
-		m_primitive_topology = primitive_topology;
+		set_primitive_topology(primitive_topology);
 
 		return true;
 	}
@@ -51,7 +51,7 @@ namespace Glacier
 		UINT offset{ 0 };
 		device_context->IASetVertexBuffers(0, 1, m_vertex_buffer.GetAddressOf(), &stride, &offset);
 
-		switch (m_primitive_topology) {
+		switch (get_primitive_topology()) {
 		case PrimitiveTopology::TRIANGLE_LIST:
 			device_context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 			break;
@@ -69,6 +69,6 @@ namespace Glacier
 		D3D11Context* ctx{ EngineContext::get_GAPI_context() };
 
 		ComPtr<ID3D11DeviceContext> device_context{ ctx->get_device_context() };
-		device_context->Draw(m_vertex_count, 0);
+		device_context->Draw(get_vertex_count(), 0);
 	}
 }

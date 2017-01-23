@@ -7,13 +7,12 @@
 namespace Glacier
 {
 	class D3D11Renderer : public Renderer {
-	private:
-		
-
 	protected:
 		void draw(Mesh* mesh, const Material& material, const Mat4f& model) noexcept override;
 	
 	public:
+		D3D11Renderer() = default;
+
 		bool initialize() noexcept override;
 
 		void draw(std::vector<RenderingComponent*>& rendering_components, float delta_time) override;

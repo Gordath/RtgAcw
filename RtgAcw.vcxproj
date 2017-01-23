@@ -72,13 +72,15 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug - Direct X|Win32'">
     <LinkIncremental>true</LinkIncremental>
     <IncludePath>$(SolutionDir)deps\include;$(SolutionDir)GlacierEngine\include;$(SolutionDir)include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)$(Configuration);$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(SolutionDir)$(Configuration);$(SolutionDir)deps\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug - Direct X|x64'">
     <LinkIncremental>true</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release - Direct X|Win32'">
     <LinkIncremental>false</LinkIncremental>
+    <IncludePath>$(SolutionDir)deps\include;$(SolutionDir)GlacierEngine\include;$(SolutionDir)include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)$(Configuration);$(SolutionDir)deps\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release - Direct X|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -96,7 +98,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>GlacierEngine.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>GlacierEngine.lib;AntTweakBar.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug - Direct X|x64'">
@@ -121,7 +123,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;GLACIERENGINE_BUILD_D3D;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
     </ClCompile>
     <Link>
@@ -129,6 +131,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>GlacierEngine.lib;AntTweakBar.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release - Direct X|x64'">
@@ -151,16 +154,16 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\camera_keyboard_input_component.cpp" />
-    <ClCompile Include="src\color_pass.cpp" />
+    <ClCompile Include="src\deep_sea_fish.cpp" />
     <ClCompile Include="src\drebel_sub.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\main_scene.cpp" />
     <ClCompile Include="src\rtg_application.cpp" />
+    <ClCompile Include="src\water_jet_sub.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="deep_sea_fish.h" />
     <ClInclude Include="include\camera_keyboard_input_component.h" />
-    <ClInclude Include="include\color_pass.h" />
+    <ClInclude Include="include\deep_sea_fish.h" />
     <ClInclude Include="include\drebel_sub.h" />
     <ClInclude Include="include\main_scene.h" />
     <ClInclude Include="include\rtg_application.h" />
@@ -169,27 +172,51 @@
   <ItemGroup>
     <FxCompile Include="sdr\color_pass.ps.hlsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug - Direct X|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release - Direct X|Win32'">true</ExcludedFromBuild>
     </FxCompile>
     <FxCompile Include="sdr\color_pass.vs.hlsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug - Direct X|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release - Direct X|Win32'">true</ExcludedFromBuild>
     </FxCompile>
     <FxCompile Include="sdr\depth_pass.ps.hlsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug - Direct X|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release - Direct X|Win32'">true</ExcludedFromBuild>
     </FxCompile>
     <FxCompile Include="sdr\depth_pass.vs.hlsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug - Direct X|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release - Direct X|Win32'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="sdr\globe.ps.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug - Direct X|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release - Direct X|Win32'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="sdr\globe.vs.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug - Direct X|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release - Direct X|Win32'">true</ExcludedFromBuild>
     </FxCompile>
     <FxCompile Include="sdr\particles.ps.hlsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug - Direct X|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release - Direct X|Win32'">true</ExcludedFromBuild>
     </FxCompile>
     <FxCompile Include="sdr\particles.vs.hlsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug - Direct X|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release - Direct X|Win32'">true</ExcludedFromBuild>
     </FxCompile>
     <FxCompile Include="sdr\render_texture.ps.hlsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug - Direct X|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release - Direct X|Win32'">true</ExcludedFromBuild>
     </FxCompile>
     <FxCompile Include="sdr\render_texture.vs.hlsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug - Direct X|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release - Direct X|Win32'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="sdr\skybox.ps.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug - Direct X|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release - Direct X|Win32'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="sdr\skybox.vs.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug - Direct X|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release - Direct X|Win32'">true</ExcludedFromBuild>
     </FxCompile>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

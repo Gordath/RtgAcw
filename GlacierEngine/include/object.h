@@ -14,7 +14,7 @@ namespace Glacier
 
 		std::string m_name;
 
-		bool m_alive{ true };
+		bool m_alive;
 
 		Vec3f m_position;
 		Vec3f m_euler_angles;
@@ -22,20 +22,43 @@ namespace Glacier
 
 		Mat4f m_xform;
 
-		Object* m_parent{ nullptr };
+		Object* m_parent;
 
 	public:
-		Object(const std::string& name) : m_name{ name }
+		explicit Object(const std::string& name) : m_name{ name }, m_alive{true}, m_parent{ nullptr }
 		{
 		}
 
-		~Object()
-		{
-			for (auto component : m_components) {
-				delete component;
-			}
+		~Object();
 
-			m_components.clear();
+
+		Object(const Object& other)
+			: ObserverSubject{other},
+			  m_components{other.m_components},
+			  m_name{other.m_name},
+			  m_alive{other.m_alive},
+			  m_position{other.m_position},
+			  m_euler_angles{other.m_euler_angles},
+			  m_scale{other.m_scale},
+			  m_xform{other.m_xform},
+			  m_parent{other.m_parent}
+		{
+		}
+
+		Object& operator=(const Object& other)
+		{
+			if (this == &other)
+				return *this;
+			ObserverSubject::operator =(other);
+			m_components = other.m_components;
+			m_name = other.m_name;
+			m_alive = other.m_alive;
+			m_position = other.m_position;
+			m_euler_angles = other.m_euler_angles;
+			m_scale = other.m_scale;
+			m_xform = other.m_xform;
+			m_parent = other.m_parent;
+			return *this;
 		}
 
 		const std::string& get_name() const noexcept
@@ -108,16 +131,7 @@ namespace Glacier
 			}
 		}
 
-		Component* get_component(const std::string& type) const noexcept
-		{
-			for (const auto component : m_components) {
-				if (component->get_type() == type) {
-					return component;
-				}
-			}
-
-			return nullptr;
-		}
+		Component* get_component(const std::string& type) const noexcept;
 
 		void add_component(Component* component) noexcept
 		{
@@ -129,28 +143,11 @@ namespace Glacier
 			return m_alive;
 		}
 
-		virtual void update(float dt, long time = 0) noexcept
-		{
-			calculate_xform();
+		virtual void update(float dt, long time = 0) noexcept;
 
-			for (auto component : m_components) {
-				component->update(dt, time);
-			}
-		}
+		virtual void setup() noexcept;
 
-		virtual void setup() noexcept
-		{
-			for (auto component : m_components) {
-				component->setup();
-			}
-		}
-
-		virtual void teardown() noexcept
-		{
-			for (auto component : m_components) {
-				component->teardown();
-			}
-		}
+		virtual void teardown() noexcept;
 	};
 }
 

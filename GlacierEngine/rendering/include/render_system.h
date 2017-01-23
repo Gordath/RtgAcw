@@ -17,6 +17,8 @@ namespace Glacier
 		std::unique_ptr<Renderer> m_renderer {std::make_unique<D3D11Renderer>()};
 
 	public:
+		RenderSystem() = default;
+
 		bool initialize() noexcept override;
 
 		void process(const std::vector<Object*>& objects, float delta_time) const noexcept override;

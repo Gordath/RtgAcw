@@ -10,23 +10,28 @@ namespace Glacier
 	};
 
 	class RenderTarget {
-	protected:
+	private:
 		Vec2i m_size;
 
 	public:
 		RenderTarget() = default;
 
-		RenderTarget(const Vec2i& size) : m_size{ size }
+		explicit RenderTarget(const Vec2i& size) : m_size{ size }
 		{
 		}
 
-		virtual ~RenderTarget() = default;
+		virtual ~RenderTarget();
 
 		virtual bool create(const Vec2i& size) = 0;
 
 		virtual bool bind(RenderTargetBindType bind_type) const = 0;
 
 		virtual bool unbind() const = 0;
+
+		void set_size(const Vec2i& size) noexcept
+		{
+			m_size = size;
+		}
 
 		const Vec2i& get_size() const noexcept
 		{

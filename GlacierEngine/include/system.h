@@ -8,7 +8,9 @@ namespace Glacier
 {
 	class System {
 	public:
-		virtual ~System() = default;
+		System() = default;
+
+		virtual ~System();
 
 		virtual bool initialize() noexcept = 0;
 

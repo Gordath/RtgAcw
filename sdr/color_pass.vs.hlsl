@@ -16,6 +16,10 @@ cbuffer uniforms {
 	float4x4 texture_matrix;
 	float4 diffuse;
 	float4 specular;
+	float fpower;
+	float fbias;
+	float pad;
+	float pad1;
 };
 
 struct VOut {
@@ -25,7 +29,6 @@ struct VOut {
 	float3 view_direction : VIEW_DIRECTION;
 	float3 view_space_pos : VIEW_SPACE_POS;
 	float fog_factor : TEXCOORD2;
-	float fresnel_term : TEXCOORD3;
 	float4 texcoord : TEXCOORD0;
 	float3 tangent : TEXCOORD4;
 	float3 binormal : TEXCOORD5;
@@ -54,15 +57,6 @@ VOut main(VIn input)
 	
 	float exp = (vdist * fog_density) * (vdist * fog_density);
 	output.fog_factor = 1.0 / pow(2.71828, exp);
-
-
-	float fresnel_power = 5.0;
-	float fresnel_bias = 0.10;
-	float fresnel_scale = 1.0 - fresnel_bias;
-
-	float3 i = normalize(output.view_space_pos);
-	float3 n = normalize(output.normal);
-	output.fresnel_term = fresnel_bias + fresnel_scale * pow(1.0 + dot(i, n), fresnel_power);
 
 	return output;
 }

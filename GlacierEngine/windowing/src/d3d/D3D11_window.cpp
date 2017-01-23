@@ -9,12 +9,12 @@
 namespace Glacier
 {
 	// Private Methods -----------------------------------------------------------------------------------------------------------------------------
-	bool D3D11Window::create_swap_chain(D3D11Context* ctx)
+	bool D3D11Window::create_swap_chain(const D3D11Context* ctx)
 	{
 		//Describe the swapchain
 		DXGI_SWAP_CHAIN_DESC swap_chain_desc;
-		swap_chain_desc.BufferDesc.Width = m_size.x;
-		swap_chain_desc.BufferDesc.Height = m_size.y;
+		swap_chain_desc.BufferDesc.Width = get_size().x;
+		swap_chain_desc.BufferDesc.Height = get_size().y;
 		swap_chain_desc.BufferDesc.RefreshRate.Numerator = 60;
 		swap_chain_desc.BufferDesc.RefreshRate.Denominator = 1;
 		swap_chain_desc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
@@ -32,7 +32,7 @@ namespace Glacier
 
 		swap_chain_desc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
 		swap_chain_desc.BufferCount = 1; //1 back buffer == Double buffering
-		swap_chain_desc.OutputWindow = m_handle;
+		swap_chain_desc.OutputWindow = get_handle();
 		swap_chain_desc.Windowed = true; //TODO: Ckeck if this is the fullscreen switch.
 		swap_chain_desc.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
 		swap_chain_desc.Flags = 0;
@@ -55,7 +55,7 @@ namespace Glacier
 		h_result = dxgi_factory->CreateSwapChain(device.Get(), &swap_chain_desc, m_swap_chain.ReleaseAndGetAddressOf());
 
 		if (FAILED(h_result)) {
-			MessageBox(m_handle, L"DXGISwapChain creation failed.", nullptr, 0);
+			MessageBox(get_handle(), L"DXGISwapChain creation failed.", nullptr, 0);
 			return false;
 		}
 
@@ -89,8 +89,8 @@ namespace Glacier
 	{
 		D3D11_TEXTURE2D_DESC depth_attachment_desc;
 		ZeroMemory(&depth_attachment_desc, sizeof(depth_attachment_desc));
-		depth_attachment_desc.Width = m_size.x;
-		depth_attachment_desc.Height = m_size.y;
+		depth_attachment_desc.Width = get_size().x;
+		depth_attachment_desc.Height = get_size().y;
 		depth_attachment_desc.MipLevels = 1;
 		depth_attachment_desc.ArraySize = 1;
 		depth_attachment_desc.Format = DXGI_FORMAT_D32_FLOAT;
@@ -140,8 +140,8 @@ namespace Glacier
 		D3D11_VIEWPORT viewport;
 		viewport.TopLeftX = 0.0f;
 		viewport.TopLeftY = 0.0f;
-		viewport.Width = static_cast<float>(m_size.x);
-		viewport.Height = static_cast<float>(m_size.y);
+		viewport.Width = static_cast<float>(get_size().x);
+		viewport.Height = static_cast<float>(get_size().y);
 		viewport.MinDepth = 0.0f;
 		viewport.MaxDepth = 1.0f;
 
@@ -149,6 +149,11 @@ namespace Glacier
 		context->RSSetViewports(1, &viewport);
 
 		return true;
+	}
+
+	void D3D11Window::swap_buffers() const noexcept
+	{
+		m_swap_chain->Present(0, 0);
 	}
 
 	// --------------------------------------------------------------------------------------------------------------------------------------------

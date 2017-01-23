@@ -25,16 +25,7 @@ namespace Glacier
 
 		ResourceManager& operator=(const ResourceManager&) = delete;
 
-		~ResourceManager()
-		{
-			for (auto resource : m_resources_by_name) {
-				delete resource.second;
-			}
-
-			m_resources_by_name.clear();
-
-			m_resources_by_id.clear();
-		}
+		~ResourceManager();
 
 		template<typename T>
 		static bool load(const std::wstring& fileName)

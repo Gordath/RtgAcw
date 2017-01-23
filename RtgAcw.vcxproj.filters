@@ -33,13 +33,16 @@
     <ClCompile Include="src\main_scene.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\color_pass.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\camera_keyboard_input_component.cpp">
       <Filter>Source Files\Components</Filter>
     </ClCompile>
     <ClCompile Include="src\drebel_sub.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\water_jet_sub.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\deep_sea_fish.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -50,19 +53,16 @@
     <ClInclude Include="include\main_scene.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\color_pass.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\camera_keyboard_input_component.h">
       <Filter>Header Files\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="deep_sea_fish.h">
-      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\drebel_sub.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\water_jet_sub.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\deep_sea_fish.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -89,6 +89,18 @@
       <Filter>sdr</Filter>
     </FxCompile>
     <FxCompile Include="sdr\particles.ps.hlsl">
+      <Filter>sdr</Filter>
+    </FxCompile>
+    <FxCompile Include="sdr\skybox.vs.hlsl">
+      <Filter>sdr</Filter>
+    </FxCompile>
+    <FxCompile Include="sdr\skybox.ps.hlsl">
+      <Filter>sdr</Filter>
+    </FxCompile>
+    <FxCompile Include="sdr\globe.vs.hlsl">
+      <Filter>sdr</Filter>
+    </FxCompile>
+    <FxCompile Include="sdr\globe.ps.hlsl">
       <Filter>sdr</Filter>
     </FxCompile>
   </ItemGroup>
