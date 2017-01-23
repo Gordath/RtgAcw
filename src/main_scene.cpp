@@ -1217,7 +1217,7 @@ void MainScene::initialize()
 	pc = new PathComponent{ deep_sea_fish10 };
 	pc->add_keyframe(Vec3f{ 12, 4, -12 }, 0);
 	pc->add_keyframe(Vec3f{ 0, 7, 12 }, 5000);
-	pc->add_keyframe(Vec3f{ -12, 4, -12 }, 90000);
+	pc->add_keyframe(Vec3f{ -12, 4, -12 }, 9000);
 	pc->add_keyframe(Vec3f{ 12, 4, -12 }, 20000);
 	pc->set_looping(true);
 	pc->set_align_to_path(true);
