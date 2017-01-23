@@ -14,6 +14,11 @@ namespace Glacier
 
 		static Mat4f identity_matrix{ glm::mat4{ 1.0f } };
 
+		inline float random_range(float l, float h)
+		{
+			return l + static_cast<float>(rand()) / (static_cast<float>(RAND_MAX / (h - l)));
+		}
+
 		inline Vec2f normalize(const Vec2f& vec)
 		{
 			return glm::normalize(vec);

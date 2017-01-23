@@ -118,7 +118,7 @@ void calculate_lighting(StructuredBuffer<Light> lights,
 
 			ambient_light += attenuation * lights[i].ambient_intensity * lit_result.x;
 			diffuse_light += attenuation * lights[i].diffuse_intensity * lit_result.y;
-			specular_light += attenuation * lights[i].specular_intensity * 7.0f * lit_result.z;
+			specular_light += attenuation * lights[i].specular_intensity * 5.0f * lit_result.z;
 		}
 	}
 

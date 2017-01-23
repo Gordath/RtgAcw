@@ -20,6 +20,11 @@ void RtgApplication::reshape(int x, int y)
 
 void RtgApplication::key_down(unsigned char key, int x, int y)
 {
+	if (key == 27)
+	{
+		exit(0);
+	}
+
 	SceneManager::on_key_down(key, x, y);
 }
 
@@ -64,10 +69,11 @@ bool RtgApplication::initialize(int* argc, char* argv[])
 	callbacks.keyboard_up_func = key_up;
 	callbacks.mouse_func = mouse_click;
 
+	std::srand(time(nullptr));
 
 	WindowingService::create(L"RtgAcw",
-	                          Vec2i{ 1280, 800 },
-	                          Vec2i{ 250, 250 },
+	                          Vec2i{ 1600, 900 },
+	                          Vec2i{},
 	                          true,
 	                          false,
 	                          true,

@@ -22,8 +22,8 @@ static float fps{0.0f};
 static bool shadows{true};
 static long dt_ms{0};
 
-static float fresnel_power{2.1f};
-static float fresnel_bias{0.10f};
+static float fresnel_power{1.9f};
+static float fresnel_bias{0.12f};
 
 static LightDesc* directional_desc{nullptr};
 static LightDesc* spotlight1_desc{nullptr};
@@ -104,9 +104,14 @@ static void TW_CALL activate_outer_camera(void* client_data) // parasoft-suppres
 	EngineContext::get_camera_system()->set_active_camera("camera1");
 }
 
-static void TW_CALL activate_inner_follow_camera(void* client_data) // parasoft-suppress  MISRA2004-16_7 "AntTweakBar's documentation specifies this exact signature for the callback function. Thats why this pointer is not cost." // parasoft-suppress  CODSTA-CPP-53 "AntTweakBar's documentation specifies this exact signature for the callback function. Thats why this pointer is not cost."
+static void TW_CALL activate_inner_camera(void* client_data) // parasoft-suppress  MISRA2004-16_7 "AntTweakBar's documentation specifies this exact signature for the callback function. Thats why this pointer is not cost."
 {
 	EngineContext::get_camera_system()->set_active_camera("camera2");
+}
+
+static void TW_CALL activate_inner_follow_camera(void* client_data) // parasoft-suppress  MISRA2004-16_7 "AntTweakBar's documentation specifies this exact signature for the callback function. Thats why this pointer is not cost." // parasoft-suppress  CODSTA-CPP-53 "AntTweakBar's documentation specifies this exact signature for the callback function. Thats why this pointer is not cost."
+{
+	EngineContext::get_camera_system()->set_active_camera("camera3");
 }
 
 static void TW_CALL reset_scene(void* client_data) // parasoft-suppress  MISRA2004-16_7 "AntTweakBar's documentation specifies this exact signature for the callback function. Thats why this pointer is not cost." // parasoft-suppress  CODSTA-CPP-53 "AntTweakBar's documentation specifies this exact signature for the callback function. Thats why this pointer is not cost."
@@ -120,8 +125,8 @@ static void TW_CALL reset_scene(void* client_data) // parasoft-suppress  MISRA20
 	simulation_speed = 1.0f;
 	shadows = true;
 
-	fresnel_power = 2.1f;
-	fresnel_bias = 0.10f;
+	fresnel_power = 1.9f;
+	fresnel_bias = 0.12f;
 }
 
 MainScene::~MainScene()
@@ -666,7 +671,7 @@ void MainScene::setup_lights() noexcept
 	light_desc.specular_intensity = Vec4f{1.0f, 1.0f, 1.0f, 1.0f};
 	light_desc.flags = Vec4ui{1, 1, 0, 0};
 	light_desc.attenuation = Vec3f{1.0f, 0.0f, 0.0f};
-	light_desc.light_projection_matrix = MathUtils::perspective_lh(MathUtils::to_radians(60.0), 2048, 2048, 10.0f, 60.0f);
+	light_desc.light_projection_matrix = MathUtils::perspective_lh(MathUtils::to_radians(80.0), 2048, 2048, 10.0f, 60.0f);
 	lc1->set_light_description(light_desc);
 	light1->set_position(Vec3f{0.0f, 30.0, 0.0f});
 	light1->setup();
@@ -685,7 +690,7 @@ void MainScene::setup_lights() noexcept
 	light_desc2.spot_cutoff = 20.0f;
 	light_desc2.spot_exponent = 90.0f;
 	light_desc2.spot_direction = Vec3f{0.09f, -0.1f, 0.09f};
-	light_desc2.light_projection_matrix = MathUtils::perspective_lh(MathUtils::to_radians(60.0), 2048, 2048, 10.0f, 60.0f);
+	light_desc2.light_projection_matrix = MathUtils::perspective_lh(MathUtils::to_radians(60.0), 2048, 2048, 10.0f, 70.0f);
 	lc2->set_light_description(light_desc2);
 	light2->set_position(Vec3f{-30.0f, 30.0, -30.0f});
 	light2->setup();
@@ -704,7 +709,7 @@ void MainScene::setup_lights() noexcept
 	light_desc3.spot_cutoff = 20.0f;
 	light_desc3.spot_exponent = 90.0f;
 	light_desc3.spot_direction = Vec3f{-0.09f, -0.1f, 0.09f};
-	light_desc3.light_projection_matrix = MathUtils::perspective_lh(MathUtils::to_radians(60.0), 2048, 2048, 10.0f, 60.0f);
+	light_desc3.light_projection_matrix = MathUtils::perspective_lh(MathUtils::to_radians(64.0), 2048, 2048, 10.0f, 60.0f);
 	lc3->set_light_description(light_desc3);
 	light3->set_position(Vec3f{30.0f, 30.0, -30.0f});
 	light3->setup();
@@ -723,7 +728,7 @@ void MainScene::setup_lights() noexcept
 	light_desc4.spot_cutoff = 20.0f;
 	light_desc4.spot_exponent = 90.0f;
 	light_desc4.spot_direction = Vec3f{0.0f, -0.1f, -0.1f};
-	light_desc4.light_projection_matrix = MathUtils::perspective_lh(MathUtils::to_radians(60.0), 2048, 2048, 10.0f, 60.0f);
+	light_desc4.light_projection_matrix = MathUtils::perspective_lh(MathUtils::to_radians(64.0), 2048, 2048, 10.0f, 60.0f);
 	lc4->set_light_description(light_desc4);
 	light4->set_position(Vec3f{0.0f, 30.0, 30.0f});
 	light4->setup();
@@ -740,21 +745,31 @@ void MainScene::setup_cameras() noexcept
 	Object* cam{new Object{"camera1"}};
 	CameraComponent* cc{new CameraComponent{cam, MathUtils::to_radians(60.0f), win_x, win_y, 0.1f, 1000.0f}};
 	CameraKeyboardInputComponent* input_comp{new CameraKeyboardInputComponent{cam}};
-	input_comp->set_movement_speed(30.0f);
-	input_comp->set_rotation_speed(180.0f);
-	cam->set_position(Vec3f(-30.0f, 0.0f, -30.0f));
-	cam->set_euler_angles(Vec3f{0.0f, 45.0f, 0.0f});
+	input_comp->set_movement_speed(20.0f);
+	input_comp->set_rotation_speed(90.0f);
+	cam->set_position(Vec3f(0.0f, 0.0f, -42.0f));
 	cam->setup();
 	add_object(cam);
 
-	Object* cam2{new Object{"camera2"}};
-	CameraComponent* cc2{new CameraComponent{cam2, MathUtils::to_radians(60.0f), win_x, win_y, 0.1f, 1000.0f}};
-	input_comp = new CameraKeyboardInputComponent{cam2};
-	input_comp->set_rotation_speed(90.0f);
-	cam2->set_parent(m_drebel);
-	cam2->set_position(Vec3f(0.0f, 0.0f, -1.0f));
+	Object* cam2{ new Object{ "camera2" } };
+	CameraComponent* cc2{ new CameraComponent{ cam2, MathUtils::to_radians(60.0f), win_x, win_y, 0.1f, 1000.0f } };
+	CameraKeyboardInputComponent* input_comp2 = new CameraKeyboardInputComponent{ cam2 };
+	input_comp2->set_movement_speed(20.0f);
+	input_comp2->set_rotation_speed(90.0f);
+	cam2->set_position(Vec3f(11.0f, 11.0f, -11.0f));
+	cam2->set_euler_angles(Vec3f{ 45.0f, -45.0f, 0.0f});
 	cam2->setup();
 	add_object(cam2);
+
+	Object* cam3{new Object{"camera3"}};
+	CameraComponent* cc3{new CameraComponent{cam3, MathUtils::to_radians(60.0f), win_x, win_y, 0.1f, 1000.0f}};
+	input_comp = new CameraKeyboardInputComponent{cam3};
+	input_comp->set_rotation_speed(90.0f);
+	cam3->set_position(Vec3f(0.0f, 0.8f, -1.0f));
+	cam3->set_euler_angles(Vec3f{ 30.0f, 0.0f, 0.0f });
+	cam3->set_parent(m_followable_objects[0]);
+	cam3->setup();
+	add_object(cam3);
 }
 
 void MainScene::setup_d3d() noexcept
@@ -953,20 +968,43 @@ void MainScene::setup_d3d() noexcept
 	TwAddSeparator(tw_bar, "sep2", nullptr);
 
 	TwAddButton(tw_bar, "Outer Camera", activate_outer_camera, nullptr, "key=f1");
+	TwAddButton(tw_bar, "Inner Camera", activate_inner_camera, nullptr, "key=f2");
 	TwAddButton(tw_bar, "Inner Follow Camera", activate_inner_follow_camera, nullptr, "key=f3");
 
 	TwAddSeparator(tw_bar, "sep3", nullptr);
 
 	TwAddVarRW(tw_bar, "Fresnel power", TW_TYPE_FLOAT, &fresnel_power, "min=1 max=10 step=0.1");
-	TwAddVarRW(tw_bar, "Fresnel bias", TW_TYPE_FLOAT, &fresnel_bias, "min=0 max=1 step=0.05");
+	TwAddVarRW(tw_bar, "Fresnel bias", TW_TYPE_FLOAT, &fresnel_bias, "min=0 max=1 step=0.01");
 
 	TwAddSeparator(tw_bar, "sep4", nullptr);
 
-	TwAddVarRW(tw_bar, "Simulation Speed", TW_TYPE_FLOAT, &simulation_speed, "min=0 max=10 step=0.1 keyincr=t");
+	TwAddVarRW(tw_bar, "Simulation Speed", TW_TYPE_FLOAT, &simulation_speed, "min=0 max=10 step=0.1 keyincr=t keydecr=T");
 	TwAddVarRO(tw_bar, "Milliseconds per frame", TW_TYPE_INT32, &dt_ms, nullptr);
 	TwAddSeparator(tw_bar, "sep5", nullptr);
 
 	TwAddButton(tw_bar, "Reset Scene", reset_scene, nullptr, "key=r");
+}
+
+void MainScene::cycle_camera_follower() noexcept
+{
+	static int idx{ 1 };
+	CameraSystem* camera_system{ EngineContext::get_camera_system() };
+
+	Object* cam{ camera_system->get_active_camera() };
+
+	if( cam->get_name() != "camera3")
+	{
+		return;
+	}
+
+	camera_system->get_active_camera()->set_parent(m_followable_objects[idx]);
+
+	idx++;
+
+	if(idx > m_followable_objects.size() - 1)
+	{
+		idx = 0;
+	}
 }
 
 void MainScene::initialize()
@@ -1032,34 +1070,159 @@ void MainScene::initialize()
 	add_object(obj);
 
 	// Submarine 1 creation -------------------------------------------------------------------------------------------
-	m_drebel = new DrebelSubmarine{"drebel_sub", this};
-	m_drebel->set_scale(Vec3f{5.0f, 5.0f, 5.0f});
-	PathComponent* pc{new PathComponent{m_drebel}};
+	Object* drebel = new DrebelSubmarine{"drebel_sub", this};
+	drebel->set_scale(Vec3f{6.0f, 6.0f, 6.0f});
+	PathComponent* pc{new PathComponent{drebel}};
 	pc->add_keyframe(Vec3f{10, 0, -10}, 0);
-	pc->add_keyframe(Vec3f{6, 2, -6}, 2000);
-	pc->add_keyframe(Vec3f{2, 6, -2}, 4000);
-	pc->add_keyframe(Vec3f{-4, 6, 6}, 6000);
-	pc->add_keyframe(Vec3f{-4, 4, -10}, 8000);
-	pc->add_keyframe(Vec3f{-6, 2, -10}, 8000);
-	pc->add_keyframe(Vec3f{-10, 0, -10}, 8000);
+	pc->add_keyframe(Vec3f{ -10, -5, -10 }, 20000);
+	pc->add_keyframe(Vec3f{ 10, 10, 10 }, 40000);
+	pc->add_keyframe(Vec3f{ 10, 0, -10 }, 60000);
 	pc->set_looping(true);
 	pc->set_align_to_path(true);
-	m_drebel->setup();
+	drebel->setup();
+	m_followable_objects.push_back(drebel);
 
-	m_water_jet_sub = new WaterJetSubmarine{"water_jet_sub", this};
-	m_water_jet_sub->set_scale(Vec3f{5.0f, 5.0f, 5.0f});
-	pc = new PathComponent{m_water_jet_sub};
-	pc->add_keyframe(Vec3f{-10, 10, 10}, 0);
-	pc->add_keyframe(Vec3f{-6, 8, 8}, 2000);
-	pc->add_keyframe(Vec3f{-4, 6, 6}, 4000);
-	pc->add_keyframe(Vec3f{-2, 4, 4}, 6000);
-	pc->add_keyframe(Vec3f{2, 4, -2}, 8000);
-	pc->add_keyframe(Vec3f{4, -4, 0}, 10000);
-	//	pc->add_keyframe(Vec3f{ -8, 0, 2 }, 12000);
-	//	pc->add_keyframe(Vec3f{ -10, 0, 0 }, 14000);
+	Object* water_jet_sub = new WaterJetSubmarine{"water_jet_sub", this};
+	water_jet_sub->set_scale(Vec3f{8.0f, 8.0f, 8.0f});
+	pc = new PathComponent{ water_jet_sub };
+	pc->add_keyframe(Vec3f{ -8, 0, 8 }, 0);
+	pc->add_keyframe(Vec3f{ 8, -5, 8 }, 10000);
+	pc->add_keyframe(Vec3f{ -8, 10, -8 }, 20000);
+	pc->add_keyframe(Vec3f{ -8, 0, 8 }, 30000);
 	pc->set_looping(true);
 	pc->set_align_to_path(true);
-	m_water_jet_sub->setup();
+	water_jet_sub->setup();
+	m_followable_objects.push_back(water_jet_sub);
+
+	float random_scale = MathUtils::random_range(1.0f, 5.0f);
+	Object* deep_sea_fish1 = new DeepSeaFish{ "deep_sea_fish", this };
+	deep_sea_fish1->set_scale(Vec3f{ random_scale, random_scale, random_scale });
+	pc = new PathComponent{ deep_sea_fish1 };
+	pc->add_keyframe(Vec3f{ -10, -5, 10 }, 0);
+	pc->add_keyframe(Vec3f{ -0, -2, -10 }, 10000);
+	pc->add_keyframe(Vec3f{ 10, -5, 10 }, 20000);
+	pc->add_keyframe(Vec3f{ -10, -5, 10 }, 30000);
+	pc->set_looping(true);
+	pc->set_align_to_path(true);
+	deep_sea_fish1->setup();
+	m_followable_objects.push_back(deep_sea_fish1);
+
+	random_scale = MathUtils::random_range(1.0f, 5.0f);
+	Object* deep_sea_fish2 = new DeepSeaFish{ "deep_sea_fish2", this };
+	deep_sea_fish2->set_scale(Vec3f{ random_scale, random_scale, random_scale });
+	pc = new PathComponent{ deep_sea_fish2 };
+	pc->add_keyframe(Vec3f{ 10, -5, -10 }, 0);
+	pc->add_keyframe(Vec3f{ 0, -2, 10 }, 10000);
+	pc->add_keyframe(Vec3f{ -10, -5, -10 }, 20000);
+	pc->add_keyframe(Vec3f{ 10, -5, -10 }, 30000);
+	pc->set_looping(true);
+	pc->set_align_to_path(true);
+	deep_sea_fish2->setup();
+	m_followable_objects.push_back(deep_sea_fish2);
+
+	random_scale = MathUtils::random_range(1.0f, 5.0f);
+	Object* deep_sea_fish3 = new DeepSeaFish{ "deep_sea_fish3", this };
+	deep_sea_fish3->set_scale(Vec3f{ random_scale, random_scale, random_scale });
+	pc = new PathComponent{ deep_sea_fish3 };
+	pc->add_keyframe(Vec3f{ -10, -1, 10 }, 0);
+	pc->add_keyframe(Vec3f{ -0, 2, -10 }, 10000);
+	pc->add_keyframe(Vec3f{ 10, -1, 10 }, 20000);
+	pc->add_keyframe(Vec3f{ -10, -1, 10 }, 30000);
+	pc->set_looping(true);
+	pc->set_align_to_path(true);
+	deep_sea_fish3->setup();
+	m_followable_objects.push_back(deep_sea_fish3);
+
+	random_scale = MathUtils::random_range(1.0f, 5.0f);
+	Object* deep_sea_fish4 = new DeepSeaFish{ "deep_sea_fish4", this };
+	deep_sea_fish4->set_scale(Vec3f{ random_scale, random_scale, random_scale });
+	pc = new PathComponent{ deep_sea_fish4 };
+	pc->add_keyframe(Vec3f{ 10, -1, -10 }, 0);
+	pc->add_keyframe(Vec3f{ 0, 2, 10 }, 10000);
+	pc->add_keyframe(Vec3f{ -10, -1, -10 }, 20000);
+	pc->add_keyframe(Vec3f{ 10, -1, -10 }, 30000);
+	pc->set_looping(true);
+	pc->set_align_to_path(true);
+	deep_sea_fish4->setup();
+	m_followable_objects.push_back(deep_sea_fish4);
+
+	random_scale = MathUtils::random_range(1.0f, 5.0f);
+	Object* deep_sea_fish5 = new DeepSeaFish{ "deep_sea_fish5", this };
+	deep_sea_fish5->set_scale(Vec3f{ random_scale, random_scale, random_scale });
+	pc = new PathComponent{ deep_sea_fish5 };
+	pc->add_keyframe(Vec3f{ -5, -1, 5 }, 0);
+	pc->add_keyframe(Vec3f{ -0, 2, -5 }, 10000);
+	pc->add_keyframe(Vec3f{ 5, -1, 5 }, 20000);
+	pc->add_keyframe(Vec3f{ -5, -1, 5 }, 30000);
+	pc->set_looping(true);
+	pc->set_align_to_path(true);
+	deep_sea_fish5->setup();
+	m_followable_objects.push_back(deep_sea_fish5);
+
+	random_scale = MathUtils::random_range(1.0f, 5.0f);
+	Object* deep_sea_fish6 = new DeepSeaFish{ "deep_sea_fish6", this };
+	deep_sea_fish6->set_scale(Vec3f{ random_scale, random_scale, random_scale });
+	pc = new PathComponent{ deep_sea_fish6 };
+	pc->add_keyframe(Vec3f{ 5, -1, -5 }, 0);
+	pc->add_keyframe(Vec3f{ 0, 2, 5 }, 10000);
+	pc->add_keyframe(Vec3f{ -5, -1, -5 }, 20000);
+	pc->add_keyframe(Vec3f{ 5, -1, -5 }, 30000);
+	pc->set_looping(true);
+	pc->set_align_to_path(true);
+	deep_sea_fish6->setup();
+	m_followable_objects.push_back(deep_sea_fish6);
+
+	random_scale = MathUtils::random_range(1.0f, 7.0f);
+	Object* deep_sea_fish7 = new DeepSeaFish{ "deep_sea_fish7", this };
+	deep_sea_fish7->set_scale(Vec3f{ random_scale, random_scale, random_scale });
+	pc = new PathComponent{ deep_sea_fish7 };
+	pc->add_keyframe(Vec3f{ -5, 4, 5 }, 0);
+	pc->add_keyframe(Vec3f{ -0, 7, -5 }, 5000);
+	pc->add_keyframe(Vec3f{ 5, 4, 5 }, 10000);
+	pc->add_keyframe(Vec3f{ -5, 4, 5 }, 15000);
+	pc->set_looping(true);
+	pc->set_align_to_path(true);
+	deep_sea_fish7->setup();
+	m_followable_objects.push_back(deep_sea_fish7);
+
+	random_scale = MathUtils::random_range(1.0f, 7.0f);
+	Object* deep_sea_fish8 = new DeepSeaFish{ "deep_sea_fish8", this };
+	deep_sea_fish8->set_scale(Vec3f{ random_scale, random_scale, random_scale });
+	pc = new PathComponent{ deep_sea_fish8 };
+	pc->add_keyframe(Vec3f{ 5, 4, -5 }, 0);
+	pc->add_keyframe(Vec3f{ 0, 7, 5 }, 8000);
+	pc->add_keyframe(Vec3f{ -5, 4, -5 }, 160000);
+	pc->add_keyframe(Vec3f{ 5, 4, -5 }, 24000);
+	pc->set_looping(true);
+	pc->set_align_to_path(true);
+	deep_sea_fish8->setup();
+	m_followable_objects.push_back(deep_sea_fish8);
+
+	random_scale = MathUtils::random_range(1.0f, 7.0f);
+	Object* deep_sea_fish9 = new DeepSeaFish{ "deep_sea_fish9", this };
+	deep_sea_fish9->set_scale(Vec3f{ random_scale, random_scale, random_scale });
+	pc = new PathComponent{ deep_sea_fish9 };
+	pc->add_keyframe(Vec3f{ -12, 4, 12 }, 0);
+	pc->add_keyframe(Vec3f{ -0, 7, -12 }, 10000);
+	pc->add_keyframe(Vec3f{ 12, 4, 12 }, 20000);
+	pc->add_keyframe(Vec3f{ -12, 4, 12 }, 30000);
+	pc->set_looping(true);
+	pc->set_align_to_path(true);
+	deep_sea_fish9->setup();
+	m_followable_objects.push_back(deep_sea_fish9);
+
+	random_scale = MathUtils::random_range(1.0f, 7.0f);
+	Object* deep_sea_fish10 = new DeepSeaFish{ "deep_sea_fish10", this };
+	deep_sea_fish10->set_scale(Vec3f{ random_scale, random_scale, random_scale });
+	pc = new PathComponent{ deep_sea_fish10 };
+	pc->add_keyframe(Vec3f{ 12, 4, -12 }, 0);
+	pc->add_keyframe(Vec3f{ 0, 7, 12 }, 5000);
+	pc->add_keyframe(Vec3f{ -12, 4, -12 }, 90000);
+	pc->add_keyframe(Vec3f{ 12, 4, -12 }, 20000);
+	pc->set_looping(true);
+	pc->set_align_to_path(true);
+	deep_sea_fish10->setup();
+	m_followable_objects.push_back(deep_sea_fish10);
 	// -----------------------------------------------------------------------------------------------------------------
 
 	setup_cameras();
@@ -1107,19 +1270,9 @@ void MainScene::on_key_down(unsigned char key, int x, int y) noexcept
 
 void MainScene::on_key_up(unsigned char key, int x, int y) noexcept
 {
-	switch (key)
+	if (key == 115)
 	{
-	case '1':
-		EngineContext::get_camera_system()->set_active_camera("camera1");
-		break;
-	case '2':
-		EngineContext::get_camera_system()->set_active_camera("camera2");
-		break;
-	case '0':
-		wireframe = !wireframe;
-		break;
-	default:
-		break;
+		cycle_camera_follower();
 	}
 
 	MessageContainer msg{new KeypressMessage{key, x, y, false}};

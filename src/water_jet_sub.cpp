@@ -16,6 +16,7 @@ void WaterJetSubmarine::setup() noexcept
 {
 	//Self init
 	Object::setup();
+	calculate_xform();
 	m_scene->add_object(this);
 	//----
 

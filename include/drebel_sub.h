@@ -16,7 +16,6 @@ public:
 	{
 	}
 
-
 	DrebelSubmarine(const DrebelSubmarine& other)
 		: Glacier::Object{other},
 		  m_scene{other.m_scene},

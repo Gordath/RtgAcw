@@ -4,6 +4,8 @@
 #include "../GlacierEngine/rendering/include/d3d/D3D11_render_target.h"
 #include "water_jet_sub.h"
 #include <array>
+#include "deep_sea_fish.h"
+#include <vector>
 
 class DrebelSubmarine;
 
@@ -27,8 +29,10 @@ private:
 	Glacier::Object* m_skybox; /* parasoft-suppress  MRM-33 "The memory of all objects added to the Scene is freed by the Scene base class in it's destructor." */
 	Glacier::Object* m_globe; /* parasoft-suppress  MRM-33 "The memory of all objects added to the Scene is freed by the Scene base class in it's destructor." */
 
-	DrebelSubmarine* m_drebel; /* parasoft-suppress  MRM-33 "The memory of all objects added to the Scene is freed by the Scene base class in it's destructor." */
-	WaterJetSubmarine* m_water_jet_sub; /* parasoft-suppress  MRM-33 "The memory of all objects added to the Scene is freed by the Scene base class in it's destructor." */
+	std::vector<Glacier::Object*> m_followable_objects;
+//	DrebelSubmarine* m_drebel; /* parasoft-suppress  MRM-33 "The memory of all objects added to the Scene is freed by the Scene base class in it's destructor." */
+//	WaterJetSubmarine* m_water_jet_sub; /* parasoft-suppress  MRM-33 "The memory of all objects added to the Scene is freed by the Scene base class in it's destructor." */
+//	DeepSeaFish* m_deep_sea_fish1;
 
 	void depth_pass() const noexcept;
 	void color_pass() const noexcept;
@@ -41,12 +45,12 @@ private:
 	void setup_cameras() noexcept;
 	void setup_d3d() noexcept;
 
+	void cycle_camera_follower() noexcept;
+
 public:
 	MainScene() :
 		m_skybox{ nullptr },
-		m_globe{ nullptr },
-		m_drebel{ nullptr },
-		m_water_jet_sub{nullptr}
+		m_globe{ nullptr }
 	{
 	}
 
