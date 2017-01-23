@@ -139,3 +139,10 @@ Contact GitHub API Training Shop Blog About
 sdr/*.compilation_errors.txt
 *.enc
 nsight_profiler.cfg
+.cpptest/
+data/
+Release - Direct X/
+Debug - Direct X/
+.parasoft.dat/
+deps/
+.parasoft
